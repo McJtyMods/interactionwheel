@@ -2,14 +2,14 @@ package mcjty.intwheel.api;
 
 import net.minecraft.util.ResourceLocation;
 
-public class WheelAction {
+public class WheelActionElement {
     private final String id;
     private final String description;
     private final String texture;
     private final int u;
     private final int v;
 
-    public WheelAction(String id, String description, String texture, int u, int v) {
+    public WheelActionElement(String id, String description, String texture, int u, int v) {
         this.id = id;
         this.description = description;
         this.texture = texture;

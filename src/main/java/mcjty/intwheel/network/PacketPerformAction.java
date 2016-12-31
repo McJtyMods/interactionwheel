@@ -1,9 +1,8 @@
 package mcjty.intwheel.network;
 
 import io.netty.buffer.ByteBuf;
-import mcjty.intwheel.WheelSupport;
-import mcjty.intwheel.api.IWheelActions;
-import mcjty.intwheel.api.WheelAction;
+import mcjty.intwheel.InteractionWheel;
+import mcjty.intwheel.api.IWheelAction;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -43,17 +42,12 @@ public class PacketPerformAction implements IMessage {
         }
 
         private void handle(PacketPerformAction message, MessageContext ctx) {
-            EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-            IWheelActions actions = WheelSupport.getWheelActions(player.getEntityWorld(), message.pos);
-            System.out.println("message.actionId = " + message.actionId);
-            for (WheelAction action : actions.getActions()) {
-                System.out.println("action.getId() = " + action.getId());
-                if (action.getId().equals(message.actionId)) {
-                    actions.performServer(action, player);
-                    return;
-                }
+            IWheelAction action = InteractionWheel.registry.get(message.actionId);
+            System.out.println("action = " + action);
+            if (action != null) {
+                EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+                action.performServer(player, player.getEntityWorld(), message.pos);
             }
-
         }
     }
 

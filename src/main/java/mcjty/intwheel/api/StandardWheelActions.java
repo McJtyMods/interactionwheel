@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum StandardWheelActions {
-    DUMP("std.dump", "Dump to container", 0, 128),                      // Dump all possible items in players inventory into container
-    EXTRACT("std.extract", "Fetch from container", 32, 128);            // Extract all possible items from container into players inventory
+    DUMP(StandardWheelActions.ID_DUMP, "Dump to container", 0, 128),                      // Dump all possible items in players inventory into container
+    EXTRACT(StandardWheelActions.ID_EXTRACT, "Fetch from container", 32, 128);            // Extract all possible items from container into players inventory
+
+    public static final String ID_DUMP = "std.dump";
+    public static final String ID_EXTRACT = "std.extract";
 
     private final String id;
     private final String desc;
@@ -35,10 +38,10 @@ public enum StandardWheelActions {
         return v;
     }
 
-    public static List<WheelAction> createStandardActions() {
-        List<WheelAction> actions = new ArrayList<>();
+    public static List<WheelActionElement> createStandardActions() {
+        List<WheelActionElement> actions = new ArrayList<>();
         for (StandardWheelActions action : StandardWheelActions.values()) {
-            actions.add(new WheelAction(action.getId(), action.getDesc(), "intwheel:textures/gui/wheel_hilight.png", action.getU(), action.getV()));
+            actions.add(new WheelActionElement(action.getId(), action.getDesc(), "intwheel:textures/gui/wheel_hilight.png", action.getU(), action.getV()));
         }
         return actions;
     }

@@ -2,8 +2,9 @@ package mcjty.intwheel.gui;
 
 import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.WheelSupport;
+import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.IWheelActions;
-import mcjty.intwheel.api.WheelAction;
+import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.input.KeyBindings;
 import mcjty.intwheel.network.PacketHandler;
 import mcjty.intwheel.network.PacketPerformAction;
@@ -52,6 +53,11 @@ public class GuiWheel extends GuiScreen {
     }
 
     @Override
+    public boolean doesGuiPauseGame() {
+        return false;
+    }
+
+    @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
@@ -69,9 +75,13 @@ public class GuiWheel extends GuiScreen {
     }
 
     private void performAction(int index) {
-        WheelAction action = actions.getActions().get(index);
-        if (actions.performClient(action, MinecraftTools.getPlayer(mc))) {
-            PacketHandler.INSTANCE.sendToServer(new PacketPerformAction(pos, action.getId()));
+        WheelActionElement element = actions.getActions().get(index);
+        IWheelAction action = InteractionWheel.registry.get(element.getId());
+        System.out.println("action = " + action);
+        if (action != null) {
+            if (action.performClient(MinecraftTools.getPlayer(mc), MinecraftTools.getWorld(mc), pos)) {
+                PacketHandler.INSTANCE.sendToServer(new PacketPerformAction(pos, element.getId()));
+            }
         }
     }
 
@@ -129,7 +139,7 @@ public class GuiWheel extends GuiScreen {
             }
         }
         for (int i = 0 ; i < actions.getActions().size() ; i++) {
-            WheelAction action = actions.getActions().get(i);
+            WheelActionElement action = actions.getActions().get(i);
             mc.getTextureManager().bindTexture(new ResourceLocation(action.getTexture()));
             int v = action.getV() + ((q == i) ? 0 : 64);
             switch (i) {
