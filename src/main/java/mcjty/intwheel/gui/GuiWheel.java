@@ -1,9 +1,7 @@
 package mcjty.intwheel.gui;
 
 import mcjty.intwheel.InteractionWheel;
-import mcjty.intwheel.WheelSupport;
 import mcjty.intwheel.api.IWheelAction;
-import mcjty.intwheel.api.IWheelActions;
 import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.input.KeyBindings;
 import mcjty.intwheel.network.PacketHandler;
@@ -17,6 +15,7 @@ import net.minecraft.world.World;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
+import java.util.List;
 
 public class GuiWheel extends GuiScreen {
 
@@ -26,7 +25,7 @@ public class GuiWheel extends GuiScreen {
     private int guiLeft;
     private int guiTop;
 
-    private final IWheelActions actions;
+    private final List<WheelActionElement> actions;
     private final BlockPos pos;
 
     private static final ResourceLocation background = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel.png");
@@ -34,7 +33,7 @@ public class GuiWheel extends GuiScreen {
 
     public GuiWheel(World world, int x, int y, int z) {
         pos = new BlockPos(x, y, z);
-        actions = WheelSupport.getWheelActions(world, pos);
+        actions = InteractionWheel.provider.getActions(world, pos);
     }
 
     @Override
@@ -67,7 +66,7 @@ public class GuiWheel extends GuiScreen {
         if (q == -1) {
             closeThis();
         } else {
-            if (q < actions.getActions().size()) {
+            if (q < actions.size()) {
                 performAction(q);
             }
         }
@@ -75,7 +74,7 @@ public class GuiWheel extends GuiScreen {
     }
 
     private void performAction(int index) {
-        WheelActionElement element = actions.getActions().get(index);
+        WheelActionElement element = actions.get(index);
         IWheelAction action = InteractionWheel.registry.get(element.getId());
         System.out.println("action = " + action);
         if (action != null) {
@@ -130,16 +129,16 @@ public class GuiWheel extends GuiScreen {
                     break;
             }
 
-            if (q < actions.getActions().size()) {
-                String desc = actions.getActions().get(q).getDescription();
+            if (q < actions.size()) {
+                String desc = actions.get(q).getDescription();
                 int width = mc.fontRendererObj.getStringWidth(desc);
                 int x = guiLeft + (160-width)/2;
                 int y = guiTop + HEIGHT;
                 RenderHelper.renderText(mc, x, y, desc);
             }
         }
-        for (int i = 0 ; i < actions.getActions().size() ; i++) {
-            WheelActionElement action = actions.getActions().get(i);
+        for (int i = 0 ; i < actions.size() ; i++) {
+            WheelActionElement action = actions.get(i);
             mc.getTextureManager().bindTexture(new ResourceLocation(action.getTexture()));
             int v = action.getV() + ((q == i) ? 0 : 64);
             switch (i) {

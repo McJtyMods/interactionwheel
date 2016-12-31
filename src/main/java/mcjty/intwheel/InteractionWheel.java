@@ -1,7 +1,9 @@
 package mcjty.intwheel;
 
 
+import mcjty.intwheel.api.IWheelActionProvider;
 import mcjty.intwheel.api.WheelActionElement;
+import mcjty.intwheel.apiimp.DefaultWheelActionProvider;
 import mcjty.intwheel.apiimp.WheelActionRegistry;
 import mcjty.intwheel.proxy.CommonProxy;
 import net.minecraftforge.fml.common.Mod;
@@ -36,6 +38,7 @@ public class InteractionWheel {
     public static Logger logger;
 
     public static WheelActionRegistry registry = new WheelActionRegistry();
+    public static IWheelActionProvider provider = new DefaultWheelActionProvider();
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event){

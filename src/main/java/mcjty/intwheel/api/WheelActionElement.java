@@ -1,7 +1,5 @@
 package mcjty.intwheel.api;
 
-import net.minecraft.util.ResourceLocation;
-
 public class WheelActionElement {
     private final String id;
     private final String description;
@@ -35,5 +33,21 @@ public class WheelActionElement {
 
     public int getV() {
         return v;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        WheelActionElement that = (WheelActionElement) o;
+
+        return id != null ? id.equals(that.id) : that.id == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }
