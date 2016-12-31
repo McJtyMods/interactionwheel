@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import org.lwjgl.input.Keyboard;
 
@@ -32,8 +33,13 @@ public class GuiWheel extends GuiScreen {
     private static final ResourceLocation background = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel.png");
     private static final ResourceLocation hilight = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel_hilight.png");
 
-    public GuiWheel(World world, int x, int y, int z) {
-        pos = new BlockPos(x, y, z);
+    public GuiWheel(World world) {
+        RayTraceResult mouseOver = Minecraft.getMinecraft().objectMouseOver;
+        if (mouseOver.typeOfHit == RayTraceResult.Type.BLOCK && mouseOver != null) {
+            pos = mouseOver.getBlockPos();
+        } else {
+            pos = null;
+        }
         actions = InteractionWheel.provider.getActions(MinecraftTools.getPlayer(Minecraft.getMinecraft()), world, pos);
     }
 

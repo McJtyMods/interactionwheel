@@ -16,13 +16,20 @@ public class PacketPerformAction implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        pos = NetworkTools.readPos(buf);
+        if (buf.readBoolean()) {
+            pos = NetworkTools.readPos(buf);
+        }
         actionId = NetworkTools.readString(buf);
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        NetworkTools.writePos(buf, pos);
+        if (pos != null) {
+            buf.writeBoolean(true);
+            NetworkTools.writePos(buf, pos);
+        } else {
+            buf.writeBoolean(false);
+        }
         NetworkTools.writeString(buf, actionId);
     }
 
@@ -43,7 +50,6 @@ public class PacketPerformAction implements IMessage {
 
         private void handle(PacketPerformAction message, MessageContext ctx) {
             IWheelAction action = InteractionWheel.registry.get(message.actionId);
-            System.out.println("action = " + action);
             if (action != null) {
                 EntityPlayerMP player = ctx.getServerHandler().playerEntity;
                 action.performServer(player, player.getEntityWorld(), message.pos);

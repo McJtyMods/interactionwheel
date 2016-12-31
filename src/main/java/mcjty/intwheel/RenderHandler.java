@@ -23,7 +23,6 @@ public class RenderHandler {
 
     public static void showFoundInventories(RenderWorldLastEvent evt) {
         if (!foundPositions.isEmpty()) {
-            System.out.println("RenderHandler.showFoundInventories");
             if (System.currentTimeMillis() > time) {
                 foundPositions.clear();
                 time = -1;

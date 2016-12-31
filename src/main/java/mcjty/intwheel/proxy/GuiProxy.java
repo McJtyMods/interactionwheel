@@ -13,6 +13,6 @@ public class GuiProxy implements IGuiHandler {
 
     @Override
     public Object getClientGuiElement(int guiid, EntityPlayer entityPlayer, World world, int x, int y, int z) {
-        return new GuiWheel(world, x, y, z);
+        return new GuiWheel(world);
     }
 }
