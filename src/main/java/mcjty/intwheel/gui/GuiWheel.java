@@ -8,6 +8,7 @@ import mcjty.intwheel.network.PacketHandler;
 import mcjty.intwheel.network.PacketPerformAction;
 import mcjty.intwheel.varia.RenderHelper;
 import mcjty.lib.tools.MinecraftTools;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -33,7 +34,7 @@ public class GuiWheel extends GuiScreen {
 
     public GuiWheel(World world, int x, int y, int z) {
         pos = new BlockPos(x, y, z);
-        actions = InteractionWheel.provider.getActions(world, pos);
+        actions = InteractionWheel.provider.getActions(MinecraftTools.getPlayer(Minecraft.getMinecraft()), world, pos);
     }
 
     @Override
@@ -144,6 +145,8 @@ public class GuiWheel extends GuiScreen {
             switch (i) {
                 case 0: drawTexturedModalRect(guiLeft + 78+8, guiTop+8, action.getU(), v, 31, 31); break;
                 case 1: drawTexturedModalRect(guiLeft + 107+12, guiTop + 22+20, action.getU(), v, 31, 31); break;
+                case 2: drawTexturedModalRect(guiLeft + 107+12, guiTop + 78+10, action.getU(), v, 31, 31); break;
+                case 3: drawTexturedModalRect(guiLeft + 78+9, guiTop + 108+11, action.getU(), v, 31, 31); break;
             }
         }
     }

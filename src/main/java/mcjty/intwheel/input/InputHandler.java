@@ -25,7 +25,7 @@ public class InputHandler {
             if (mouseOver != null && mouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
                 BlockPos pos = mouseOver.getBlockPos();
                 WorldClient world = MinecraftTools.getWorld(Minecraft.getMinecraft());
-                List<WheelActionElement> actions = InteractionWheel.provider.getActions(world, pos);
+                List<WheelActionElement> actions = InteractionWheel.provider.getActions(player, world, pos);
                 if (!actions.isEmpty()) {
                     player.openGui(InteractionWheel.instance, GuiProxy.GUI_NOTE, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ());
                 }

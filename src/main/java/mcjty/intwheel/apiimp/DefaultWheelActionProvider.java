@@ -4,31 +4,42 @@ import mcjty.intwheel.api.IWheelActionProvider;
 import mcjty.intwheel.api.IWheelActions;
 import mcjty.intwheel.api.StandardWheelActions;
 import mcjty.intwheel.api.WheelActionElement;
+import mcjty.lib.tools.ItemStackTools;
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultWheelActionProvider implements IWheelActionProvider {
 
     @Override
     @Nonnull
-    public List<WheelActionElement> getActions(World world, BlockPos pos) {
+    public List<WheelActionElement> getActions(EntityPlayer player, World world, BlockPos pos) {
+        List<WheelActionElement> actions = new ArrayList<>();
+        ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
+        if (ItemStackTools.isValid(heldItem)) {
+            actions.add(StandardWheelActions.SEARCH.createWheelAction());
+        }
+        actions.add(StandardWheelActions.ROTATE.createWheelAction());
         Block block = world.getBlockState(pos).getBlock();
         if (block instanceof IWheelActions) {
-            return ((IWheelActions) block).getActions();
+            actions.addAll(((IWheelActions) block).getActions());
         } else {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof IInventory || (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))) {
-                return StandardWheelActions.createStandardActions();
+                actions.add(StandardWheelActions.DUMP.createWheelAction());
+                actions.add(StandardWheelActions.EXTRACT.createWheelAction());
             }
         }
-        return Collections.emptyList();
+        return actions;
     }
 }

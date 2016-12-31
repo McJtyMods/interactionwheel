@@ -32,6 +32,6 @@ public class PacketHandler {
         INSTANCE.registerMessage(PacketPerformAction.Handler.class, PacketPerformAction.class, nextID(), Side.SERVER);
 
         // Client side
-//        INSTANCE.registerMessage(PacketReturnInfoHandler.class, PacketReturnInfoToClient.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(PackedInventoriesToClient.Handler.class, PackedInventoriesToClient.class, nextID(), Side.CLIENT);
     }
 }
