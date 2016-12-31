@@ -1,5 +1,7 @@
 package mcjty.intwheel.api;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import java.util.List;
 
 /**
@@ -11,9 +13,9 @@ public interface IWheelActions {
     List<WheelAction> getActions();
 
     // Perform an action. This is called server-side
-    void performServer(WheelAction action);
+    void performServer(WheelAction action, EntityPlayer player);
 
     // Perform an action. This is called client-side. If this returns false the server
     // side action is not performed
-    default boolean performClient(WheelAction action) { return true; }
+    default boolean performClient(WheelAction action, EntityPlayer player) { return true; }
 }

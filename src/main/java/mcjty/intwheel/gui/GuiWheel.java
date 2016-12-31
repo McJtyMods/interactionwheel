@@ -1,11 +1,14 @@
 package mcjty.intwheel.gui;
 
 import mcjty.intwheel.InteractionWheel;
+import mcjty.intwheel.WheelSupport;
 import mcjty.intwheel.api.IWheelActions;
 import mcjty.intwheel.api.WheelAction;
-import mcjty.intwheel.input.InputHandler;
 import mcjty.intwheel.input.KeyBindings;
+import mcjty.intwheel.network.PacketHandler;
+import mcjty.intwheel.network.PacketPerformAction;
 import mcjty.intwheel.varia.RenderHelper;
+import mcjty.lib.tools.MinecraftTools;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -23,12 +26,14 @@ public class GuiWheel extends GuiScreen {
     private int guiTop;
 
     private final IWheelActions actions;
+    private final BlockPos pos;
 
     private static final ResourceLocation background = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel.png");
     private static final ResourceLocation hilight = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel_hilight.png");
 
     public GuiWheel(World world, int x, int y, int z) {
-        actions = InputHandler.getWheelActions(world, new BlockPos(x, y, z));
+        pos = new BlockPos(x, y, z);
+        actions = WheelSupport.getWheelActions(world, pos);
     }
 
     @Override
@@ -56,7 +61,17 @@ public class GuiWheel extends GuiScreen {
         if (q == -1) {
             closeThis();
         } else {
+            if (q < actions.getActions().size()) {
+                performAction(q);
+            }
+        }
+        closeThis();
+    }
 
+    private void performAction(int index) {
+        WheelAction action = actions.getActions().get(index);
+        if (actions.performClient(action, MinecraftTools.getPlayer(mc))) {
+            PacketHandler.INSTANCE.sendToServer(new PacketPerformAction(pos, action.getId()));
         }
     }
 

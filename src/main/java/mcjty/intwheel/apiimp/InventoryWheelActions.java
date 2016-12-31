@@ -3,6 +3,7 @@ package mcjty.intwheel.apiimp;
 import mcjty.intwheel.api.IWheelActions;
 import mcjty.intwheel.api.StandardWheelActions;
 import mcjty.intwheel.api.WheelAction;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class InventoryWheelActions implements IWheelActions {
     }
 
     @Override
-    public void performServer(WheelAction action) {
+    public void performServer(WheelAction action, EntityPlayer player) {
 
     }
 }
