@@ -1,0 +1,15 @@
+[
+{
+  "modid": "intwheel",
+  "name": "Interaction Wheel",
+  "description": "Interaction Wheel",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["McJty"],
+  "credits": "McJty",
+  "logoFile": "",
+  "screenshots": []
+}
+]
