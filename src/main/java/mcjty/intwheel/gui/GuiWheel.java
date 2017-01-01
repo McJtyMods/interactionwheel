@@ -105,10 +105,11 @@ public class GuiWheel extends GuiScreen {
 
         int cx = mouseX - guiLeft - WIDTH / 2;
         int cy = mouseY - guiTop - HEIGHT / 2;
+        int offset = actions.size() / 2;
         int q = getSelectedSection(cx, cy);
         if (q != -1) {
             mc.getTextureManager().bindTexture(hilight);
-            switch (q) {
+            switch ((q - offset + 8) % 8) {
                 case 0:
                     drawTexturedModalRect(guiLeft + 78, guiTop, 0, 0, 63, 63);
                     break;
@@ -150,7 +151,7 @@ public class GuiWheel extends GuiScreen {
             int txth = action.getTxth();
             int u = q == i ? action.getUhigh() : action.getUlow();
             int v = q == i ? action.getVhigh() : action.getVlow();
-            switch (i) {
+            switch ((i - offset + 8) % 8) {
                 case 0: RenderHelper.drawTexturedModalRect(guiLeft + 78+8, guiTop+8, u, v, 31, 31, txtw, txth); break;
                 case 1: RenderHelper.drawTexturedModalRect(guiLeft + 107+12, guiTop + 22+19, u, v, 31, 31, txtw, txth); break;
                 case 2: RenderHelper.drawTexturedModalRect(guiLeft + 107+12, guiTop + 78+9, u, v, 31, 31, txtw, txth); break;
@@ -187,6 +188,7 @@ public class GuiWheel extends GuiScreen {
         } else if (cx < 0 && cy < 0 && Math.abs(cx) < Math.abs(cy)) {
             q = 7;
         }
-        return q;
+        int offset = actions.size() / 2;
+        return (q + offset) % 8;
     }
 }
