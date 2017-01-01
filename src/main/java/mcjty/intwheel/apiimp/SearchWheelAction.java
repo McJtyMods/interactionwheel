@@ -5,13 +5,11 @@ import mcjty.intwheel.api.StandardWheelActions;
 import mcjty.intwheel.network.PackedInventoriesToClient;
 import mcjty.intwheel.network.PacketHandler;
 import mcjty.lib.tools.ItemStackTools;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -29,12 +27,12 @@ public class SearchWheelAction implements IWheelAction {
     }
 
     @Override
-    public boolean performClient(EntityPlayer player, World world, BlockPos pos) {
+    public boolean performClient(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         return true;
     }
 
     @Override
-    public void performServer(EntityPlayer player, World world, BlockPos pos) {
+    public void performServer(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         pos = player.getPosition();
         ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
         if (ItemStackTools.isValid(heldItem)) {

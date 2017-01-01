@@ -15,8 +15,8 @@ public interface IWheelAction {
 
     // Perform an action. This is called client-side. If this returns false the server
     // side action is not performed
-    boolean performClient(EntityPlayer player, World world, @Nullable BlockPos pos);
+    boolean performClient(EntityPlayer player, World world, @Nullable BlockPos pos, boolean extended);
 
     // Perform an action. This is called server-side
-    void performServer(EntityPlayer player, World world, @Nullable BlockPos pos);
+    void performServer(EntityPlayer player, World world, @Nullable BlockPos pos, boolean extended);
 }

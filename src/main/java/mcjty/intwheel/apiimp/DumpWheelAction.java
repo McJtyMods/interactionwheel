@@ -22,23 +22,25 @@ public class DumpWheelAction implements IWheelAction {
     }
 
     @Override
-    public boolean performClient(EntityPlayer player, World world, BlockPos pos) {
+    public boolean performClient(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         return true;
     }
 
     @Override
-    public void performServer(EntityPlayer player, World world, BlockPos pos) {
+    public void performServer(EntityPlayer player, World world, BlockPos pos, boolean extended) {
+        int start = extended ? 0 : 9;
+        System.out.println("start = " + start);
         TileEntity te = world.getTileEntity(pos);
         if (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
             IItemHandler inventory = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-            for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
+            for (int i = start ; i < player.inventory.getSizeInventory() ; i++) {
                 ItemStack stack = player.inventory.getStackInSlot(i);
                 stack = ItemHandlerHelper.insertItem(inventory, stack, false);
                 player.inventory.setInventorySlotContents(i, stack);
             }
         } else if (te instanceof IInventory) {
             IInventory inventory = (IInventory) te;
-            for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
+            for (int i = start ; i < player.inventory.getSizeInventory() ; i++) {
                 ItemStack stack = player.inventory.getStackInSlot(i);
                 int failed = InventoryHelper.mergeItemStackSafe(inventory, null, stack, 0, inventory.getSizeInventory(), null);
                 if (failed > 0) {

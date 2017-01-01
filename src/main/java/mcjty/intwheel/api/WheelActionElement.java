@@ -7,6 +7,7 @@ package mcjty.intwheel.api;
 public class WheelActionElement {
     private final String id;
     private final String description;
+    private final String sneakDescription;
     private final String texture;
     private final int uhigh;
     private final int vhigh;
@@ -19,6 +20,7 @@ public class WheelActionElement {
      * The wheel icon should be a 32x32 image embedded in a larger texture
      * @param id is the id for the wheel action
      * @param description a short (max about 20 chars) description of the wheel element
+     * @param sneakDescription an optional description to use when sneaking
      * @param texture a string representation of a texture resource. Default is "intwheel:textures/gui/wheel_hilight.png"
      * @param uhigh the texture 'u' location of the image within the texture (selected version)
      * @param vhigh the texture 'v' location of the image within the texture (selected version)
@@ -27,9 +29,10 @@ public class WheelActionElement {
      * @param txtw the total size of the source texture (often 256)
      * @param txth the total size of the source texture (often 256)
      */
-    public WheelActionElement(String id, String description, String texture, int uhigh, int vhigh, int ulow, int vlow, int txtw, int txth) {
+    public WheelActionElement(String id, String description, String sneakDescription, String texture, int uhigh, int vhigh, int ulow, int vlow, int txtw, int txth) {
         this.id = id;
         this.description = description;
+        this.sneakDescription = sneakDescription;
         this.texture = texture;
         this.uhigh = uhigh;
         this.vhigh = vhigh;
@@ -45,6 +48,10 @@ public class WheelActionElement {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getSneakDescription() {
+        return sneakDescription;
     }
 
     public String getTexture() {

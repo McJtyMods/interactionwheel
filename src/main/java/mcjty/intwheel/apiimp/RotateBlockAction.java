@@ -16,12 +16,12 @@ public class RotateBlockAction implements IWheelAction {
     }
 
     @Override
-    public boolean performClient(EntityPlayer player, World world, BlockPos pos) {
+    public boolean performClient(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         return true;
     }
 
     @Override
-    public void performServer(EntityPlayer player, World world, BlockPos pos) {
+    public void performServer(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         IBlockState blockState = world.getBlockState(pos);
         blockState.getBlock().rotateBlock(world, pos, EnumFacing.UP);
     }

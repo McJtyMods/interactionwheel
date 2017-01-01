@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 public class PacketPerformAction implements IMessage {
     private BlockPos pos;
     private String actionId;
+    private boolean extended;
 
     @Override
     public void fromBytes(ByteBuf buf) {
@@ -20,6 +21,7 @@ public class PacketPerformAction implements IMessage {
             pos = NetworkTools.readPos(buf);
         }
         actionId = NetworkTools.readString(buf);
+        extended = buf.readBoolean();
     }
 
     @Override
@@ -31,14 +33,16 @@ public class PacketPerformAction implements IMessage {
             buf.writeBoolean(false);
         }
         NetworkTools.writeString(buf, actionId);
+        buf.writeBoolean(extended);
     }
 
     public PacketPerformAction() {
     }
 
-    public PacketPerformAction(BlockPos pos, String id) {
+    public PacketPerformAction(BlockPos pos, String id, boolean extended) {
         this.pos = pos;
         this.actionId = id;
+        this.extended = extended;
     }
 
     public static class Handler implements IMessageHandler<PacketPerformAction, IMessage> {
@@ -52,7 +56,7 @@ public class PacketPerformAction implements IMessage {
             IWheelAction action = InteractionWheel.registry.get(message.actionId);
             if (action != null) {
                 EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-                action.performServer(player, player.getEntityWorld(), message.pos);
+                action.performServer(player, player.getEntityWorld(), message.pos, message.extended);
             }
         }
     }

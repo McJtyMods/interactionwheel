@@ -20,12 +20,12 @@ public class ExtractWheelAction implements IWheelAction {
     }
 
     @Override
-    public boolean performClient(EntityPlayer player, World world, BlockPos pos) {
+    public boolean performClient(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         return true;
     }
 
     @Override
-    public void performServer(EntityPlayer player, World world, BlockPos pos) {
+    public void performServer(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         TileEntity te = world.getTileEntity(pos);
         if (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
             IItemHandler inventory = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);

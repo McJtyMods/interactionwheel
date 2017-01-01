@@ -85,8 +85,9 @@ public class GuiWheel extends GuiScreen {
         WheelActionElement element = actions.get(index);
         IWheelAction action = InteractionWheel.registry.get(element.getId());
         if (action != null) {
-            if (action.performClient(MinecraftTools.getPlayer(mc), MinecraftTools.getWorld(mc), pos)) {
-                PacketHandler.INSTANCE.sendToServer(new PacketPerformAction(pos, element.getId()));
+            boolean extended = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+            if (action.performClient(MinecraftTools.getPlayer(mc), MinecraftTools.getWorld(mc), pos, extended)) {
+                PacketHandler.INSTANCE.sendToServer(new PacketPerformAction(pos, element.getId(), extended));
             }
         }
     }
@@ -139,7 +140,12 @@ public class GuiWheel extends GuiScreen {
             }
 
             if (q < actions.size()) {
+                boolean extended = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
                 String desc = actions.get(q).getDescription();
+                String sneakDesc = actions.get(q).getSneakDescription();
+                if (extended && sneakDesc != null) {
+                    desc = sneakDesc;
+                }
                 int width = mc.fontRendererObj.getStringWidth(desc);
                 int x = guiLeft + (160-width)/2;
                 int y = guiTop + HEIGHT;
