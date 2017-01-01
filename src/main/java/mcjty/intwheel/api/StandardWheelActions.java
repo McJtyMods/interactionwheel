@@ -40,6 +40,6 @@ public enum StandardWheelActions {
     }
 
     public WheelActionElement createWheelAction() {
-        return new WheelActionElement(id, desc, "intwheel:textures/gui/wheel_hilight.png", u, v);
+        return new WheelActionElement(id, desc, "intwheel:textures/gui/wheel_hilight.png", u, v, u, v+64, 256, 256);
     }
 }

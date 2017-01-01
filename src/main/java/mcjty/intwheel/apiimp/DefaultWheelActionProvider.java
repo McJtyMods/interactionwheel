@@ -43,6 +43,14 @@ public class DefaultWheelActionProvider implements IWheelActionProvider {
                 }
             }
         }
+//        actions.add(new WheelActionElement(StandardWheelActions.ID_ROTATE, "rot", "intwheel:textures/gui/wheel_hilight.png", 128, 128));
+//        actions.add(new WheelActionElement(StandardWheelActions.ID_ROTATE, "rot", "intwheel:textures/gui/wheel_hilight.png", 128, 128));
+//        actions.add(new WheelActionElement(StandardWheelActions.ID_ROTATE, "rot", "intwheel:textures/gui/wheel_hilight.png", 128, 128));
+//        actions.add(new WheelActionElement(StandardWheelActions.ID_ROTATE, "rot", "intwheel:textures/gui/wheel_hilight.png", 128, 128));
+//        actions.add(new WheelActionElement(StandardWheelActions.ID_ROTATE, "rot", "intwheel:textures/gui/wheel_hilight.png", 128, 128));
+//        actions.add(new WheelActionElement(StandardWheelActions.ID_ROTATE, "rot", "intwheel:textures/gui/wheel_hilight.png", 128, 128));
+//        actions.add(new WheelActionElement(StandardWheelActions.ID_ROTATE, "rot", "intwheel:textures/gui/wheel_hilight.png", 128, 128));
+//        actions.add(new WheelActionElement(StandardWheelActions.ID_ROTATE, "rot", "intwheel:textures/gui/wheel_hilight.png", 128, 128));
         return actions;
     }
 }

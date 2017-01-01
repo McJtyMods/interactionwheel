@@ -147,12 +147,19 @@ public class GuiWheel extends GuiScreen {
         for (int i = 0 ; i < actions.size() ; i++) {
             WheelActionElement action = actions.get(i);
             mc.getTextureManager().bindTexture(new ResourceLocation(action.getTexture()));
-            int v = action.getV() + ((q == i) ? 0 : 64);
+            int txtw = action.getTxtw();
+            int txth = action.getTxth();
+            int u = q == i ? action.getUhigh() : action.getUlow();
+            int v = q == i ? action.getVhigh() : action.getVlow();
             switch (i) {
-                case 0: drawTexturedModalRect(guiLeft + 78+8, guiTop+8, action.getU(), v, 31, 31); break;
-                case 1: drawTexturedModalRect(guiLeft + 107+12, guiTop + 22+20, action.getU(), v, 31, 31); break;
-                case 2: drawTexturedModalRect(guiLeft + 107+12, guiTop + 78+10, action.getU(), v, 31, 31); break;
-                case 3: drawTexturedModalRect(guiLeft + 78+9, guiTop + 108+11, action.getU(), v, 31, 31); break;
+                case 0: RenderHelper.drawTexturedModalRect(guiLeft + 78+8, guiTop+8, u, v, 31, 31, txtw, txth); break;
+                case 1: RenderHelper.drawTexturedModalRect(guiLeft + 107+12, guiTop + 22+19, u, v, 31, 31, txtw, txth); break;
+                case 2: RenderHelper.drawTexturedModalRect(guiLeft + 107+12, guiTop + 78+9, u, v, 31, 31, txtw, txth); break;
+                case 3: RenderHelper.drawTexturedModalRect(guiLeft + 78+9, guiTop + 108+11, u, v, 31, 31, txtw, txth); break;
+                case 4: RenderHelper.drawTexturedModalRect(guiLeft + 23+18, guiTop+107+11, u, v, 31, 31, txtw, txth); break;
+                case 5: RenderHelper.drawTexturedModalRect(guiLeft + 0+10, guiTop + 78+9, u, v, 31, 31, txtw, txth); break;
+                case 6: RenderHelper.drawTexturedModalRect(guiLeft + 0+9, guiTop + 22+19, u, v, 31, 31, txtw, txth); break;
+                case 7: RenderHelper.drawTexturedModalRect(guiLeft + 22+19, guiTop + 8, u, v, 31, 31, txtw, txth); break;
             }
         }
     }
