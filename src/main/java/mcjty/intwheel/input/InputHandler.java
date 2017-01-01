@@ -25,12 +25,12 @@ public class InputHandler {
             RayTraceResult mouseOver = Minecraft.getMinecraft().objectMouseOver;
             if (mouseOver != null && mouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
                 BlockPos pos = mouseOver.getBlockPos();
-                List<WheelActionElement> actions = InteractionWheel.provider.getActions(player, world, pos);
+                List<WheelActionElement> actions = InteractionWheel.interactionWheelImp.getActions(player, world, pos);
                 if (!actions.isEmpty()) {
                     player.openGui(InteractionWheel.instance, GuiProxy.GUI_NOTE, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ());
                 }
             } else {
-                List<WheelActionElement> actions = InteractionWheel.provider.getActions(player, world, null);
+                List<WheelActionElement> actions = InteractionWheel.interactionWheelImp.getActions(player, world, null);
                 if (!actions.isEmpty()) {
                     player.openGui(InteractionWheel.instance, GuiProxy.GUI_NOTE, player.getEntityWorld(), player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
                 }

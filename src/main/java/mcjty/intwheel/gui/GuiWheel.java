@@ -40,7 +40,7 @@ public class GuiWheel extends GuiScreen {
         } else {
             pos = null;
         }
-        actions = InteractionWheel.provider.getActions(MinecraftTools.getPlayer(Minecraft.getMinecraft()), world, pos);
+        actions = InteractionWheel.interactionWheelImp.getActions(MinecraftTools.getPlayer(Minecraft.getMinecraft()), world, pos);
     }
 
     @Override

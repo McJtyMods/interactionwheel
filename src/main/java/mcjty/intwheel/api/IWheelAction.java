@@ -8,6 +8,9 @@ import javax.annotation.Nullable;
 
 public interface IWheelAction {
 
+    /**
+     * Use an id in the format 'mod.whatever'
+     */
     String getId();
 
     // Perform an action. This is called client-side. If this returns false the server

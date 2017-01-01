@@ -1,10 +1,7 @@
 package mcjty.intwheel.proxy;
 
 import mcjty.intwheel.InteractionWheel;
-import mcjty.intwheel.apiimp.DumpWheelAction;
-import mcjty.intwheel.apiimp.ExtractWheelAction;
-import mcjty.intwheel.apiimp.RotateBlockAction;
-import mcjty.intwheel.apiimp.SearchWheelAction;
+import mcjty.intwheel.apiimp.*;
 import mcjty.intwheel.config.ConfigSetup;
 import mcjty.intwheel.network.PacketHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -15,6 +12,8 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 public class CommonProxy {
     public void preInit(FMLPreInitializationEvent e) {
         PacketHandler.registerMessages("intwheel");
+
+        InteractionWheel.interactionWheelImp.registerProvider(new DefaultWheelActionProvider());
 
         ConfigSetup.preInit(e);
     }

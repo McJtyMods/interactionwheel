@@ -1,6 +1,7 @@
 package mcjty.intwheel.api;
 
 public enum StandardWheelActions {
+    GENERIC("?", "?", 128, 128),                                                          // Generic: use this in combination with your own ID
     SEARCH(StandardWheelActions.ID_SEARCH, "Search item", 96, 128),                       // Search item
     ROTATE(StandardWheelActions.ID_ROTATE, "Rotate block", 64, 128),                      // Rotate block
     DUMP(StandardWheelActions.ID_DUMP, "Dump to container", 0, 128),                      // Dump all possible items in players inventory into container
@@ -23,23 +24,13 @@ public enum StandardWheelActions {
         this.v = v;
     }
 
-    public String getId() {
-        return id;
+    // Create a standard wheel action element
+    public WheelActionElement createElement() {
+        return new WheelActionElement(id, desc, "intwheel:textures/gui/wheel_hilight.png", u, v, u, v+64, 256, 256);
     }
 
-    public String getDesc() {
-        return desc;
-    }
-
-    public int getU() {
-        return u;
-    }
-
-    public int getV() {
-        return v;
-    }
-
-    public WheelActionElement createWheelAction() {
+    // Create a wheel action element with your own custom id and description but with a standard icon
+    public WheelActionElement createElement(String id, String desc) {
         return new WheelActionElement(id, desc, "intwheel:textures/gui/wheel_hilight.png", u, v, u, v+64, 256, 256);
     }
 }
