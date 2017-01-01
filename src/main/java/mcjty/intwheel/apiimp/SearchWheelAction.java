@@ -35,6 +35,7 @@ public class SearchWheelAction implements IWheelAction {
 
     @Override
     public void performServer(EntityPlayer player, World world, BlockPos pos) {
+        pos = player.getPosition();
         ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
         if (ItemStackTools.isValid(heldItem)) {
             Set<BlockPos> found = new HashSet<>();

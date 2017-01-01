@@ -83,7 +83,6 @@ public class GuiWheel extends GuiScreen {
     private void performAction(int index) {
         WheelActionElement element = actions.get(index);
         IWheelAction action = InteractionWheel.registry.get(element.getId());
-        System.out.println("action = " + action);
         if (action != null) {
             if (action.performClient(MinecraftTools.getPlayer(mc), MinecraftTools.getWorld(mc), pos)) {
                 PacketHandler.INSTANCE.sendToServer(new PacketPerformAction(pos, element.getId()));
