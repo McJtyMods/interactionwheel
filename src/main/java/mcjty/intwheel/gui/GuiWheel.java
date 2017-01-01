@@ -74,7 +74,7 @@ public class GuiWheel extends GuiScreen {
         if (q == -1) {
             closeThis();
         } else {
-            if (q < actions.size()) {
+            if (q < getActionSize()) {
                 performAction(q);
             }
         }
@@ -108,7 +108,7 @@ public class GuiWheel extends GuiScreen {
 
         int cx = mouseX - guiLeft - WIDTH / 2;
         int cy = mouseY - guiTop - HEIGHT / 2;
-        int offset = actions.size() / 2;
+        int offset = getActionSize() / 2;
         int q = getSelectedSection(cx, cy);
         if (q != -1) {
             mc.getTextureManager().bindTexture(hilight);
@@ -139,7 +139,7 @@ public class GuiWheel extends GuiScreen {
                     break;
             }
 
-            if (q < actions.size()) {
+            if (q < getActionSize()) {
                 boolean extended = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
                 String desc = actions.get(q).getDescription();
                 String sneakDesc = actions.get(q).getSneakDescription();
@@ -152,7 +152,7 @@ public class GuiWheel extends GuiScreen {
                 RenderHelper.renderText(mc, x, y, desc);
             }
         }
-        for (int i = 0 ; i < actions.size() ; i++) {
+        for (int i = 0; i < getActionSize(); i++) {
             WheelActionElement action = actions.get(i);
             mc.getTextureManager().bindTexture(new ResourceLocation(action.getTexture()));
             int txtw = action.getTxtw();
@@ -170,6 +170,11 @@ public class GuiWheel extends GuiScreen {
                 case 7: RenderHelper.drawTexturedModalRect(guiLeft + 22+19, guiTop + 8, u, v, 31, 31, txtw, txth); break;
             }
         }
+    }
+
+    private int getActionSize() {
+        // @todo, overflow in case there are too many actions
+        return Math.min(8, actions.size());
     }
 
     private int getSelectedSection(int cx, int cy) {
@@ -196,7 +201,7 @@ public class GuiWheel extends GuiScreen {
         } else if (cx < 0 && cy < 0 && Math.abs(cx) < Math.abs(cy)) {
             q = 7;
         }
-        int offset = actions.size() / 2;
+        int offset = getActionSize() / 2;
         return (q + offset) % 8;
     }
 }
