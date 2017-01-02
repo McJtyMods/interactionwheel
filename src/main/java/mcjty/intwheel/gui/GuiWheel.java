@@ -15,9 +15,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GuiWheel extends GuiScreen {
@@ -99,6 +101,19 @@ public class GuiWheel extends GuiScreen {
         }
     }
 
+    private static final List<Pair<Integer, Integer>> iconOffsets = new ArrayList<>();
+
+    static {
+        iconOffsets.add(Pair.of(78 + 8, 8));
+        iconOffsets.add(Pair.of(107 + 12, 22 + 19));
+        iconOffsets.add(Pair.of(107 + 12, 78 + 9));
+        iconOffsets.add(Pair.of(78 + 9, 108 + 11));
+        iconOffsets.add(Pair.of(23 + 18, 107 + 11));
+        iconOffsets.add(Pair.of(0 + 10, 78 + 9));
+        iconOffsets.add(Pair.of(0 + 9, 22 + 19));
+        iconOffsets.add(Pair.of(22 + 19, 8));
+    }
+
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -147,7 +162,7 @@ public class GuiWheel extends GuiScreen {
                     desc = sneakDesc;
                 }
                 int width = mc.fontRendererObj.getStringWidth(desc);
-                int x = guiLeft + (160-width)/2;
+                int x = guiLeft + (160 - width) / 2;
                 int y = guiTop + HEIGHT;
                 RenderHelper.renderText(mc, x, y, desc);
             }
@@ -159,16 +174,8 @@ public class GuiWheel extends GuiScreen {
             int txth = action.getTxth();
             int u = q == i ? action.getUhigh() : action.getUlow();
             int v = q == i ? action.getVhigh() : action.getVlow();
-            switch ((i - offset + 8) % 8) {
-                case 0: RenderHelper.drawTexturedModalRect(guiLeft + 78+8, guiTop+8, u, v, 31, 31, txtw, txth); break;
-                case 1: RenderHelper.drawTexturedModalRect(guiLeft + 107+12, guiTop + 22+19, u, v, 31, 31, txtw, txth); break;
-                case 2: RenderHelper.drawTexturedModalRect(guiLeft + 107+12, guiTop + 78+9, u, v, 31, 31, txtw, txth); break;
-                case 3: RenderHelper.drawTexturedModalRect(guiLeft + 78+9, guiTop + 108+11, u, v, 31, 31, txtw, txth); break;
-                case 4: RenderHelper.drawTexturedModalRect(guiLeft + 23+18, guiTop+107+11, u, v, 31, 31, txtw, txth); break;
-                case 5: RenderHelper.drawTexturedModalRect(guiLeft + 0+10, guiTop + 78+9, u, v, 31, 31, txtw, txth); break;
-                case 6: RenderHelper.drawTexturedModalRect(guiLeft + 0+9, guiTop + 22+19, u, v, 31, 31, txtw, txth); break;
-                case 7: RenderHelper.drawTexturedModalRect(guiLeft + 22+19, guiTop + 8, u, v, 31, 31, txtw, txth); break;
-            }
+            int offs = (i - offset + 8) % 8;
+            RenderHelper.drawTexturedModalRect(guiLeft + iconOffsets.get(offs).getLeft(), guiTop + iconOffsets.get(offs).getRight(), u, v, 31, 31, txtw, txth);
         }
     }
 
@@ -178,7 +185,7 @@ public class GuiWheel extends GuiScreen {
     }
 
     private int getSelectedSection(int cx, int cy) {
-        double dist = Math.sqrt(cx*cx + cy*cy);
+        double dist = Math.sqrt(cx * cx + cy * cy);
         if (dist < 37 || dist > 80) {
             return -1;
         }
