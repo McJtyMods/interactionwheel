@@ -126,47 +126,15 @@ public class GuiWheel extends GuiScreen {
         int offset = getActionSize() / 2;
         int q = getSelectedSection(cx, cy);
         if (q != -1) {
-            mc.getTextureManager().bindTexture(hilight);
-            switch ((q - offset + 8) % 8) {
-                case 0:
-                    drawTexturedModalRect(guiLeft + 78, guiTop, 0, 0, 63, 63);
-                    break;
-                case 1:
-                    drawTexturedModalRect(guiLeft + 107, guiTop + 22, 64, 0, 63, 63);
-                    break;
-                case 2:
-                    drawTexturedModalRect(guiLeft + 107, guiTop + 78, 128, 0, 63, 63);
-                    break;
-                case 3:
-                    drawTexturedModalRect(guiLeft + 78, guiTop + 108, 192, 0, 63, 63);
-                    break;
-                case 4:
-                    drawTexturedModalRect(guiLeft + 23, guiTop + 107, 0, 64, 63, 63);
-                    break;
-                case 5:
-                    drawTexturedModalRect(guiLeft, guiTop + 78, 64, 64, 63, 63);
-                    break;
-                case 6:
-                    drawTexturedModalRect(guiLeft, guiTop + 22, 128, 64, 63, 63);
-                    break;
-                case 7:
-                    drawTexturedModalRect(guiLeft + 22, guiTop, 192, 64, 63, 63);
-                    break;
-            }
-
+            drawSelectedSection(offset, q);
             if (q < getActionSize()) {
-                boolean extended = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
-                String desc = actions.get(q).getDescription();
-                String sneakDesc = actions.get(q).getSneakDescription();
-                if (extended && sneakDesc != null) {
-                    desc = sneakDesc;
-                }
-                int width = mc.fontRendererObj.getStringWidth(desc);
-                int x = guiLeft + (160 - width) / 2;
-                int y = guiTop + HEIGHT;
-                RenderHelper.renderText(mc, x, y, desc);
+                drawTooltip(q);
             }
         }
+        drawIcons(offset, q);
+    }
+
+    private void drawIcons(int offset, int q) {
         for (int i = 0; i < getActionSize(); i++) {
             WheelActionElement action = actions.get(i);
             mc.getTextureManager().bindTexture(new ResourceLocation(action.getTexture()));
@@ -175,7 +143,56 @@ public class GuiWheel extends GuiScreen {
             int u = q == i ? action.getUhigh() : action.getUlow();
             int v = q == i ? action.getVhigh() : action.getVlow();
             int offs = (i - offset + 8) % 8;
-            RenderHelper.drawTexturedModalRect(guiLeft + iconOffsets.get(offs).getLeft(), guiTop + iconOffsets.get(offs).getRight(), u, v, 31, 31, txtw, txth);
+            int ox = guiLeft + iconOffsets.get(offs).getLeft();
+            int oy = guiTop + iconOffsets.get(offs).getRight();
+            RenderHelper.drawTexturedModalRect(ox, oy, u, v, 31, 31, txtw, txth);
+
+            int tx = (int) (guiLeft + 80 + 70 * Math.cos(Math.PI * 2.0 * offs / 8 - Math.PI / 2));
+            int ty = (int) (guiTop + 80 + 70 * Math.sin(Math.PI * 2.0 * offs / 8 - Math.PI / 2));
+            RenderHelper.renderText(mc, tx, ty, "" + i);
+        }
+    }
+
+    private void drawTooltip(int q) {
+        boolean extended = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+        String desc = actions.get(q).getDescription();
+        String sneakDesc = actions.get(q).getSneakDescription();
+        if (extended && sneakDesc != null) {
+            desc = sneakDesc;
+        }
+        int width = mc.fontRendererObj.getStringWidth(desc);
+        int x = guiLeft + (160 - width) / 2;
+        int y = guiTop + HEIGHT;
+        RenderHelper.renderText(mc, x, y, desc);
+    }
+
+    private void drawSelectedSection(int offset, int q) {
+        mc.getTextureManager().bindTexture(hilight);
+        switch ((q - offset + 8) % 8) {
+            case 0:
+                drawTexturedModalRect(guiLeft + 78, guiTop, 0, 0, 63, 63);
+                break;
+            case 1:
+                drawTexturedModalRect(guiLeft + 107, guiTop + 22, 64, 0, 63, 63);
+                break;
+            case 2:
+                drawTexturedModalRect(guiLeft + 107, guiTop + 78, 128, 0, 63, 63);
+                break;
+            case 3:
+                drawTexturedModalRect(guiLeft + 78, guiTop + 108, 192, 0, 63, 63);
+                break;
+            case 4:
+                drawTexturedModalRect(guiLeft + 23, guiTop + 107, 0, 64, 63, 63);
+                break;
+            case 5:
+                drawTexturedModalRect(guiLeft, guiTop + 78, 64, 64, 63, 63);
+                break;
+            case 6:
+                drawTexturedModalRect(guiLeft, guiTop + 22, 128, 64, 63, 63);
+                break;
+            case 7:
+                drawTexturedModalRect(guiLeft + 22, guiTop, 192, 64, 63, 63);
+                break;
         }
     }
 

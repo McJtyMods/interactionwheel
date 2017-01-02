@@ -45,5 +45,9 @@ public class DefaultWheelActionProvider implements IWheelActionProvider {
                 ((IWheelBlockSupport) block).updateWheelActions(actions);
             }
         }
+        actions.add(StandardWheelActions.GENERIC.createElement("x", "x", null));
+        actions.add(StandardWheelActions.GENERIC.createElement("x", "x", null));
+        actions.add(StandardWheelActions.GENERIC.createElement("x", "x", null));
+        actions.add(StandardWheelActions.GENERIC.createElement("x", "x", null));
     }
 }
