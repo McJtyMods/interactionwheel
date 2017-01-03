@@ -60,11 +60,24 @@ public class GuiWheelConfig extends GuiScreen {
         int cx = mouseX - guiLeft;
         int cy = mouseY - guiTop;
 
-        Map<String, IWheelAction> actions = InteractionWheel.registry.getActions();
+        List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
 
-        int action = getSelectedAction(cx, cy);
-        if (action >= 0 || action < actions.size()) {
+        int selected = getSelectedAction(cx, cy);
+        if (selected >= 0 && selected < actions.size()) {
             PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
+            String id = actions.get(selected);
+            IWheelAction action = InteractionWheel.registry.get(id);
+            if (action != null) {
+                Boolean enabled = config.isEnabled(id);
+                if (enabled == null) {
+                    enabled = action.isDefaultEnabled();
+                }
+                if (enabled) {
+                    config.disable(id);
+                } else {
+                    config.enable(id);
+                }
+            }
         }
     }
 
@@ -123,7 +136,7 @@ public class GuiWheelConfig extends GuiScreen {
             return -1;
         }
         int totw = WIDTH / SIZE;
-        int i = (cx - MARGIN) / SIZE + totw * (cy - MARGIN) / SIZE;
+        int i = (cx - MARGIN) / SIZE + totw * ((cy - MARGIN) / SIZE);
         return i;
     }
 }
