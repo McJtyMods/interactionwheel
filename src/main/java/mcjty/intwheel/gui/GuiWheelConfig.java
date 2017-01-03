@@ -77,6 +77,30 @@ public class GuiWheelConfig extends GuiScreen {
                     config.setOrderActions(actions);
                     config.sendToServer();
                 }
+            } else if (keyCode == Keyboard.KEY_HOME) {
+                PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
+                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
+                int idx = actions.indexOf(id);
+                if (idx > 0) {
+                    String idnext = actions.get(0);
+                    actions.set(0, id);
+                    actions.set(idx, idnext);
+
+                    config.setOrderActions(actions);
+                    config.sendToServer();
+                }
+            } else if (keyCode == Keyboard.KEY_END) {
+                PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
+                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
+                int idx = actions.indexOf(id);
+                if (idx < actions.size()-1) {
+                    String idnext = actions.get(actions.size()-1);
+                    actions.set(actions.size()-1, id);
+                    actions.set(idx, idnext);
+
+                    config.setOrderActions(actions);
+                    config.sendToServer();
+                }
             } else if ((typedChar >= 'a' && typedChar <= 'z') || keyCode == Keyboard.KEY_DELETE || keyCode == Keyboard.KEY_BACK) {
                 PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
                 if (keyCode == Keyboard.KEY_DELETE || keyCode == Keyboard.KEY_BACK) {
@@ -159,7 +183,7 @@ public class GuiWheelConfig extends GuiScreen {
             renderTooltipText(desc, 0);
             renderTooltipText(TextFormatting.YELLOW + "Click to enable/disable this action", 10);
             renderTooltipText(TextFormatting.YELLOW + "Press 'a' to 'z' to assign hotkey ('del' to remove hotkey)", 20);
-            renderTooltipText(TextFormatting.YELLOW + "Arrows to order actions", 30);
+            renderTooltipText(TextFormatting.YELLOW + "Arrows and home/end to order actions", 30);
         }
     }
 
