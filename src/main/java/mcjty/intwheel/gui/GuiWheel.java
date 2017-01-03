@@ -6,9 +6,11 @@ import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.input.KeyBindings;
 import mcjty.intwheel.network.PacketHandler;
 import mcjty.intwheel.network.PacketPerformAction;
+import mcjty.intwheel.proxy.GuiProxy;
 import mcjty.intwheel.varia.RenderHelper;
 import mcjty.lib.tools.MinecraftTools;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
@@ -30,7 +32,7 @@ public class GuiWheel extends GuiScreen {
     private int guiLeft;
     private int guiTop;
 
-    private final List<WheelActionElement> actions;
+    private final List<String> actions;
     private final BlockPos pos;
 
     private static final ResourceLocation background = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel.png");
@@ -72,8 +74,13 @@ public class GuiWheel extends GuiScreen {
 
         int cx = mouseX - guiLeft - WIDTH / 2;
         int cy = mouseY - guiTop - HEIGHT / 2;
+
         int q = getSelectedSection(cx, cy);
-        if (q == -1) {
+        if (q == -2) {
+            EntityPlayerSP player = MinecraftTools.getPlayer(mc);
+            player.openGui(InteractionWheel.instance, GuiProxy.GUI_CONFIG, player.getEntityWorld(), player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
+            return;
+        } else if (q == -1) {
             closeThis();
         } else {
             if (q < getActionSize()) {
@@ -84,12 +91,12 @@ public class GuiWheel extends GuiScreen {
     }
 
     private void performAction(int index) {
-        WheelActionElement element = actions.get(index);
-        IWheelAction action = InteractionWheel.registry.get(element.getId());
+        String id = actions.get(index);
+        IWheelAction action = InteractionWheel.registry.get(id);
         if (action != null) {
             boolean extended = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
             if (action.performClient(MinecraftTools.getPlayer(mc), MinecraftTools.getWorld(mc), pos, extended)) {
-                PacketHandler.INSTANCE.sendToServer(new PacketPerformAction(pos, element.getId(), extended));
+                PacketHandler.INSTANCE.sendToServer(new PacketPerformAction(pos, id, extended));
             }
         }
     }
@@ -125,7 +132,9 @@ public class GuiWheel extends GuiScreen {
         int cy = mouseY - guiTop - HEIGHT / 2;
         int offset = getActionSize() / 2;
         int q = getSelectedSection(cx, cy);
-        if (q != -1) {
+        if (q == -2) {
+            renderTooltipText("Click for configuration");
+        } else if (q != -1) {
             drawSelectedSection(offset, q);
             if (q < getActionSize()) {
                 drawTooltip(q);
@@ -136,35 +145,48 @@ public class GuiWheel extends GuiScreen {
 
     private void drawIcons(int offset, int q) {
         for (int i = 0; i < getActionSize(); i++) {
-            WheelActionElement action = actions.get(i);
-            mc.getTextureManager().bindTexture(new ResourceLocation(action.getTexture()));
-            int txtw = action.getTxtw();
-            int txth = action.getTxth();
-            int u = q == i ? action.getUhigh() : action.getUlow();
-            int v = q == i ? action.getVhigh() : action.getVlow();
-            int offs = (i - offset + 8) % 8;
-            int ox = guiLeft + iconOffsets.get(offs).getLeft();
-            int oy = guiTop + iconOffsets.get(offs).getRight();
-            RenderHelper.drawTexturedModalRect(ox, oy, u, v, 31, 31, txtw, txth);
+            String id = actions.get(i);
+            IWheelAction action = InteractionWheel.registry.get(id);
+            if (action != null) {
+                WheelActionElement element = action.createElement();
+                mc.getTextureManager().bindTexture(new ResourceLocation(element.getTexture()));
+                int txtw = element.getTxtw();
+                int txth = element.getTxth();
+                int u = q == i ? element.getUhigh() : element.getUlow();
+                int v = q == i ? element.getVhigh() : element.getVlow();
+                int offs = (i - offset + 8) % 8;
+                int ox = guiLeft + iconOffsets.get(offs).getLeft();
+                int oy = guiTop + iconOffsets.get(offs).getRight();
+                RenderHelper.drawTexturedModalRect(ox, oy, u, v, 31, 31, txtw, txth);
 
-            double angle = Math.PI * 2.0 * offs / 8 - Math.PI / 2.0 + Math.PI / 8.0;
-            int tx = (int) (guiLeft + 80 + 86 * Math.cos(angle));
-            int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));
-            RenderHelper.renderText(mc, tx-mc.fontRendererObj.getCharWidth('4')/2, ty-mc.fontRendererObj.FONT_HEIGHT/2, "" + i);
+                double angle = Math.PI * 2.0 * offs / 8 - Math.PI / 2.0 + Math.PI / 8.0;
+                int tx = (int) (guiLeft + 80 + 86 * Math.cos(angle));
+                int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));
+                RenderHelper.renderText(mc, tx - mc.fontRendererObj.getCharWidth('4') / 2, ty - mc.fontRendererObj.FONT_HEIGHT / 2, "" + i);
+            }
         }
     }
 
-    private void drawTooltip(int q) {
-        boolean extended = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
-        String desc = actions.get(q).getDescription();
-        String sneakDesc = actions.get(q).getSneakDescription();
-        if (extended && sneakDesc != null) {
-            desc = sneakDesc;
-        }
+    private void renderTooltipText(String desc) {
         int width = mc.fontRendererObj.getStringWidth(desc);
         int x = guiLeft + (160 - width) / 2;
         int y = guiTop + HEIGHT + 5;
         RenderHelper.renderText(mc, x, y, desc);
+    }
+
+    private void drawTooltip(int q) {
+        boolean extended = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+        String id = actions.get(q);
+        IWheelAction action = InteractionWheel.registry.get(id);
+        if (action != null) {
+            WheelActionElement element = action.createElement();
+            String desc = element.getDescription();
+            String sneakDesc = element.getSneakDescription();
+            if (extended && sneakDesc != null) {
+                desc = sneakDesc;
+            }
+            renderTooltipText(desc);
+        }
     }
 
     private void drawSelectedSection(int offset, int q) {
@@ -203,6 +225,10 @@ public class GuiWheel extends GuiScreen {
     }
 
     private int getSelectedSection(int cx, int cy) {
+        if (Math.abs(cx) < 6 && Math.abs(cy) < 6) {
+            return -2;
+        }
+
         double dist = Math.sqrt(cx * cx + cy * cy);
         if (dist < 37 || dist > 80) {
             return -1;

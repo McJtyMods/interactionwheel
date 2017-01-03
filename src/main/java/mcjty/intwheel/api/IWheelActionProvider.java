@@ -17,11 +17,11 @@ public interface IWheelActionProvider {
     String getID();
 
     /**
-     * Update the actions. You get a list of action elements that is already filled
+     * Update the actions. You get a list of actions that is already filled
      * in by previous registered providers. You can update the list here. Even remove
      * actions if you want.
-     * @param actions a list that you can modify
+     * @param actions a list with action IDs that you can modify
      * @param pos is the position of the block the player is looking at or null in case the player isn't pointing at a block
      */
-    void updateWheelActions(@Nonnull List<WheelActionElement> actions, @Nonnull EntityPlayer player, World world, @Nullable BlockPos pos);
+    void updateWheelActions(@Nonnull List<String> actions, @Nonnull EntityPlayer player, World world, @Nullable BlockPos pos);
 }

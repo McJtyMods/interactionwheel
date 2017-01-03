@@ -3,7 +3,6 @@ package mcjty.intwheel.apiimp;
 import mcjty.intwheel.api.IWheelActionProvider;
 import mcjty.intwheel.api.IWheelBlockSupport;
 import mcjty.intwheel.api.StandardWheelActions;
-import mcjty.intwheel.api.WheelActionElement;
 import mcjty.lib.tools.ItemStackTools;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,27 +26,23 @@ public class DefaultWheelActionProvider implements IWheelActionProvider {
     }
 
     @Override
-    public void updateWheelActions(@Nonnull List<WheelActionElement> actions, @Nonnull EntityPlayer player, World world, @Nullable BlockPos pos) {
+    public void updateWheelActions(@Nonnull List<String> actions, @Nonnull EntityPlayer player, World world, @Nullable BlockPos pos) {
         ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
         if (ItemStackTools.isValid(heldItem)) {
-            actions.add(StandardWheelActions.SEARCH.createElement());
+            actions.add(StandardWheelActions.ID_SEARCH);
         }
         if (pos != null) {
-            actions.add(StandardWheelActions.ROTATE.createElement());
+            actions.add(StandardWheelActions.ID_ROTATE);
             Block block = world.getBlockState(pos).getBlock();
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof IInventory || (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))) {
-                actions.add(StandardWheelActions.DUMP.createElement());
-                actions.add(StandardWheelActions.EXTRACT.createElement());
+                actions.add(StandardWheelActions.ID_DUMP);
+                actions.add(StandardWheelActions.ID_EXTRACT);
             }
 
             if (block instanceof IWheelBlockSupport) {
                 ((IWheelBlockSupport) block).updateWheelActions(actions);
             }
         }
-        actions.add(StandardWheelActions.GENERIC.createElement("x", "x", null));
-        actions.add(StandardWheelActions.GENERIC.createElement("x", "x", null));
-        actions.add(StandardWheelActions.GENERIC.createElement("x", "x", null));
-        actions.add(StandardWheelActions.GENERIC.createElement("x", "x", null));
     }
 }

@@ -2,6 +2,7 @@ package mcjty.intwheel.apiimp;
 
 import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.StandardWheelActions;
+import mcjty.intwheel.api.WheelActionElement;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
@@ -18,6 +19,11 @@ public class RotateBlockAction implements IWheelAction {
     @Override
     public boolean performClient(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         return true;
+    }
+
+    @Override
+    public WheelActionElement createElement() {
+        return StandardWheelActions.ROTATE.createElement();
     }
 
     @Override

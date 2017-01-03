@@ -2,6 +2,7 @@ package mcjty.intwheel.apiimp;
 
 import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.StandardWheelActions;
+import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.network.PackedInventoriesToClient;
 import mcjty.intwheel.network.PacketHandler;
 import mcjty.lib.tools.ItemStackTools;
@@ -29,6 +30,11 @@ public class SearchWheelAction implements IWheelAction {
     @Override
     public boolean performClient(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         return true;
+    }
+
+    @Override
+    public WheelActionElement createElement() {
+        return StandardWheelActions.SEARCH.createElement();
     }
 
     @Override

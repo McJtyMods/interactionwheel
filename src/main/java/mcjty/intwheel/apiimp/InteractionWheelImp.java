@@ -4,7 +4,6 @@ import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.api.IInteractionWheel;
 import mcjty.intwheel.api.IWheelActionProvider;
 import mcjty.intwheel.api.IWheelActionRegistry;
-import mcjty.intwheel.api.WheelActionElement;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -59,8 +58,8 @@ public class InteractionWheelImp implements IInteractionWheel {
     }
 
     @Nonnull
-    public List<WheelActionElement> getActions(@Nonnull EntityPlayer player, World world, @Nullable BlockPos pos) {
-        List<WheelActionElement> actions = new ArrayList<>();
+    public List<String> getActions(@Nonnull EntityPlayer player, World world, @Nullable BlockPos pos) {
+        List<String> actions = new ArrayList<>();
         for (IWheelActionProvider provider : providers) {
             provider.updateWheelActions(actions, player, world, pos);
         }

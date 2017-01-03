@@ -13,6 +13,11 @@ public interface IWheelAction {
      */
     String getId();
 
+    /**
+     * Create a description element for this action
+     */
+    WheelActionElement createElement();
+
     // Perform an action. This is called client-side. If this returns false the server
     // side action is not performed
     boolean performClient(EntityPlayer player, World world, @Nullable BlockPos pos, boolean extended);

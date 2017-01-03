@@ -3,6 +3,7 @@ package mcjty.intwheel.input;
 
 import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.api.WheelActionElement;
+import mcjty.intwheel.proxy.GuiProxy;
 import mcjty.lib.tools.MinecraftTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -24,14 +25,14 @@ public class InputHandler {
             RayTraceResult mouseOver = Minecraft.getMinecraft().objectMouseOver;
             if (mouseOver != null && mouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
                 BlockPos pos = mouseOver.getBlockPos();
-                List<WheelActionElement> actions = InteractionWheel.interactionWheelImp.getActions(player, world, pos);
+                List<String> actions = InteractionWheel.interactionWheelImp.getActions(player, world, pos);
                 if (!actions.isEmpty()) {
-                    player.openGui(InteractionWheel.instance, 0, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ());
+                    player.openGui(InteractionWheel.instance, GuiProxy.GUI_WHEEL, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ());
                 }
             } else {
-                List<WheelActionElement> actions = InteractionWheel.interactionWheelImp.getActions(player, world, null);
+                List<String> actions = InteractionWheel.interactionWheelImp.getActions(player, world, null);
                 if (!actions.isEmpty()) {
-                    player.openGui(InteractionWheel.instance, 0, player.getEntityWorld(), player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
+                    player.openGui(InteractionWheel.instance, GuiProxy.GUI_WHEEL, player.getEntityWorld(), player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
                 }
             }
         }

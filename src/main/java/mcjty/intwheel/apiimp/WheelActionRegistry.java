@@ -18,4 +18,8 @@ public class WheelActionRegistry implements IWheelActionRegistry {
     public IWheelAction get(String id) {
         return actions.get(id);
     }
+
+    public Map<String, IWheelAction> getActions() {
+        return actions;
+    }
 }

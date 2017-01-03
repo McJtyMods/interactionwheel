@@ -2,6 +2,7 @@ package mcjty.intwheel.apiimp;
 
 import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.StandardWheelActions;
+import mcjty.intwheel.api.WheelActionElement;
 import mcjty.lib.tools.ItemStackTools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -22,6 +23,11 @@ public class ExtractWheelAction implements IWheelAction {
     @Override
     public boolean performClient(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         return true;
+    }
+
+    @Override
+    public WheelActionElement createElement() {
+        return StandardWheelActions.EXTRACT.createElement();
     }
 
     @Override
