@@ -45,5 +45,15 @@ public class DefaultWheelActionProvider implements IWheelActionProvider {
                 ((IWheelBlockSupport) block).updateWheelActions(actions);
             }
         }
+        actions.add("std.dummy0");
+        actions.add("std.dummy1");
+        actions.add("std.dummy2");
+        actions.add("std.dummy3");
+        actions.add("std.dummy4");
+        actions.add("std.dummy5");
+        actions.add("std.dummy7");
+        actions.add("std.dummy8");
+        actions.add("std.dummy9");
+        actions.add("std.dummy10");
     }
 }

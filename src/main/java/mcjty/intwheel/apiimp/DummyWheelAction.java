@@ -16,6 +16,11 @@ public class DummyWheelAction implements IWheelAction {
     }
 
     @Override
+    public boolean isDefaultEnabled() {
+        return false;
+    }
+
+    @Override
     public String getId() {
         return id;
     }

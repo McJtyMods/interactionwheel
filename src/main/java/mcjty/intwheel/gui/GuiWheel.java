@@ -16,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -36,6 +37,9 @@ public class GuiWheel extends GuiScreen {
     private int guiTop;
 
     private BlockPos pos;
+
+    private int page = 0;
+    private int pages = 1;
 
     private static final ResourceLocation background = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel.png");
     private static final ResourceLocation hilight = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel_hilight.png");
@@ -59,6 +63,8 @@ public class GuiWheel extends GuiScreen {
         guiLeft = (this.width - WIDTH) / 2;
         guiTop = (this.height - HEIGHT) / 2;
 
+        page = 0;
+        pages = 1;
         PacketHandler.INSTANCE.sendToServer(new PacketRequestConfig());
     }
 
@@ -67,7 +73,12 @@ public class GuiWheel extends GuiScreen {
         super.keyTyped(typedChar, keyCode);
         if (Keyboard.isKeyDown(KeyBindings.keyOpenWheel.getKeyCode())) {
             closeThis();
-        } else if (typedChar >= 'a' && typedChar <= 'z') {
+        } else if (keyCode == Keyboard.KEY_SPACE) {
+            page++;
+            if (page >= pages) {
+                page = 0;
+            }
+        } else if ((typedChar >= 'a' && typedChar <= 'z') || (typedChar >= 'A' && typedChar <= 'Z')) {
             PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
             Map<String, Integer> hotkeys = config.getHotkeys();
             List<String> actions = getActions();
@@ -77,6 +88,7 @@ public class GuiWheel extends GuiScreen {
                         performAction(action);
                         this.mc.displayGuiScreen(null);
                         mc.setIngameFocus();
+                        KeyBinding.unPressAllKeys();
                         return;
                     }
                 }
@@ -115,7 +127,7 @@ public class GuiWheel extends GuiScreen {
     }
 
     private void performAction(List<String> actions, int index) {
-        String id = actions.get(index);
+        String id = actions.get(index + page * 8);
         performAction(id);
     }
 
@@ -157,6 +169,11 @@ public class GuiWheel extends GuiScreen {
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
 
         List<String> actions = getActions();
+        pages = (actions.size()-1) / 8 + 1;
+        if (page >= pages) {
+            page = 0;
+        }
+
         int cx = mouseX - guiLeft - WIDTH / 2;
         int cy = mouseY - guiTop - HEIGHT / 2;
         int offset = getActionSize(actions) / 2;
@@ -178,7 +195,7 @@ public class GuiWheel extends GuiScreen {
         Map<String, Integer> hotkeys = config.getHotkeys();
 
         for (int i = 0; i < getActionSize(actions); i++) {
-            String id = actions.get(i);
+            String id = actions.get(i + page * 8);
             IWheelAction action = InteractionWheel.registry.get(id);
             if (action != null) {
                 WheelActionElement element = action.createElement();
@@ -213,7 +230,7 @@ public class GuiWheel extends GuiScreen {
 
     private void drawTooltip(List<String> actions, int q) {
         boolean extended = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
-        String id = actions.get(q);
+        String id = actions.get(q + page * 8);
         IWheelAction action = InteractionWheel.registry.get(id);
         if (action != null) {
             WheelActionElement element = action.createElement();
@@ -263,7 +280,9 @@ public class GuiWheel extends GuiScreen {
 
     private int getActionSize(List<String> actions) {
         // @todo, overflow in case there are too many actions
-        return Math.min(8, actions.size());
+        int s = actions.size();
+        s -= page * 8;
+        return Math.min(8, s);
     }
 
     private int getSelectedSection(List<String> actions, int cx, int cy) {

@@ -15,7 +15,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -53,8 +52,8 @@ public class GuiWheelConfig extends GuiScreen {
 
         String id = getSelectedActionID(cx, cy);
         if (id != null) {
+            PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
             if (keyCode == Keyboard.KEY_LEFT) {
-                PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
                 List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
                 int idx = actions.indexOf(id);
                 if (idx > 0) {
@@ -66,7 +65,6 @@ public class GuiWheelConfig extends GuiScreen {
                     config.sendToServer();
                 }
             } else if (keyCode == Keyboard.KEY_RIGHT) {
-                PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
                 List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
                 int idx = actions.indexOf(id);
                 if (idx < actions.size()-1) {
@@ -78,7 +76,6 @@ public class GuiWheelConfig extends GuiScreen {
                     config.sendToServer();
                 }
             } else if (keyCode == Keyboard.KEY_HOME) {
-                PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
                 List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
                 int idx = actions.indexOf(id);
                 if (idx > 0) {
@@ -90,7 +87,6 @@ public class GuiWheelConfig extends GuiScreen {
                     config.sendToServer();
                 }
             } else if (keyCode == Keyboard.KEY_END) {
-                PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
                 List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
                 int idx = actions.indexOf(id);
                 if (idx < actions.size()-1) {
@@ -102,7 +98,6 @@ public class GuiWheelConfig extends GuiScreen {
                     config.sendToServer();
                 }
             } else if ((typedChar >= 'a' && typedChar <= 'z') || keyCode == Keyboard.KEY_DELETE || keyCode == Keyboard.KEY_BACK) {
-                PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
                 if (keyCode == Keyboard.KEY_DELETE || keyCode == Keyboard.KEY_BACK) {
                     config.getHotkeys().remove(id);
                 } else {
