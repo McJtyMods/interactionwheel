@@ -33,6 +33,10 @@ public class GuiWheel extends GuiScreen {
     private static final int WIDTH = 160;
     private static final int HEIGHT = 160;
 
+    public static final int BUTTON_CONFIG = -2;
+    public static final int BUTTON_LEFT = -3;
+    public static final int BUTTON_RIGHT = -4;
+
     private int guiLeft;
     private int guiTop;
 
@@ -112,9 +116,24 @@ public class GuiWheel extends GuiScreen {
         int cy = mouseY - guiTop - HEIGHT / 2;
 
         int q = getSelectedSection(actions, cx, cy);
-        if (q == -2) {
+        if (q == BUTTON_CONFIG) {
             EntityPlayerSP player = MinecraftTools.getPlayer(mc);
             player.openGui(InteractionWheel.instance, GuiProxy.GUI_CONFIG, player.getEntityWorld(), player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
+            return;
+        } else if (q == BUTTON_LEFT) {
+            page--;
+            if (page < 0) {
+                page = pages - 1;
+                if (page < 0) {
+                    page = 0;
+                }
+            }
+            return;
+        } else if (q == BUTTON_RIGHT) {
+            page++;
+            if (page > pages-1) {
+                page = 0;
+            }
             return;
         } else if (q == -1) {
             closeThis();
@@ -173,14 +192,23 @@ public class GuiWheel extends GuiScreen {
         if (page >= pages) {
             page = 0;
         }
+        if (pages > 1) {
+            renderPageText((page+1) + " / " + pages);
+        }
 
         int cx = mouseX - guiLeft - WIDTH / 2;
         int cy = mouseY - guiTop - HEIGHT / 2;
         int offset = getActionSize(actions) / 2;
         int q = getSelectedSection(actions, cx, cy);
-        if (q == -2) {
-            drawSelectedButton(q);
+        if (q == BUTTON_CONFIG) {
+            highlightConfigButton();
             renderTooltipText("Click for configuration");
+        } else if (q == BUTTON_LEFT) {
+            highlightLeftButton();
+            renderTooltipText("Go to previous page");
+        } else if (q == BUTTON_RIGHT) {
+            highlightRightButton();
+            renderTooltipText("Go to next page");
         } else if (q != -1) {
             drawSelectedSection(offset, q);
             if (q < getActionSize(actions)) {
@@ -228,6 +256,13 @@ public class GuiWheel extends GuiScreen {
         RenderHelper.renderText(mc, x, y, desc);
     }
 
+    private void renderPageText(String desc) {
+        int width = mc.fontRendererObj.getStringWidth(desc);
+        int x = guiLeft + (160 - width) / 2;
+        int y = guiTop + 90;
+        RenderHelper.renderText(mc, x, y, desc);
+    }
+
     private void drawTooltip(List<String> actions, int q) {
         boolean extended = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
         String id = actions.get(q + page * 8);
@@ -243,9 +278,19 @@ public class GuiWheel extends GuiScreen {
         }
     }
 
-    private void drawSelectedButton(int q) {
+    private void highlightConfigButton() {
         mc.getTextureManager().bindTexture(background);
         drawTexturedModalRect(guiLeft+74, guiTop+74, 74, 74, 12, 12);
+    }
+
+    private void highlightLeftButton() {
+        mc.getTextureManager().bindTexture(background);
+        drawTexturedModalRect(guiLeft+60, guiTop+75, 60, 75, 10, 10);
+    }
+
+    private void highlightRightButton() {
+        mc.getTextureManager().bindTexture(background);
+        drawTexturedModalRect(guiLeft+90, guiTop+75, 90, 75, 10, 10);
     }
 
     private void drawSelectedSection(int offset, int q) {
@@ -287,7 +332,14 @@ public class GuiWheel extends GuiScreen {
 
     private int getSelectedSection(List<String> actions, int cx, int cy) {
         if (Math.abs(cx) < 6 && Math.abs(cy) < 6) {
-            return -2;
+            return BUTTON_CONFIG;
+        }
+
+        if (Math.abs(cy) < 5 && (cx > -20 && cx < -10)) {
+            return BUTTON_LEFT;
+        }
+        if (Math.abs(cy) < 5 && (cx > 10 && cx < 20)) {
+            return BUTTON_RIGHT;
         }
 
         double dist = Math.sqrt(cx * cx + cy * cy);
