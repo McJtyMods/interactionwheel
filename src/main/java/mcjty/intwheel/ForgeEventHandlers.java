@@ -25,7 +25,7 @@ public class ForgeEventHandlers {
             // We need to copyFrom the capabilities
             if (event.getOriginal().hasCapability(PlayerProperties.PLAYER_WHEEL_CONFIGURATION, null)) {
                 PlayerWheelConfiguration oldStore = event.getOriginal().getCapability(PlayerProperties.PLAYER_WHEEL_CONFIGURATION, null);
-                PlayerWheelConfiguration newStore = PlayerProperties.getPlayerGotNote(event.getEntityPlayer());
+                PlayerWheelConfiguration newStore = PlayerProperties.getWheelConfig(event.getEntityPlayer());
                 newStore.copyFrom(oldStore);
             }
         }

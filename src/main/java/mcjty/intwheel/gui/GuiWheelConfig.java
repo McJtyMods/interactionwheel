@@ -2,7 +2,9 @@ package mcjty.intwheel.gui;
 
 import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.api.IWheelAction;
+import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.input.KeyBindings;
+import mcjty.intwheel.varia.RenderHelper;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
@@ -14,7 +16,7 @@ import java.util.Map;
 public class GuiWheelConfig extends GuiScreen {
 
     private static final int WIDTH = 256;
-    private static final int HEIGHT = 220;
+    private static final int HEIGHT = 204;
 
     private int guiLeft;
     private int guiTop;
@@ -70,18 +72,18 @@ public class GuiWheelConfig extends GuiScreen {
 
     private void drawIcons() {
         Map<String, IWheelAction> actions = InteractionWheel.registry.getActions();
+        int ox = guiLeft + 4;
+        int oy = guiTop + 4;
         for (IWheelAction action : actions.values()) {
-//
-//            mc.getTextureManager().bindTexture(new ResourceLocation(action.getTexture()));
-//            int txtw = action.getTxtw();
-//            int txth = action.getTxth();
-//            int u = q == i ? action.getUhigh() : action.getUlow();
-//            int v = q == i ? action.getVhigh() : action.getVlow();
-//            int offs = (i - offset + 8) % 8;
-//            int ox = guiLeft + iconOffsets.get(offs).getLeft();
-//            int oy = guiTop + iconOffsets.get(offs).getRight();
-//            RenderHelper.drawTexturedModalRect(ox, oy, u, v, 31, 31, txtw, txth);
-//
+            WheelActionElement element = action.createElement();
+            mc.getTextureManager().bindTexture(new ResourceLocation(element.getTexture()));
+            int txtw = element.getTxtw();
+            int txth = element.getTxth();
+            boolean enabled = true;
+            int u = enabled ? element.getUhigh() : element.getUlow();
+            int v = enabled ? element.getVhigh() : element.getVlow();
+            RenderHelper.drawTexturedModalRect(ox, oy, u, v, 31, 31, txtw, txth);
+            ox += 28;
 //            double angle = Math.PI * 2.0 * offs / 8 - Math.PI / 2.0 + Math.PI / 8.0;
 //            int tx = (int) (guiLeft + 80 + 86 * Math.cos(angle));
 //            int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));

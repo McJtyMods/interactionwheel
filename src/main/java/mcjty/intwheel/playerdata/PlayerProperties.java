@@ -9,7 +9,7 @@ public class PlayerProperties {
     @CapabilityInject(PlayerWheelConfiguration.class)
     public static Capability<PlayerWheelConfiguration> PLAYER_WHEEL_CONFIGURATION;
 
-    public static PlayerWheelConfiguration getPlayerGotNote(EntityPlayer player) {
+    public static PlayerWheelConfiguration getWheelConfig(EntityPlayer player) {
         return player.getCapability(PLAYER_WHEEL_CONFIGURATION, null);
     }
 

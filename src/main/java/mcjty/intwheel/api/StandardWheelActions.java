@@ -1,7 +1,5 @@
 package mcjty.intwheel.api;
 
-import javax.annotation.Nullable;
-
 public enum StandardWheelActions {
     GENERIC("?", "?", null, 128, 128),                                                         // Generic: use this in combination with your own ID
     SEARCH(StandardWheelActions.ID_SEARCH, "Search item", null, 96, 128),                      // Search item
@@ -30,11 +28,6 @@ public enum StandardWheelActions {
 
     // Create a standard wheel action element
     public WheelActionElement createElement() {
-        return new WheelActionElement(id, desc, sneakDesc, "intwheel:textures/gui/wheel_hilight.png", u, v, u, v+64, 256, 256);
-    }
-
-    // Create a wheel action element with your own custom id and description but with a standard icon
-    public WheelActionElement createElement(String id, String desc, @Nullable String sneakDesc) {
-        return new WheelActionElement(id, desc, sneakDesc, "intwheel:textures/gui/wheel_hilight.png", u, v, u, v+64, 256, 256);
+        return new WheelActionElement(id).texture("intwheel:textures/gui/wheel_hilight.png", u, v, u, v+64, 256, 256).description(desc, sneakDesc);
     }
 }

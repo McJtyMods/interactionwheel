@@ -2,18 +2,16 @@ package mcjty.intwheel.playerdata;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class PlayerWheelConfiguration {
 
     private Map<String, Integer> hotkeys = new HashMap<>();
-    private Set<String> enabledActions = new HashSet<>();
+    private Map<String, Boolean> enabledActions = new HashMap<>();
 
     public PlayerWheelConfiguration() {
     }
@@ -31,20 +29,25 @@ public class PlayerWheelConfiguration {
     }
 
     public void enable(String id) {
-        enabledActions.add(id);
+        enabledActions.put(id, Boolean.TRUE);
     }
 
     public void disable(String id) {
-        enabledActions.remove(id);
+        enabledActions.put(id, Boolean.FALSE);
     }
 
-    public boolean isEnabled(String id) {
-        return enabledActions.contains(id);
+    /**
+     * Can return null if the status is not known yet for this player
+     * @param id
+     * @return
+     */
+    public Boolean isEnabled(String id) {
+        return enabledActions.get(id);
     }
 
     public void copyFrom(PlayerWheelConfiguration source) {
         hotkeys = new HashMap<>(source.hotkeys);
-        enabledActions = new HashSet<>(source.enabledActions);
+        enabledActions = new HashMap<>(source.enabledActions);
     }
 
 
@@ -59,8 +62,11 @@ public class PlayerWheelConfiguration {
         compound.setTag("hotkeys", list);
 
         list = new NBTTagList();
-        for (String action : enabledActions) {
-            list.appendTag(new NBTTagString(action));
+        for (Map.Entry<String, Boolean> entry : enabledActions.entrySet()) {
+            NBTTagCompound tc = new NBTTagCompound();
+            tc.setString("id", entry.getKey());
+            tc.setBoolean("enabled", entry.getValue());
+            list.appendTag(tc);
         }
         compound.setTag("enabled", list);
     }
@@ -73,11 +79,11 @@ public class PlayerWheelConfiguration {
             hotkeys.put(tc.getString("id"), tc.getInteger("key"));
         }
 
-        enabledActions = new HashSet<>();
-        list = compound.getTagList("enabled", Constants.NBT.TAG_STRING);
+        enabledActions = new HashMap<>();
+        list = compound.getTagList("enabled", Constants.NBT.TAG_COMPOUND);
         for (int i = 0 ; i < list.tagCount() ; i++) {
-            NBTTagString tc = (NBTTagString) list.get(i);
-            enabledActions.add(tc.getString());
+            NBTTagCompound tc = (NBTTagCompound) list.get(i);
+            enabledActions.put(tc.getString("id"), tc.getBoolean("enabled"));
         }
     }
 }

@@ -18,6 +18,11 @@ public interface IWheelAction {
      */
     WheelActionElement createElement();
 
+    /**
+     * Return false if this action should not be enabled by default
+     */
+    default boolean isDefaultEnabled() { return true; }
+
     // Perform an action. This is called client-side. If this returns false the server
     // side action is not performed
     boolean performClient(EntityPlayer player, World world, @Nullable BlockPos pos, boolean extended);

@@ -133,6 +133,7 @@ public class GuiWheel extends GuiScreen {
         int offset = getActionSize() / 2;
         int q = getSelectedSection(cx, cy);
         if (q == -2) {
+            drawSelectedButton(q);
             renderTooltipText("Click for configuration");
         } else if (q != -1) {
             drawSelectedSection(offset, q);
@@ -159,10 +160,10 @@ public class GuiWheel extends GuiScreen {
                 int oy = guiTop + iconOffsets.get(offs).getRight();
                 RenderHelper.drawTexturedModalRect(ox, oy, u, v, 31, 31, txtw, txth);
 
-                double angle = Math.PI * 2.0 * offs / 8 - Math.PI / 2.0 + Math.PI / 8.0;
-                int tx = (int) (guiLeft + 80 + 86 * Math.cos(angle));
-                int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));
-                RenderHelper.renderText(mc, tx - mc.fontRendererObj.getCharWidth('4') / 2, ty - mc.fontRendererObj.FONT_HEIGHT / 2, "" + i);
+//                double angle = Math.PI * 2.0 * offs / 8 - Math.PI / 2.0 + Math.PI / 8.0;
+//                int tx = (int) (guiLeft + 80 + 86 * Math.cos(angle));
+//                int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));
+//                RenderHelper.renderText(mc, tx - mc.fontRendererObj.getCharWidth('4') / 2, ty - mc.fontRendererObj.FONT_HEIGHT / 2, "" + i);
             }
         }
     }
@@ -187,6 +188,11 @@ public class GuiWheel extends GuiScreen {
             }
             renderTooltipText(desc);
         }
+    }
+
+    private void drawSelectedButton(int q) {
+        mc.getTextureManager().bindTexture(background);
+        drawTexturedModalRect(guiLeft+74, guiTop+74, 74, 74, 12, 12);
     }
 
     private void drawSelectedSection(int offset, int q) {
