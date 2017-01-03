@@ -3,7 +3,6 @@ package mcjty.intwheel.gui;
 import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.WheelActionElement;
-import mcjty.intwheel.input.KeyBindings;
 import mcjty.intwheel.playerdata.PlayerProperties;
 import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import mcjty.intwheel.varia.RenderHelper;
@@ -12,6 +11,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,7 +23,7 @@ public class GuiWheelConfig extends GuiScreen {
     private static final int HEIGHT = 204;
 
     public static final int MARGIN = 4;
-    public static final int SIZE = 26;
+    public static final int SIZE = 30;
 
     private int guiLeft;
     private int guiTop;
@@ -43,8 +43,27 @@ public class GuiWheelConfig extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
-        if (Keyboard.isKeyDown(KeyBindings.keyOpenWheel.getKeyCode())) {
-            closeThis();
+        System.out.println("keyCode = " + keyCode);
+        System.out.println("typedChar = " + typedChar);
+        if ((typedChar >= 'a' && typedChar <= 'z') || keyCode == Keyboard.KEY_DELETE || keyCode == Keyboard.KEY_BACK) {
+
+            int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
+            int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
+            int cx = mouseX - guiLeft;
+            int cy = mouseY - guiTop;
+
+            List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
+
+            int selected = getSelectedAction(cx, cy);
+            if (selected >= 0 && selected < actions.size()) {
+                PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
+                String id = actions.get(selected);
+                if (keyCode == Keyboard.KEY_DELETE || keyCode == Keyboard.KEY_BACK) {
+                    config.getHotkeys().remove(id);
+                } else {
+                    config.getHotkeys().put(id, keyCode);
+                }
+            }
         }
     }
 
@@ -99,6 +118,7 @@ public class GuiWheelConfig extends GuiScreen {
 
     private void drawIcons() {
         PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
+        Map<String, Integer> hotkeys = config.getHotkeys();
 
         List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
         int ox = MARGIN;
@@ -116,15 +136,17 @@ public class GuiWheelConfig extends GuiScreen {
             int u = enabled ? element.getUhigh() : element.getUlow();
             int v = enabled ? element.getVhigh() : element.getVlow();
             RenderHelper.drawTexturedModalRect(guiLeft + ox, guiTop + oy, u, v, 31, 31, txtw, txth);
+
+            if (hotkeys.containsKey(id)) {
+                String keyName = Keyboard.getKeyName(hotkeys.get(id));
+                RenderHelper.renderText(mc, guiLeft + ox, guiTop + oy, keyName);
+            }
+
             ox += SIZE;
             if (ox > WIDTH) {
                 ox = MARGIN;
                 oy += SIZE;
             }
-//            double angle = Math.PI * 2.0 * offs / 8 - Math.PI / 2.0 + Math.PI / 8.0;
-//            int tx = (int) (guiLeft + 80 + 86 * Math.cos(angle));
-//            int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));
-//            RenderHelper.renderText(mc, tx-mc.fontRendererObj.getCharWidth('4')/2, ty-mc.fontRendererObj.FONT_HEIGHT/2, "" + i);
         }
     }
 
