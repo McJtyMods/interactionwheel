@@ -43,8 +43,6 @@ public class GuiWheelConfig extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
-        System.out.println("keyCode = " + keyCode);
-        System.out.println("typedChar = " + typedChar);
         if ((typedChar >= 'a' && typedChar <= 'z') || keyCode == Keyboard.KEY_DELETE || keyCode == Keyboard.KEY_BACK) {
 
             int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;

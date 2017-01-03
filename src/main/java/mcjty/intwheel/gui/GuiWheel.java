@@ -67,7 +67,21 @@ public class GuiWheel extends GuiScreen {
         super.keyTyped(typedChar, keyCode);
         if (Keyboard.isKeyDown(KeyBindings.keyOpenWheel.getKeyCode())) {
             closeThis();
+        } else if (typedChar >= 'a' && typedChar <= 'z') {
+            PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
+            Map<String, Integer> hotkeys = config.getHotkeys();
+            List<String> actions = getActions();
+            for (String action : actions) {
+                if (hotkeys.containsKey(action)) {
+                    if (hotkeys.get(action) == keyCode) {
+                        performAction(action);
+                        closeThis();
+                        return;
+                    }
+                }
+            }
         }
+
     }
 
     @Override
@@ -101,6 +115,10 @@ public class GuiWheel extends GuiScreen {
 
     private void performAction(List<String> actions, int index) {
         String id = actions.get(index);
+        performAction(id);
+    }
+
+    private void performAction(String id) {
         IWheelAction action = InteractionWheel.registry.get(id);
         if (action != null) {
             boolean extended = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
