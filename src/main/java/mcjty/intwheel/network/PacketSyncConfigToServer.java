@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class PacketSyncConfig implements IMessage {
+public class PacketSyncConfigToServer implements IMessage {
     NBTTagCompound tc;
 
     @Override
@@ -23,21 +23,21 @@ public class PacketSyncConfig implements IMessage {
         NetworkTools.writeTag(buf, tc);
     }
 
-    public PacketSyncConfig() {
+    public PacketSyncConfigToServer() {
     }
 
-    public PacketSyncConfig(NBTTagCompound tc) {
+    public PacketSyncConfigToServer(NBTTagCompound tc) {
         this.tc = tc;
     }
 
-    public static class Handler implements IMessageHandler<PacketSyncConfig, IMessage> {
+    public static class Handler implements IMessageHandler<PacketSyncConfigToServer, IMessage> {
         @Override
-        public IMessage onMessage(PacketSyncConfig message, MessageContext ctx) {
+        public IMessage onMessage(PacketSyncConfigToServer message, MessageContext ctx) {
             FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
             return null;
         }
 
-        private void handle(PacketSyncConfig message, MessageContext ctx) {
+        private void handle(PacketSyncConfigToServer message, MessageContext ctx) {
             System.out.println("message = " + message);
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
             PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(player);

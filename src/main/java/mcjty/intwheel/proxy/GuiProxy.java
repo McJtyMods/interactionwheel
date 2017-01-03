@@ -19,7 +19,7 @@ public class GuiProxy implements IGuiHandler {
     @Override
     public Object getClientGuiElement(int guiid, EntityPlayer entityPlayer, World world, int x, int y, int z) {
         if (guiid == GUI_WHEEL) {
-            return new GuiWheel(world);
+            return new GuiWheel();
         } else if (guiid == GUI_CONFIG) {
             return new GuiWheelConfig();
         } else {

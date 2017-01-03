@@ -6,6 +6,7 @@ import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.input.KeyBindings;
 import mcjty.intwheel.network.PacketHandler;
 import mcjty.intwheel.network.PacketPerformAction;
+import mcjty.intwheel.network.PacketRequestConfig;
 import mcjty.intwheel.playerdata.PlayerProperties;
 import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import mcjty.intwheel.proxy.GuiProxy;
@@ -18,7 +19,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
 
@@ -35,20 +35,22 @@ public class GuiWheel extends GuiScreen {
     private int guiLeft;
     private int guiTop;
 
-    private final List<String> actions;
-    private final BlockPos pos;
+    private BlockPos pos;
 
     private static final ResourceLocation background = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel.png");
     private static final ResourceLocation hilight = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel_hilight.png");
 
-    public GuiWheel(World world) {
+    public GuiWheel() {
         RayTraceResult mouseOver = Minecraft.getMinecraft().objectMouseOver;
         if (mouseOver.typeOfHit == RayTraceResult.Type.BLOCK && mouseOver != null) {
             pos = mouseOver.getBlockPos();
         } else {
             pos = null;
         }
-        actions = InteractionWheel.interactionWheelImp.getActions(MinecraftTools.getPlayer(Minecraft.getMinecraft()), world, pos);
+    }
+
+    private List<String> getActions() {
+        return InteractionWheel.interactionWheelImp.getActions(MinecraftTools.getPlayer(Minecraft.getMinecraft()), MinecraftTools.getWorld(Minecraft.getMinecraft()), pos);
     }
 
     @Override
@@ -56,6 +58,8 @@ public class GuiWheel extends GuiScreen {
         super.initGui();
         guiLeft = (this.width - WIDTH) / 2;
         guiTop = (this.height - HEIGHT) / 2;
+
+        PacketHandler.INSTANCE.sendToServer(new PacketRequestConfig());
     }
 
     @Override
@@ -75,10 +79,12 @@ public class GuiWheel extends GuiScreen {
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
+        List<String> actions = getActions();
+
         int cx = mouseX - guiLeft - WIDTH / 2;
         int cy = mouseY - guiTop - HEIGHT / 2;
 
-        int q = getSelectedSection(cx, cy);
+        int q = getSelectedSection(actions, cx, cy);
         if (q == -2) {
             EntityPlayerSP player = MinecraftTools.getPlayer(mc);
             player.openGui(InteractionWheel.instance, GuiProxy.GUI_CONFIG, player.getEntityWorld(), player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
@@ -86,14 +92,14 @@ public class GuiWheel extends GuiScreen {
         } else if (q == -1) {
             closeThis();
         } else {
-            if (q < getActionSize()) {
-                performAction(q);
+            if (q < getActionSize(actions)) {
+                performAction(actions, q);
             }
         }
         closeThis();
     }
 
-    private void performAction(int index) {
+    private void performAction(List<String> actions, int index) {
         String id = actions.get(index);
         IWheelAction action = InteractionWheel.registry.get(id);
         if (action != null) {
@@ -131,27 +137,28 @@ public class GuiWheel extends GuiScreen {
         mc.getTextureManager().bindTexture(background);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
 
+        List<String> actions = getActions();
         int cx = mouseX - guiLeft - WIDTH / 2;
         int cy = mouseY - guiTop - HEIGHT / 2;
-        int offset = getActionSize() / 2;
-        int q = getSelectedSection(cx, cy);
+        int offset = getActionSize(actions) / 2;
+        int q = getSelectedSection(actions, cx, cy);
         if (q == -2) {
             drawSelectedButton(q);
             renderTooltipText("Click for configuration");
         } else if (q != -1) {
             drawSelectedSection(offset, q);
-            if (q < getActionSize()) {
-                drawTooltip(q);
+            if (q < getActionSize(actions)) {
+                drawTooltip(actions, q);
             }
         }
-        drawIcons(offset, q);
+        drawIcons(actions, offset, q);
     }
 
-    private void drawIcons(int offset, int q) {
+    private void drawIcons(List<String> actions, int offset, int q) {
         PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
         Map<String, Integer> hotkeys = config.getHotkeys();
 
-        for (int i = 0; i < getActionSize(); i++) {
+        for (int i = 0; i < getActionSize(actions); i++) {
             String id = actions.get(i);
             IWheelAction action = InteractionWheel.registry.get(id);
             if (action != null) {
@@ -185,7 +192,7 @@ public class GuiWheel extends GuiScreen {
         RenderHelper.renderText(mc, x, y, desc);
     }
 
-    private void drawTooltip(int q) {
+    private void drawTooltip(List<String> actions, int q) {
         boolean extended = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
         String id = actions.get(q);
         IWheelAction action = InteractionWheel.registry.get(id);
@@ -235,12 +242,12 @@ public class GuiWheel extends GuiScreen {
         }
     }
 
-    private int getActionSize() {
+    private int getActionSize(List<String> actions) {
         // @todo, overflow in case there are too many actions
         return Math.min(8, actions.size());
     }
 
-    private int getSelectedSection(int cx, int cy) {
+    private int getSelectedSection(List<String> actions, int cx, int cy) {
         if (Math.abs(cx) < 6 && Math.abs(cy) < 6) {
             return -2;
         }
@@ -268,7 +275,7 @@ public class GuiWheel extends GuiScreen {
         } else if (cx < 0 && cy < 0 && Math.abs(cx) < Math.abs(cy)) {
             q = 7;
         }
-        int offset = getActionSize() / 2;
+        int offset = getActionSize(actions) / 2;
         return (q + offset) % 8;
     }
 }

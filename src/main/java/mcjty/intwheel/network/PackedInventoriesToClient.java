@@ -2,8 +2,8 @@ package mcjty.intwheel.network;
 
 import io.netty.buffer.ByteBuf;
 import mcjty.intwheel.RenderHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -41,7 +41,7 @@ public class PackedInventoriesToClient implements IMessage {
     public static class Handler implements IMessageHandler<PackedInventoriesToClient, IMessage> {
         @Override
         public IMessage onMessage(PackedInventoriesToClient message, MessageContext ctx) {
-            FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
+            Minecraft.getMinecraft().addScheduledTask(() -> handle(message, ctx));
             return null;
         }
 

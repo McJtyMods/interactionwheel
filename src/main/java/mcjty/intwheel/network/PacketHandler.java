@@ -30,9 +30,11 @@ public class PacketHandler {
     public static void registerMessages() {
         // Server side
         INSTANCE.registerMessage(PacketPerformAction.Handler.class, PacketPerformAction.class, nextID(), Side.SERVER);
-        INSTANCE.registerMessage(PacketSyncConfig.Handler.class, PacketSyncConfig.class, nextID(), Side.SERVER);
+        INSTANCE.registerMessage(PacketSyncConfigToServer.Handler.class, PacketSyncConfigToServer.class, nextID(), Side.SERVER);
+        INSTANCE.registerMessage(PacketRequestConfig.Handler.class, PacketRequestConfig.class, nextID(), Side.SERVER);
 
         // Client side
         INSTANCE.registerMessage(PackedInventoriesToClient.Handler.class, PackedInventoriesToClient.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(PacketSyncConfigToClient.Handler.class, PacketSyncConfigToClient.class, nextID(), Side.CLIENT);
     }
 }
