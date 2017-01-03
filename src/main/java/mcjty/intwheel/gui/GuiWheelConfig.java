@@ -63,6 +63,7 @@ public class GuiWheelConfig extends GuiScreen {
                 } else {
                     config.getHotkeys().put(id, keyCode);
                 }
+                config.sendToServer();
             }
         }
     }
@@ -96,6 +97,7 @@ public class GuiWheelConfig extends GuiScreen {
                 } else {
                     config.enable(id);
                 }
+                config.sendToServer();
             }
         }
     }
@@ -139,7 +141,7 @@ public class GuiWheelConfig extends GuiScreen {
 
             if (hotkeys.containsKey(id)) {
                 String keyName = Keyboard.getKeyName(hotkeys.get(id));
-                RenderHelper.renderText(mc, guiLeft + ox, guiTop + oy, keyName);
+                RenderHelper.renderText(mc, guiLeft + ox+1, guiTop + oy+1, keyName);
             }
 
             ox += SIZE;

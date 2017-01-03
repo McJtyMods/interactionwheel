@@ -1,5 +1,7 @@
 package mcjty.intwheel.playerdata;
 
+import mcjty.intwheel.network.PacketHandler;
+import mcjty.intwheel.network.PacketSyncConfig;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
@@ -91,6 +93,7 @@ public class PlayerWheelConfiguration {
         NBTTagList list = compound.getTagList("hotkeys", Constants.NBT.TAG_COMPOUND);
         for (int i = 0 ; i < list.tagCount() ; i++) {
             NBTTagCompound tc = (NBTTagCompound) list.get(i);
+            System.out.println("hot: i = " + i + ", " + tc.getString("id"));
             hotkeys.put(tc.getString("id"), tc.getInteger("key"));
         }
 
@@ -98,6 +101,7 @@ public class PlayerWheelConfiguration {
         list = compound.getTagList("enabled", Constants.NBT.TAG_COMPOUND);
         for (int i = 0 ; i < list.tagCount() ; i++) {
             NBTTagCompound tc = (NBTTagCompound) list.get(i);
+            System.out.println("ena: i = " + i + ", " + tc.getString("id"));
             enabledActions.put(tc.getString("id"), tc.getBoolean("enabled"));
         }
 
@@ -107,5 +111,11 @@ public class PlayerWheelConfiguration {
             NBTTagString tc = (NBTTagString) list.get(i);
             orderedActions.add(tc.getString());
         }
+    }
+
+    public void sendToServer() {
+        NBTTagCompound tc = new NBTTagCompound();
+        saveNBTData(tc);
+        PacketHandler.INSTANCE.sendToServer(new PacketSyncConfig(tc));
     }
 }

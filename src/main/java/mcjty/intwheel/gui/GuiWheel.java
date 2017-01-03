@@ -6,6 +6,8 @@ import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.input.KeyBindings;
 import mcjty.intwheel.network.PacketHandler;
 import mcjty.intwheel.network.PacketPerformAction;
+import mcjty.intwheel.playerdata.PlayerProperties;
+import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import mcjty.intwheel.proxy.GuiProxy;
 import mcjty.intwheel.varia.RenderHelper;
 import mcjty.lib.tools.MinecraftTools;
@@ -23,6 +25,7 @@ import org.lwjgl.input.Keyboard;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class GuiWheel extends GuiScreen {
 
@@ -145,6 +148,9 @@ public class GuiWheel extends GuiScreen {
     }
 
     private void drawIcons(int offset, int q) {
+        PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
+        Map<String, Integer> hotkeys = config.getHotkeys();
+
         for (int i = 0; i < getActionSize(); i++) {
             String id = actions.get(i);
             IWheelAction action = InteractionWheel.registry.get(id);
@@ -153,17 +159,21 @@ public class GuiWheel extends GuiScreen {
                 mc.getTextureManager().bindTexture(new ResourceLocation(element.getTexture()));
                 int txtw = element.getTxtw();
                 int txth = element.getTxth();
-                int u = q == i ? element.getUhigh() : element.getUlow();
-                int v = q == i ? element.getVhigh() : element.getVlow();
+                boolean selected = q == i;
+                int u = selected ? element.getUhigh() : element.getUlow();
+                int v = selected ? element.getVhigh() : element.getVlow();
                 int offs = (i - offset + 8) % 8;
                 int ox = guiLeft + iconOffsets.get(offs).getLeft();
                 int oy = guiTop + iconOffsets.get(offs).getRight();
                 RenderHelper.drawTexturedModalRect(ox, oy, u, v, 31, 31, txtw, txth);
 
-//                double angle = Math.PI * 2.0 * offs / 8 - Math.PI / 2.0 + Math.PI / 8.0;
-//                int tx = (int) (guiLeft + 80 + 86 * Math.cos(angle));
-//                int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));
-//                RenderHelper.renderText(mc, tx - mc.fontRendererObj.getCharWidth('4') / 2, ty - mc.fontRendererObj.FONT_HEIGHT / 2, "" + i);
+                if (selected && hotkeys.containsKey(id)) {
+                    double angle = Math.PI * 2.0 * offs / 8 - Math.PI / 2.0 + Math.PI / 8.0;
+                    int tx = (int) (guiLeft + 80 + 86 * Math.cos(angle));
+                    int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));
+                    String keyName = Keyboard.getKeyName(hotkeys.get(id));
+                    RenderHelper.renderText(mc, tx - mc.fontRendererObj.getCharWidth(keyName.charAt(0)) / 2, ty - mc.fontRendererObj.FONT_HEIGHT / 2, keyName);
+                }
             }
         }
     }
