@@ -74,7 +74,16 @@ public class InteractionWheelImp implements IInteractionWheel {
             }
         }
 
-        return orderedActions;
+
+        // Clean up all invalid actions
+        List<String> valid = new ArrayList<>();
+        for (String action : orderedActions) {
+            if (InteractionWheel.registry.get(action) != null) {
+                valid.add(action);
+            }
+        }
+
+        return valid;
     }
 
 

@@ -206,7 +206,7 @@ public class GuiWheelConfig extends GuiScreen {
 
             if (hotkeys.containsKey(id)) {
                 String keyName = Keyboard.getKeyName(hotkeys.get(id));
-                RenderHelper.renderText(mc, guiLeft + ox * SIZE + MARGIN +1, guiTop + oy * SIZE + MARGIN +1, keyName);
+                RenderHelper.renderText(mc, guiLeft + ox * SIZE + MARGIN + 1, guiTop + oy * SIZE + MARGIN + 1, keyName);
             }
 
             ox++;

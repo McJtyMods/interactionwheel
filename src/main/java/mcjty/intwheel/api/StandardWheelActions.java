@@ -5,9 +5,11 @@ public enum StandardWheelActions {
     SEARCH(StandardWheelActions.ID_SEARCH, "Search item", null, 96, 128),                      // Search item
     ROTATE(StandardWheelActions.ID_ROTATE, "Rotate block", null, 64, 128),                     // Rotate block
     DUMP(StandardWheelActions.ID_DUMP, "Dump to container", "Dump (including hotbar)", 0, 128),// Dump all possible items in players inventory into container
+    DUMP1(StandardWheelActions.ID_DUMP1, "Dump current to container", null, 160, 128),         // Dump held item into container
     EXTRACT(StandardWheelActions.ID_EXTRACT, "Fetch from container", null, 32, 128);           // Extract all possible items from container into players inventory
 
     public static final String ID_DUMP = "std.dump";
+    public static final String ID_DUMP1 = "std.dump1";
     public static final String ID_EXTRACT = "std.extract";
     public static final String ID_ROTATE = "std.rotate";
     public static final String ID_SEARCH = "std.search";

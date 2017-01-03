@@ -16,7 +16,6 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Set;
 
 public class DefaultWheelActionProvider implements IWheelActionProvider {
@@ -39,21 +38,24 @@ public class DefaultWheelActionProvider implements IWheelActionProvider {
             if (te instanceof IInventory || (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))) {
                 actions.add(StandardWheelActions.ID_DUMP);
                 actions.add(StandardWheelActions.ID_EXTRACT);
+                if (ItemStackTools.isValid(heldItem)) {
+                    actions.add(StandardWheelActions.ID_DUMP1);
+                }
             }
 
             if (block instanceof IWheelBlockSupport) {
                 ((IWheelBlockSupport) block).updateWheelActions(actions);
             }
         }
-        actions.add("std.dummy0");
-        actions.add("std.dummy1");
-        actions.add("std.dummy2");
-        actions.add("std.dummy3");
-        actions.add("std.dummy4");
-        actions.add("std.dummy5");
-        actions.add("std.dummy7");
-        actions.add("std.dummy8");
-        actions.add("std.dummy9");
-        actions.add("std.dummy10");
+//        actions.add("std.dummy0");
+//        actions.add("std.dummy1");
+//        actions.add("std.dummy2");
+//        actions.add("std.dummy3");
+//        actions.add("std.dummy4");
+//        actions.add("std.dummy5");
+//        actions.add("std.dummy7");
+//        actions.add("std.dummy8");
+//        actions.add("std.dummy9");
+//        actions.add("std.dummy10");
     }
 }
