@@ -75,7 +75,8 @@ public class GuiWheel extends GuiScreen {
                 if (hotkeys.containsKey(action)) {
                     if (hotkeys.get(action) == keyCode) {
                         performAction(action);
-                        closeThis();
+                        this.mc.displayGuiScreen(null);
+                        mc.setIngameFocus();
                         return;
                     }
                 }

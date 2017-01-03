@@ -45,6 +45,10 @@ public class PlayerWheelConfiguration {
         return orderedActions;
     }
 
+    public void setOrderActions(List<String> actions) {
+        orderedActions = new ArrayList<>(actions);
+    }
+
     /**
      * Can return null if the status is not known yet for this player
      * @param id
