@@ -147,9 +147,10 @@ public class GuiWheel extends GuiScreen {
             int oy = guiTop + iconOffsets.get(offs).getRight();
             RenderHelper.drawTexturedModalRect(ox, oy, u, v, 31, 31, txtw, txth);
 
-            int tx = (int) (guiLeft + 80 + 70 * Math.cos(Math.PI * 2.0 * offs / 8 - Math.PI / 2));
-            int ty = (int) (guiTop + 80 + 70 * Math.sin(Math.PI * 2.0 * offs / 8 - Math.PI / 2));
-            RenderHelper.renderText(mc, tx, ty, "" + i);
+            double angle = Math.PI * 2.0 * offs / 8 - Math.PI / 2.0 + Math.PI / 8.0;
+            int tx = (int) (guiLeft + 80 + 86 * Math.cos(angle));
+            int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));
+            RenderHelper.renderText(mc, tx-mc.fontRendererObj.getCharWidth('4')/2, ty-mc.fontRendererObj.FONT_HEIGHT/2, "" + i);
         }
     }
 
@@ -162,7 +163,7 @@ public class GuiWheel extends GuiScreen {
         }
         int width = mc.fontRendererObj.getStringWidth(desc);
         int x = guiLeft + (160 - width) / 2;
-        int y = guiTop + HEIGHT;
+        int y = guiTop + HEIGHT + 5;
         RenderHelper.renderText(mc, x, y, desc);
     }
 

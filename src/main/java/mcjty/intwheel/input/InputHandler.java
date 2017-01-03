@@ -4,7 +4,6 @@ package mcjty.intwheel.input;
 import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.api.WheelActionElement;
 import mcjty.lib.tools.MinecraftTools;
-import mcjty.theoneprobe.proxy.GuiProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -27,12 +26,12 @@ public class InputHandler {
                 BlockPos pos = mouseOver.getBlockPos();
                 List<WheelActionElement> actions = InteractionWheel.interactionWheelImp.getActions(player, world, pos);
                 if (!actions.isEmpty()) {
-                    player.openGui(InteractionWheel.instance, GuiProxy.GUI_NOTE, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ());
+                    player.openGui(InteractionWheel.instance, 0, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ());
                 }
             } else {
                 List<WheelActionElement> actions = InteractionWheel.interactionWheelImp.getActions(player, world, null);
                 if (!actions.isEmpty()) {
-                    player.openGui(InteractionWheel.instance, GuiProxy.GUI_NOTE, player.getEntityWorld(), player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
+                    player.openGui(InteractionWheel.instance, 0, player.getEntityWorld(), player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
                 }
             }
         }

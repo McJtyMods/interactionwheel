@@ -1,9 +1,11 @@
 package mcjty.intwheel.proxy;
 
+import mcjty.intwheel.ForgeEventHandlers;
 import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.apiimp.*;
 import mcjty.intwheel.config.ConfigSetup;
 import mcjty.intwheel.network.PacketHandler;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -19,7 +21,7 @@ public class CommonProxy {
     }
 
     public void init(FMLInitializationEvent e) {
-//        MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
+        MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
         NetworkRegistry.INSTANCE.registerGuiHandler(InteractionWheel.instance, new GuiProxy());
 
         InteractionWheel.registry.register(new RotateBlockAction());

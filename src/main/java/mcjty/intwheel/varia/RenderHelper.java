@@ -342,7 +342,7 @@ public class RenderHelper {
         int b1 = brightness >> 16 & 65535;
         int b2 = brightness & 65535;
         GlStateManager.pushMatrix();
-        mcjty.theoneprobe.rendering.RenderHelper.rotateToPlayer();
+        RenderHelper.rotateToPlayer();
         Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer buffer = tessellator.getBuffer();
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
