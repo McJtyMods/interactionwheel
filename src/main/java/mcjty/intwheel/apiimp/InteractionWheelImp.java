@@ -14,7 +14,9 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class InteractionWheelImp implements IInteractionWheel {
 
@@ -60,30 +62,49 @@ public class InteractionWheelImp implements IInteractionWheel {
         return InteractionWheel.registry;
     }
 
+    // Get all sorted actions. Disabled and enabled
+    public List<String> getSortedActions(@Nonnull EntityPlayer player) {
+        PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(player);
+        List<String> orderedActions = new ArrayList<>(config.getOrderedActions());
+
+        // Add all ids that are missing
+        for (String id : InteractionWheel.registry.getRegistrationOrder()) {
+            if (!orderedActions.contains(id)) {
+                orderedActions.add(id);
+            }
+        }
+
+        return orderedActions;
+    }
+
+
     @Nonnull
     public List<String> getActions(@Nonnull EntityPlayer player, World world, @Nullable BlockPos pos) {
-        List<String> actions = new ArrayList<>();
+        Set<String> actions = new HashSet<>();
         for (IWheelActionProvider provider : providers) {
             provider.updateWheelActions(actions, player, world, pos);
         }
         // Only keep enabled actions
         PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(player);
         List<String> newactions = new ArrayList<>();
-        for (String id : actions) {
-            Boolean enabled = config.isEnabled(id);
-            if (enabled == null) {
-                // Don't know yet, use default
-                IWheelAction action = InteractionWheel.registry.get(id);
-                if (action == null) {
-                    enabled = Boolean.FALSE;
-                } else {
-                    enabled = action.isDefaultEnabled();
+        for (String id : getSortedActions(player)) {
+            if (actions.contains(id)) {
+                Boolean enabled = config.isEnabled(id);
+                if (enabled == null) {
+                    // Don't know yet, use default
+                    IWheelAction action = InteractionWheel.registry.get(id);
+                    if (action == null) {
+                        enabled = Boolean.FALSE;
+                    } else {
+                        enabled = action.isDefaultEnabled();
+                    }
+                }
+                if (enabled) {
+                    newactions.add(id);
                 }
             }
-            if (enabled) {
-                newactions.add(id);
-            }
         }
+
         return newactions;
     }
 }

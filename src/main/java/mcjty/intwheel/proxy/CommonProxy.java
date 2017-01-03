@@ -25,9 +25,9 @@ public class CommonProxy {
         NetworkRegistry.INSTANCE.registerGuiHandler(InteractionWheel.instance, new GuiProxy());
 
         InteractionWheel.registry.register(new RotateBlockAction());
+        InteractionWheel.registry.register(new SearchWheelAction());
         InteractionWheel.registry.register(new DumpWheelAction());
         InteractionWheel.registry.register(new ExtractWheelAction());
-        InteractionWheel.registry.register(new SearchWheelAction());
     }
 
     public void postInit(FMLPostInitializationEvent e) {

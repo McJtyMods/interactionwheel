@@ -17,6 +17,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Set;
 
 public class DefaultWheelActionProvider implements IWheelActionProvider {
 
@@ -26,7 +27,7 @@ public class DefaultWheelActionProvider implements IWheelActionProvider {
     }
 
     @Override
-    public void updateWheelActions(@Nonnull List<String> actions, @Nonnull EntityPlayer player, World world, @Nullable BlockPos pos) {
+    public void updateWheelActions(@Nonnull Set<String> actions, @Nonnull EntityPlayer player, World world, @Nullable BlockPos pos) {
         ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
         if (ItemStackTools.isValid(heldItem)) {
             actions.add(StandardWheelActions.ID_SEARCH);

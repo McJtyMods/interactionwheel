@@ -2,16 +2,19 @@ package mcjty.intwheel.playerdata;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.util.Constants;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 public class PlayerWheelConfiguration {
 
     private Map<String, Integer> hotkeys = new HashMap<>();
     private Map<String, Boolean> enabledActions = new HashMap<>();
+    private List<String> orderedActions = new ArrayList<>();
 
     public PlayerWheelConfiguration() {
     }
@@ -36,6 +39,10 @@ public class PlayerWheelConfiguration {
         enabledActions.put(id, Boolean.FALSE);
     }
 
+    public List<String> getOrderedActions() {
+        return orderedActions;
+    }
+
     /**
      * Can return null if the status is not known yet for this player
      * @param id
@@ -48,6 +55,7 @@ public class PlayerWheelConfiguration {
     public void copyFrom(PlayerWheelConfiguration source) {
         hotkeys = new HashMap<>(source.hotkeys);
         enabledActions = new HashMap<>(source.enabledActions);
+        orderedActions = new ArrayList<>(source.orderedActions);
     }
 
 
@@ -69,6 +77,13 @@ public class PlayerWheelConfiguration {
             list.appendTag(tc);
         }
         compound.setTag("enabled", list);
+
+        list = new NBTTagList();
+        for (String action : orderedActions) {
+            list.appendTag(new NBTTagString(action));
+        }
+        compound.setTag("order", list);
+
     }
 
     public void loadNBTData(NBTTagCompound compound) {
@@ -84,6 +99,13 @@ public class PlayerWheelConfiguration {
         for (int i = 0 ; i < list.tagCount() ; i++) {
             NBTTagCompound tc = (NBTTagCompound) list.get(i);
             enabledActions.put(tc.getString("id"), tc.getBoolean("enabled"));
+        }
+
+        orderedActions = new ArrayList<>();
+        list = compound.getTagList("order", Constants.NBT.TAG_STRING);
+        for (int i = 0 ; i < list.tagCount() ; i++) {
+            NBTTagString tc = (NBTTagString) list.get(i);
+            orderedActions.add(tc.getString());
         }
     }
 }
