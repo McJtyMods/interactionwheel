@@ -34,9 +34,9 @@ public class CommonProxy {
         InteractionWheel.registry.register(new SearchWheelAction());
         InteractionWheel.registry.register(new DumpWheelAction());
         InteractionWheel.registry.register(new ExtractWheelAction());
-        for (int i = 0 ; i < 30 ; i++) {
-            InteractionWheel.registry.register(new DummyWheelAction("std.dummy" + i));
-        }
+//        for (int i = 0 ; i < 30 ; i++) {
+//            InteractionWheel.registry.register(new DummyWheelAction("std.dummy" + i));
+//        }
     }
 
     public void postInit(FMLPostInitializationEvent e) {

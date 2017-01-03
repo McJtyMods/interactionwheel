@@ -39,7 +39,6 @@ public class PacketSyncConfigToClient implements IMessage {
         }
 
         private void handle(PacketSyncConfigToClient message, MessageContext ctx) {
-            System.out.println("to client:message = " + message);
             EntityPlayerSP player = MinecraftTools.getPlayer(Minecraft.getMinecraft());
             PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(player);
             config.loadNBTData(message.tc);

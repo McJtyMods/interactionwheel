@@ -35,7 +35,6 @@ public class DumpWheelAction implements IWheelAction {
     @Override
     public void performServer(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         int start = extended ? 0 : 9;
-        System.out.println("start = " + start);
         TileEntity te = world.getTileEntity(pos);
         if (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
             IItemHandler inventory = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);

@@ -13,9 +13,7 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void onEntityConstructing(AttachCapabilitiesEvent.Entity event){
         if (event.getEntity() instanceof EntityPlayer) {
-            System.out.println("ForgeEventHandlers.onEntityConstructing");
             if (!event.getEntity().hasCapability(PlayerProperties.PLAYER_WHEEL_CONFIGURATION, null)) {
-                System.out.println("ForgeEventHandlers.onEntityConstructing: 2");
                 event.addCapability(new ResourceLocation(InteractionWheel.MODID, "hotkeys"), new PropertiesDispatcher());
             }
         }
