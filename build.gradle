@@ -75,3 +75,49 @@ processResources
         exclude 'mcmod.info'
     }
 }
+
+task("uploadJars", dependsOn: "reobf") {
+    description = "uploads JARs"
+    if (System.getenv("local_maven") != null) {
+        apply plugin: 'maven'
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+                    repository(url: "file://" + System.getenv("local_maven"))
+                    pom {
+                        groupId = project.group
+                        version = project.version
+                        artifactId = project.archivesBaseName
+                        project {
+                            name project.archivesBaseName
+                            packaging 'jar'
+                            description 'InteractionWheel'
+                            scm {
+                                url 'https://github.com/McJty/InteractionWheel'
+                                connection 'scm:git:git@github.com:McJty/InteractionWheel.git'
+                                developerConnection 'scm:git:git@github.com:McJty/InteractionWheel.git'
+                            }
+                            issueManagement {
+                                system 'github'
+                                url 'https://github.com/McJty/InteractionWheel/issues'
+                            }
+                            licenses {
+                                license {
+                                    name 'MIT'
+                                    distribution 'repo'
+                                }
+                            }
+                            developers {
+                                developer {
+                                    id 'McJty'
+                                    name 'McJty'
+                                    roles { role 'developer' }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
