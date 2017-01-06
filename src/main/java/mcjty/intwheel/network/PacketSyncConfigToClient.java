@@ -1,11 +1,10 @@
 package mcjty.intwheel.network;
 
 import io.netty.buffer.ByteBuf;
+import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.playerdata.PlayerProperties;
 import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
-import mcjty.lib.tools.MinecraftTools;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -34,12 +33,12 @@ public class PacketSyncConfigToClient implements IMessage {
     public static class Handler implements IMessageHandler<PacketSyncConfigToClient, IMessage> {
         @Override
         public IMessage onMessage(PacketSyncConfigToClient message, MessageContext ctx) {
-            Minecraft.getMinecraft().addScheduledTask(() -> handle(message, ctx));
+            InteractionWheel.proxy.addScheduledTaskClient(() -> handle(message, ctx));
             return null;
         }
 
         private void handle(PacketSyncConfigToClient message, MessageContext ctx) {
-            EntityPlayerSP player = MinecraftTools.getPlayer(Minecraft.getMinecraft());
+            EntityPlayer player = InteractionWheel.proxy.getClientPlayer();
             PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(player);
             config.loadNBTData(message.tc);
         }
