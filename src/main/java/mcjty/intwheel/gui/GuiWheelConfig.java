@@ -175,7 +175,7 @@ public class GuiWheelConfig extends GuiScreen {
 //            if (extended && sneakDesc != null) {
 //                desc = sneakDesc;
 //            }
-            renderTooltipText(desc, 0);
+            renderTooltipText(TextFormatting.BLUE + id + ": " + TextFormatting.WHITE + desc, 0);
             renderTooltipText(TextFormatting.YELLOW + "Click to enable/disable this action", 10);
             renderTooltipText(TextFormatting.YELLOW + "Press 'a' to 'z' to assign hotkey ('del' to remove hotkey)", 20);
             renderTooltipText(TextFormatting.YELLOW + "Arrows and home/end to order actions", 30);
