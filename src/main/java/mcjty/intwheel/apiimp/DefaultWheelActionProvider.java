@@ -40,6 +40,7 @@ public class DefaultWheelActionProvider implements IWheelActionProvider {
                 actions.add(StandardWheelActions.ID_EXTRACT);
                 if (ItemStackTools.isValid(heldItem)) {
                     actions.add(StandardWheelActions.ID_DUMP1);
+                    actions.add(StandardWheelActions.ID_DUMPSIMILAR);
                 }
             }
 
