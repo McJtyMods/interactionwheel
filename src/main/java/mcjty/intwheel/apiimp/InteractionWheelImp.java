@@ -10,6 +10,7 @@ import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -91,7 +92,11 @@ public class InteractionWheelImp implements IInteractionWheel {
     public List<String> getActions(@Nonnull EntityPlayer player, World world, @Nullable BlockPos pos) {
         Set<String> actions = new HashSet<>();
         for (IWheelActionProvider provider : providers) {
-            provider.updateWheelActions(actions, player, world, pos);
+            try {
+                provider.updateWheelActions(actions, player, world, pos);
+            } catch (Exception e) {
+                InteractionWheel.logger.log(Level.ERROR, "The provider " + provider.getID() + " caused a crash!", e);
+            }
         }
         // Only keep enabled actions
         PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(player);
