@@ -188,7 +188,7 @@ public class GuiWheel extends GuiScreen {
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
 
         List<String> actions = getActions();
-        pages = (actions.size()-1) / 8 + 1;
+        pages = actions.isEmpty() ? 0 : ((actions.size()-1) / 8 + 1);
         if (page >= pages) {
             page = 0;
         }
@@ -326,6 +326,9 @@ public class GuiWheel extends GuiScreen {
     private int getActionSize(List<String> actions) {
         // @todo, overflow in case there are too many actions
         int s = actions.size();
+        if (s == 0) {
+            return s;
+        }
         s -= page * 8;
         return Math.min(8, s);
     }
