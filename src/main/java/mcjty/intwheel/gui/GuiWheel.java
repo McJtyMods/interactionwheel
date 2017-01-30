@@ -22,6 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,10 +73,15 @@ public class GuiWheel extends GuiScreen {
         PacketHandler.INSTANCE.sendToServer(new PacketRequestConfig());
     }
 
+    private static boolean isKeyDown(KeyBinding key) {
+        int i = key.getKeyCode();
+        return ((i != 0) && (i < 256)) ? ((i < 0) ? Mouse.isButtonDown(i + 100) : Keyboard.isKeyDown(i)) : false;
+    }
+
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
-        if (Keyboard.isKeyDown(KeyBindings.keyOpenWheel.getKeyCode())) {
+        if (isKeyDown(KeyBindings.keyOpenWheel)) {
             closeThis();
         } else if (keyCode == Keyboard.KEY_SPACE) {
             page++;
@@ -131,7 +137,7 @@ public class GuiWheel extends GuiScreen {
             return;
         } else if (q == BUTTON_RIGHT) {
             page++;
-            if (page > pages-1) {
+            if (page > pages - 1) {
                 page = 0;
             }
             return;
@@ -188,12 +194,12 @@ public class GuiWheel extends GuiScreen {
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
 
         List<String> actions = getActions();
-        pages = actions.isEmpty() ? 0 : ((actions.size()-1) / 8 + 1);
+        pages = actions.isEmpty() ? 0 : ((actions.size() - 1) / 8 + 1);
         if (page >= pages) {
             page = 0;
         }
         if (pages > 1) {
-            renderPageText((page+1) + " / " + pages);
+            renderPageText((page + 1) + " / " + pages);
         }
 
         int cx = mouseX - guiLeft - WIDTH / 2;
@@ -280,17 +286,17 @@ public class GuiWheel extends GuiScreen {
 
     private void highlightConfigButton() {
         mc.getTextureManager().bindTexture(background);
-        drawTexturedModalRect(guiLeft+74, guiTop+74, 74, 74, 12, 12);
+        drawTexturedModalRect(guiLeft + 74, guiTop + 74, 74, 74, 12, 12);
     }
 
     private void highlightLeftButton() {
         mc.getTextureManager().bindTexture(background);
-        drawTexturedModalRect(guiLeft+60, guiTop+75, 60, 75, 10, 10);
+        drawTexturedModalRect(guiLeft + 60, guiTop + 75, 60, 75, 10, 10);
     }
 
     private void highlightRightButton() {
         mc.getTextureManager().bindTexture(background);
-        drawTexturedModalRect(guiLeft+90, guiTop+75, 90, 75, 10, 10);
+        drawTexturedModalRect(guiLeft + 90, guiTop + 75, 90, 75, 10, 10);
     }
 
     private void drawSelectedSection(int offset, int q) {
