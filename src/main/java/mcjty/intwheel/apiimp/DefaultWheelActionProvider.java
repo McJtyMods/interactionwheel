@@ -43,6 +43,7 @@ public class DefaultWheelActionProvider implements IWheelActionProvider {
                     actions.add(StandardWheelActions.ID_DUMPSIMILAR);
                 }
             }
+            actions.add(StandardWheelActions.ID_PICKTOOL);
 
             if (block instanceof IWheelBlockSupport) {
                 ((IWheelBlockSupport) block).updateWheelActions(actions);

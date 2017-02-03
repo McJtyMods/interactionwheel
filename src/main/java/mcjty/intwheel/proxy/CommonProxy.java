@@ -41,6 +41,7 @@ public class CommonProxy {
         InteractionWheel.registry.register(new Dump1WheelAction());
         InteractionWheel.registry.register(new DumpSimilarWheelAction());
         InteractionWheel.registry.register(new ExtractWheelAction());
+        InteractionWheel.registry.register(new PickToolWheelAction());
 //        for (int i = 0 ; i < 30 ; i++) {
 //            InteractionWheel.registry.register(new DummyWheelAction("std.dummy" + i));
 //        }

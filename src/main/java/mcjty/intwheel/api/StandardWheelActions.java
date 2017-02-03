@@ -7,7 +7,9 @@ public enum StandardWheelActions {
     DUMP(StandardWheelActions.ID_DUMP, "Dump to container", "Dump (including hotbar)", 0, 128),
     DUMP1(StandardWheelActions.ID_DUMP1, "Dump current to container", null, 160, 128),
     EXTRACT(StandardWheelActions.ID_EXTRACT, "Fetch from container", null, 32, 128),
-    DUMPSIMILAR(StandardWheelActions.ID_DUMPSIMILAR, "Dump current and equal to container", null, 224, 128);
+    DUMPSIMILAR(StandardWheelActions.ID_DUMPSIMILAR, "Dump current and equal to container", null, 224, 128),
+    PICKTOOL(StandardWheelActions.ID_PICKTOOL, "Select the right tool", null, 0, 160);
+
 
     public static final String ID_DUMP = "std.dump";
     public static final String ID_DUMP1 = "std.dump1";
@@ -15,6 +17,7 @@ public enum StandardWheelActions {
     public static final String ID_EXTRACT = "std.extract";
     public static final String ID_ROTATE = "std.rotate";
     public static final String ID_SEARCH = "std.search";
+    public static final String ID_PICKTOOL = "std.picktool";
 
     private final String id;
     private final String desc;
