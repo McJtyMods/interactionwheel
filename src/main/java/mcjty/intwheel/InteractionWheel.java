@@ -46,8 +46,6 @@ public class InteractionWheel {
     public void preInit(FMLPreInitializationEvent event){
         logger = event.getModLog();
         proxy.preInit(event);
-//        MainCompatHandler.registerWaila();
-//        MainCompatHandler.registerTOP();
     }
 
     @Mod.EventHandler
