@@ -4,8 +4,6 @@ import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.StandardWheelActions;
 import mcjty.intwheel.api.WheelActionElement;
 import mcjty.lib.tools.ItemStackTools;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
@@ -34,7 +32,7 @@ public class PickToolWheelAction implements IWheelAction {
     public void performServer(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
         if (ItemStackTools.isValid(heldItem)) {
-            if (ForgeHooks.canToolHarvestBlock(world, pos, heldItem)) {
+            if (ForgeHooks.canHarvestBlock(world.getBlockState(pos).getBlock(), player, world, pos)) {
                 // Nothing to do
                 return;
             }
@@ -44,11 +42,29 @@ public class PickToolWheelAction implements IWheelAction {
             ItemStack s = player.inventory.getStackInSlot(i);
             if (ItemStackTools.isValid(s)) {
                 if (ForgeHooks.canToolHarvestBlock(world, pos, s)) {
-                    ItemStack stack = s;
                     player.inventory.setInventorySlotContents(i, heldItem);
-                    player.setHeldItem(EnumHand.MAIN_HAND, stack);
+                    player.setHeldItem(EnumHand.MAIN_HAND, s);
                     player.openContainer.detectAndSendChanges();
                     return;
+                }
+            }
+        }
+
+        // We couldn't find a tool. Here we try again with a more complicated algorithm.
+        for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
+            if (i != player.inventory.currentItem) {
+                ItemStack s = player.inventory.getStackInSlot(i);
+                if (ItemStackTools.isValid(s)) {
+                    // Swap held item and this item
+                    player.inventory.setInventorySlotContents(i, heldItem);
+                    player.setHeldItem(EnumHand.MAIN_HAND, s);
+                    if (ForgeHooks.canHarvestBlock(world.getBlockState(pos).getBlock(), player, world, pos)) {
+                        player.openContainer.detectAndSendChanges();
+                        return;
+                    }
+                    // Restore
+                    player.inventory.setInventorySlotContents(i, s);
+                    player.setHeldItem(EnumHand.MAIN_HAND, heldItem);
                 }
             }
         }
