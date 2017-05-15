@@ -249,21 +249,21 @@ public class GuiWheel extends GuiScreen {
                     int tx = (int) (guiLeft + 80 + 86 * Math.cos(angle));
                     int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));
                     String keyName = Keyboard.getKeyName(hotkeys.get(id));
-                    RenderHelper.renderText(mc, tx - mc.fontRendererObj.getCharWidth(keyName.charAt(0)) / 2, ty - mc.fontRendererObj.FONT_HEIGHT / 2, keyName);
+                    RenderHelper.renderText(mc, tx - mc.fontRenderer.getCharWidth(keyName.charAt(0)) / 2, ty - mc.fontRenderer.FONT_HEIGHT / 2, keyName);
                 }
             }
         }
     }
 
     private void renderTooltipText(String desc) {
-        int width = mc.fontRendererObj.getStringWidth(desc);
+        int width = mc.fontRenderer.getStringWidth(desc);
         int x = guiLeft + (160 - width) / 2;
         int y = guiTop + HEIGHT + 5;
         RenderHelper.renderText(mc, x, y, desc);
     }
 
     private void renderPageText(String desc) {
-        int width = mc.fontRendererObj.getStringWidth(desc);
+        int width = mc.fontRenderer.getStringWidth(desc);
         int x = guiLeft + (160 - width) / 2;
         int y = guiTop + 90;
         RenderHelper.renderText(mc, x, y, desc);
