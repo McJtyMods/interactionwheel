@@ -8,12 +8,18 @@ public enum StandardWheelActions {
     DUMP1(StandardWheelActions.ID_DUMP1, "Dump current to container", null, 160, 128),
     EXTRACT(StandardWheelActions.ID_EXTRACT, "Fetch from container", null, 32, 128),
     DUMPSIMILAR(StandardWheelActions.ID_DUMPSIMILAR, "Dump current and equal to container", null, 224, 128),
+    DUMPSIMILARINV(StandardWheelActions.ID_DUMPSIMILARINV, "Dump all matching container contents", null, 96, 160),
+    DUMPORES(StandardWheelActions.ID_DUMPORES, "Dump all ores to container", null, 32, 160),
+    DUMPBLOCKS(StandardWheelActions.ID_DUMPBLOCKS, "Dump all blocks to container", null, 64, 160),
     PICKTOOL(StandardWheelActions.ID_PICKTOOL, "Select the right tool", null, 0, 160);
 
 
     public static final String ID_DUMP = "std.dump";
     public static final String ID_DUMP1 = "std.dump1";
     public static final String ID_DUMPSIMILAR = "std.dumpsimilar";
+    public static final String ID_DUMPSIMILARINV = "std.dumpsimilarinv";
+    public static final String ID_DUMPORES = "std.dumpores";
+    public static final String ID_DUMPBLOCKS = "std.dumpblocks";
     public static final String ID_EXTRACT = "std.extract";
     public static final String ID_ROTATE = "std.rotate";
     public static final String ID_SEARCH = "std.search";

@@ -38,6 +38,9 @@ public class DefaultWheelActionProvider implements IWheelActionProvider {
             if (te instanceof IInventory || (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))) {
                 actions.add(StandardWheelActions.ID_DUMP);
                 actions.add(StandardWheelActions.ID_EXTRACT);
+                actions.add(StandardWheelActions.ID_DUMPORES);
+                actions.add(StandardWheelActions.ID_DUMPBLOCKS);
+                actions.add(StandardWheelActions.ID_DUMPSIMILARINV);
                 if (ItemStackTools.isValid(heldItem)) {
                     actions.add(StandardWheelActions.ID_DUMP1);
                     actions.add(StandardWheelActions.ID_DUMPSIMILAR);
