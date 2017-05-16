@@ -32,11 +32,12 @@ public class PickToolWheelAction implements IWheelAction {
     public void performServer(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
         if (ItemStackTools.isValid(heldItem)) {
-            if (ForgeHooks.canHarvestBlock(world.getBlockState(pos).getBlock(), player, world, pos)) {
+            if (ForgeHooks.canToolHarvestBlock(world, pos, heldItem)) {
                 // Nothing to do
                 return;
             }
         }
+
         // Find a tool that works
         for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
             ItemStack s = player.inventory.getStackInSlot(i);
