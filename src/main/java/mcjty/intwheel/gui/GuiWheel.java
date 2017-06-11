@@ -11,7 +11,6 @@ import mcjty.intwheel.playerdata.PlayerProperties;
 import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import mcjty.intwheel.proxy.GuiProxy;
 import mcjty.intwheel.varia.RenderHelper;
-import mcjty.lib.tools.MinecraftTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
@@ -59,7 +58,7 @@ public class GuiWheel extends GuiScreen {
     }
 
     private List<String> getActions() {
-        return InteractionWheel.interactionWheelImp.getActions(MinecraftTools.getPlayer(Minecraft.getMinecraft()), MinecraftTools.getWorld(Minecraft.getMinecraft()), pos);
+        return InteractionWheel.interactionWheelImp.getActions(Minecraft.getMinecraft().player, Minecraft.getMinecraft().world, pos);
     }
 
     @Override
@@ -89,7 +88,7 @@ public class GuiWheel extends GuiScreen {
                 page = 0;
             }
         } else if ((typedChar >= 'a' && typedChar <= 'z') || (typedChar >= 'A' && typedChar <= 'Z')) {
-            PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
+            PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(mc.player);
             Map<String, Integer> hotkeys = config.getHotkeys();
             List<String> actions = getActions();
             for (String action : actions) {
@@ -123,7 +122,7 @@ public class GuiWheel extends GuiScreen {
 
         int q = getSelectedSection(actions, cx, cy);
         if (q == BUTTON_CONFIG) {
-            EntityPlayerSP player = MinecraftTools.getPlayer(mc);
+            EntityPlayerSP player = mc.player;
             player.openGui(InteractionWheel.instance, GuiProxy.GUI_CONFIG, player.getEntityWorld(), player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
             return;
         } else if (q == BUTTON_LEFT) {
@@ -160,7 +159,7 @@ public class GuiWheel extends GuiScreen {
         IWheelAction action = InteractionWheel.registry.get(id);
         if (action != null) {
             boolean extended = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
-            if (action.performClient(MinecraftTools.getPlayer(mc), MinecraftTools.getWorld(mc), pos, extended)) {
+            if (action.performClient(mc.player, mc.world, pos, extended)) {
                 PacketHandler.INSTANCE.sendToServer(new PacketPerformAction(pos, id, extended));
             }
         }
@@ -225,7 +224,7 @@ public class GuiWheel extends GuiScreen {
     }
 
     private void drawIcons(List<String> actions, int offset, int q) {
-        PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
+        PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(mc.player);
         Map<String, Integer> hotkeys = config.getHotkeys();
 
         for (int i = 0; i < getActionSize(actions); i++) {
@@ -249,21 +248,21 @@ public class GuiWheel extends GuiScreen {
                     int tx = (int) (guiLeft + 80 + 86 * Math.cos(angle));
                     int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));
                     String keyName = Keyboard.getKeyName(hotkeys.get(id));
-                    RenderHelper.renderText(mc, tx - mc.fontRenderer.getCharWidth(keyName.charAt(0)) / 2, ty - mc.fontRenderer.FONT_HEIGHT / 2, keyName);
+                    RenderHelper.renderText(mc, tx - mc.fontRendererObj.getCharWidth(keyName.charAt(0)) / 2, ty - mc.fontRendererObj.FONT_HEIGHT / 2, keyName);
                 }
             }
         }
     }
 
     private void renderTooltipText(String desc) {
-        int width = mc.fontRenderer.getStringWidth(desc);
+        int width = mc.fontRendererObj.getStringWidth(desc);
         int x = guiLeft + (160 - width) / 2;
         int y = guiTop + HEIGHT + 5;
         RenderHelper.renderText(mc, x, y, desc);
     }
 
     private void renderPageText(String desc) {
-        int width = mc.fontRenderer.getStringWidth(desc);
+        int width = mc.fontRendererObj.getStringWidth(desc);
         int x = guiLeft + (160 - width) / 2;
         int y = guiTop + 90;
         RenderHelper.renderText(mc, x, y, desc);

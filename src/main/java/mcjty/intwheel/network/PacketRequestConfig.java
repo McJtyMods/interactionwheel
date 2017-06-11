@@ -31,7 +31,7 @@ public class PacketRequestConfig implements IMessage {
         }
 
         private void handle(PacketRequestConfig message, MessageContext ctx) {
-            EntityPlayerMP player = ctx.getServerHandler().player;
+            EntityPlayerMP player = ctx.getServerHandler().playerEntity;
             PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(player);
             NBTTagCompound tc = new NBTTagCompound();
             config.saveNBTData(tc);

@@ -10,14 +10,15 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ForgeEventHandlers {
-    @SubscribeEvent
-    public void onEntityConstructing(AttachCapabilitiesEvent.Entity event){
-        if (event.getEntity() instanceof EntityPlayer) {
-            if (!event.getEntity().hasCapability(PlayerProperties.PLAYER_WHEEL_CONFIGURATION, null)) {
-                event.addCapability(new ResourceLocation(InteractionWheel.MODID, "hotkeys"), new PropertiesDispatcher());
-            }
-        }
-    }
+//@todo
+//    @SubscribeEvent
+//    public void onEntityConstructing(AttachCapabilitiesEvent.Entity event){
+//        if (event.getEntity() instanceof EntityPlayer) {
+//            if (!event.getEntity().hasCapability(PlayerProperties.PLAYER_WHEEL_CONFIGURATION, null)) {
+//                event.addCapability(new ResourceLocation(InteractionWheel.MODID, "hotkeys"), new PropertiesDispatcher());
+//            }
+//        }
+//    }
 
     @SubscribeEvent
     public void onPlayerCloned(PlayerEvent.Clone event) {

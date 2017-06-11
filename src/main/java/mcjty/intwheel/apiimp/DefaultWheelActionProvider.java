@@ -3,7 +3,6 @@ package mcjty.intwheel.apiimp;
 import mcjty.intwheel.api.IWheelActionProvider;
 import mcjty.intwheel.api.IWheelBlockSupport;
 import mcjty.intwheel.api.StandardWheelActions;
-import mcjty.lib.tools.ItemStackTools;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -28,7 +27,7 @@ public class DefaultWheelActionProvider implements IWheelActionProvider {
     @Override
     public void updateWheelActions(@Nonnull Set<String> actions, @Nonnull EntityPlayer player, World world, @Nullable BlockPos pos) {
         ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
-        if (ItemStackTools.isValid(heldItem)) {
+        if (!heldItem.isEmpty()) {
             actions.add(StandardWheelActions.ID_SEARCH);
         }
         if (pos != null) {
@@ -41,7 +40,7 @@ public class DefaultWheelActionProvider implements IWheelActionProvider {
                 actions.add(StandardWheelActions.ID_DUMPORES);
                 actions.add(StandardWheelActions.ID_DUMPBLOCKS);
                 actions.add(StandardWheelActions.ID_DUMPSIMILARINV);
-                if (ItemStackTools.isValid(heldItem)) {
+                if (!heldItem.isEmpty()) {
                     actions.add(StandardWheelActions.ID_DUMP1);
                     actions.add(StandardWheelActions.ID_DUMPSIMILAR);
                 }

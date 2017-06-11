@@ -4,7 +4,6 @@ import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.StandardWheelActions;
 import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.varia.InventoryHelper;
-import mcjty.lib.tools.ItemStackTools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -41,7 +40,7 @@ public class Dump1WheelAction implements IWheelAction {
     @Override
     public void performServer(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
-        if (ItemStackTools.isEmpty(heldItem)) {
+        if (heldItem.isEmpty()) {
             return;
         }
         TileEntity te = world.getTileEntity(pos);
@@ -54,10 +53,10 @@ public class Dump1WheelAction implements IWheelAction {
             int failed = InventoryHelper.mergeItemStackSafe(inventory, null, heldItem, 0, inventory.getSizeInventory(), null);
             if (failed > 0) {
                 ItemStack putBack = heldItem.copy();
-                ItemStackTools.setStackSize(putBack, failed);
+                putBack.setCount(failed);
                 player.setHeldItem(EnumHand.MAIN_HAND, putBack);
             } else {
-                player.setHeldItem(EnumHand.MAIN_HAND, ItemStackTools.getEmptyStack());
+                player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
             }
         }
     }

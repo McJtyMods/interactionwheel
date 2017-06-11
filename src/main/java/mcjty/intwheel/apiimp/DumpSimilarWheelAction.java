@@ -4,7 +4,6 @@ import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.StandardWheelActions;
 import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.varia.InventoryHelper;
-import mcjty.lib.tools.ItemStackTools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -41,7 +40,7 @@ public class DumpSimilarWheelAction implements IWheelAction {
     @Override
     public void performServer(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
-        if (ItemStackTools.isEmpty(heldItem)) {
+        if (heldItem.isEmpty()) {
             return;
         }
         TileEntity te = world.getTileEntity(pos);
@@ -49,7 +48,7 @@ public class DumpSimilarWheelAction implements IWheelAction {
             IItemHandler inventory = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
             for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
                 ItemStack stack = player.inventory.getStackInSlot(i);
-                if (ItemStackTools.isValid(stack) && stack.isItemEqual(heldItem)) {
+                if (!stack.isEmpty() && stack.isItemEqual(heldItem)) {
                     stack = ItemHandlerHelper.insertItem(inventory, stack, false);
                     player.inventory.setInventorySlotContents(i, stack);
                 }
@@ -58,14 +57,14 @@ public class DumpSimilarWheelAction implements IWheelAction {
             IInventory inventory = (IInventory) te;
             for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
                 ItemStack stack = player.inventory.getStackInSlot(i);
-                if (ItemStackTools.isValid(stack) && stack.isItemEqual(heldItem)) {
+                if (!stack.isEmpty() && stack.isItemEqual(heldItem)) {
                     int failed = InventoryHelper.mergeItemStackSafe(inventory, null, stack, 0, inventory.getSizeInventory(), null);
                     if (failed > 0) {
                         ItemStack putBack = stack.copy();
-                        ItemStackTools.setStackSize(putBack, failed);
+                        putBack.setCount(failed);
                         player.inventory.setInventorySlotContents(i, putBack);
                     } else {
-                        player.inventory.setInventorySlotContents(i, ItemStackTools.getEmptyStack());
+                        player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
                     }
                 }
             }

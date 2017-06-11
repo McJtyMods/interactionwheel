@@ -3,7 +3,6 @@ package mcjty.intwheel.apiimp;
 import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.StandardWheelActions;
 import mcjty.intwheel.api.WheelActionElement;
-import mcjty.lib.tools.ItemStackTools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -37,8 +36,8 @@ public class ExtractWheelAction implements IWheelAction {
             IItemHandler inventory = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
             for (int i = 0 ; i < inventory.getSlots() ; i++) {
                 ItemStack stack = inventory.getStackInSlot(i);
-                if (ItemStackTools.isValid(stack)) {
-                    int s = ItemStackTools.getStackSize(stack);
+                if (!stack.isEmpty()) {
+                    int s = stack.getCount();
                     ItemStack extracted = inventory.extractItem(i, s, true);        // Simulate
                     if (player.inventory.addItemStackToInventory(extracted)) {
                         inventory.extractItem(i, s, false); // Do for real
@@ -49,8 +48,8 @@ public class ExtractWheelAction implements IWheelAction {
             IInventory inventory = (IInventory) te;
             for (int i = 0 ; i < inventory.getSizeInventory() ; i++) {
                 ItemStack stack = inventory.getStackInSlot(i);
-                if (ItemStackTools.isValid(stack)) {
-                    int s = ItemStackTools.getStackSize(stack);
+                if (!stack.isEmpty()) {
+                    int s = stack.getCount();
                     ItemStack extracted = inventory.decrStackSize(i, s);
                     if (!player.inventory.addItemStackToInventory(extracted)) {
                         inventory.setInventorySlotContents(i, extracted);

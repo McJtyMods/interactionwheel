@@ -55,7 +55,7 @@ public class PacketPerformAction implements IMessage {
         private void handle(PacketPerformAction message, MessageContext ctx) {
             IWheelAction action = InteractionWheel.registry.get(message.actionId);
             if (action != null) {
-                EntityPlayerMP player = ctx.getServerHandler().player;
+                EntityPlayerMP player = ctx.getServerHandler().playerEntity;
                 action.performServer(player, player.getEntityWorld(), message.pos, message.extended);
             }
         }

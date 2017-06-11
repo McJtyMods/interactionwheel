@@ -3,7 +3,6 @@ package mcjty.intwheel.input;
 
 import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.proxy.GuiProxy;
-import mcjty.lib.tools.MinecraftTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.math.BlockPos;
@@ -25,7 +24,7 @@ public class InputHandler {
 
     private void checkWheelKey() {
         if (KeyBindings.keyOpenWheel.isPressed()) {
-            EntityPlayerSP player = MinecraftTools.getPlayer(Minecraft.getMinecraft());
+            EntityPlayerSP player = Minecraft.getMinecraft().player;
             RayTraceResult mouseOver = Minecraft.getMinecraft().objectMouseOver;
             if (mouseOver != null && mouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
                 BlockPos pos = mouseOver.getBlockPos();

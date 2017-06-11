@@ -3,7 +3,6 @@ package mcjty.intwheel.apiimp;
 import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.StandardWheelActions;
 import mcjty.intwheel.api.WheelActionElement;
-import mcjty.lib.tools.ItemStackTools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
@@ -31,7 +30,7 @@ public class PickToolWheelAction implements IWheelAction {
     @Override
     public void performServer(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
-        if (ItemStackTools.isValid(heldItem)) {
+        if (!heldItem.isEmpty()) {
             if (ForgeHooks.canToolHarvestBlock(world, pos, heldItem)) {
                 // Nothing to do
                 return;
@@ -41,7 +40,7 @@ public class PickToolWheelAction implements IWheelAction {
         // Find a tool that works
         for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
             ItemStack s = player.inventory.getStackInSlot(i);
-            if (ItemStackTools.isValid(s)) {
+            if (!s.isEmpty()) {
                 if (ForgeHooks.canToolHarvestBlock(world, pos, s)) {
                     player.inventory.setInventorySlotContents(i, heldItem);
                     player.setHeldItem(EnumHand.MAIN_HAND, s);
@@ -55,7 +54,7 @@ public class PickToolWheelAction implements IWheelAction {
         for (int i = 0 ; i < player.inventory.getSizeInventory() ; i++) {
             if (i != player.inventory.currentItem) {
                 ItemStack s = player.inventory.getStackInSlot(i);
-                if (ItemStackTools.isValid(s)) {
+                if (!s.isEmpty()) {
                     // Swap held item and this item
                     player.inventory.setInventorySlotContents(i, heldItem);
                     player.setHeldItem(EnumHand.MAIN_HAND, s);

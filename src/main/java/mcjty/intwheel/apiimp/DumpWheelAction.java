@@ -4,7 +4,6 @@ import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.StandardWheelActions;
 import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.varia.InventoryHelper;
-import mcjty.lib.tools.ItemStackTools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -50,10 +49,10 @@ public class DumpWheelAction implements IWheelAction {
                 int failed = InventoryHelper.mergeItemStackSafe(inventory, null, stack, 0, inventory.getSizeInventory(), null);
                 if (failed > 0) {
                     ItemStack putBack = stack.copy();
-                    ItemStackTools.setStackSize(putBack, failed);
+                    putBack.setCount(failed);
                     player.inventory.setInventorySlotContents(i, putBack);
                 } else {
-                    player.inventory.setInventorySlotContents(i, ItemStackTools.getEmptyStack());
+                    player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
                 }
             }
         }

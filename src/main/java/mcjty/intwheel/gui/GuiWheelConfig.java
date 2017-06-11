@@ -6,7 +6,6 @@ import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.playerdata.PlayerProperties;
 import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import mcjty.intwheel.varia.RenderHelper;
-import mcjty.lib.tools.MinecraftTools;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
@@ -52,9 +51,9 @@ public class GuiWheelConfig extends GuiScreen {
 
         String id = getSelectedActionID(cx, cy);
         if (id != null) {
-            PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
+            PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(mc.player);
             if (keyCode == Keyboard.KEY_LEFT) {
-                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
+                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
                 int idx = actions.indexOf(id);
                 if (idx > 0) {
                     String idprev = actions.get(idx - 1);
@@ -65,7 +64,7 @@ public class GuiWheelConfig extends GuiScreen {
                     config.sendToServer();
                 }
             } else if (keyCode == Keyboard.KEY_RIGHT) {
-                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
+                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
                 int idx = actions.indexOf(id);
                 if (idx < actions.size()-1) {
                     String idnext = actions.get(idx+1);
@@ -76,7 +75,7 @@ public class GuiWheelConfig extends GuiScreen {
                     config.sendToServer();
                 }
             } else if (keyCode == Keyboard.KEY_HOME) {
-                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
+                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
                 int idx = actions.indexOf(id);
                 if (idx > 0) {
                     String idnext = actions.get(0);
@@ -87,7 +86,7 @@ public class GuiWheelConfig extends GuiScreen {
                     config.sendToServer();
                 }
             } else if (keyCode == Keyboard.KEY_END) {
-                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
+                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
                 int idx = actions.indexOf(id);
                 if (idx < actions.size()-1) {
                     String idnext = actions.get(actions.size()-1);
@@ -120,11 +119,11 @@ public class GuiWheelConfig extends GuiScreen {
         int cx = mouseX - guiLeft;
         int cy = mouseY - guiTop;
 
-        List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
+        List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
 
         int selected = getSelectedAction(cx, cy);
         if (selected >= 0 && selected < actions.size()) {
-            PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
+            PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(mc.player);
             String id = actions.get(selected);
             IWheelAction action = InteractionWheel.registry.get(id);
             if (action != null) {
@@ -184,10 +183,10 @@ public class GuiWheelConfig extends GuiScreen {
 
 
     private void drawIcons() {
-        PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(MinecraftTools.getPlayer(mc));
+        PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(mc.player);
         Map<String, Integer> hotkeys = config.getHotkeys();
 
-        List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
+        List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
         int ox = 0;
         int oy = 0;
         for (String id : actions) {
@@ -230,7 +229,7 @@ public class GuiWheelConfig extends GuiScreen {
     }
 
     private String getSelectedActionID(int cx, int cy) {
-        List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(MinecraftTools.getPlayer(mc));
+        List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
         int selected = getSelectedAction(cx, cy);
         if (selected >= 0 && selected < actions.size()) {
             return actions.get(selected);

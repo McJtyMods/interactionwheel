@@ -5,7 +5,6 @@ import mcjty.intwheel.api.StandardWheelActions;
 import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.network.PackedInventoriesToClient;
 import mcjty.intwheel.network.PacketHandler;
-import mcjty.lib.tools.ItemStackTools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
@@ -41,7 +40,7 @@ public class SearchWheelAction implements IWheelAction {
     public void performServer(EntityPlayer player, World world, BlockPos pos, boolean extended) {
         pos = player.getPosition();
         ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
-        if (ItemStackTools.isValid(heldItem)) {
+        if (!heldItem.isEmpty()) {
             Set<BlockPos> found = new HashSet<>();
             for (int dx = -20 ; dx <= 20 ; dx++) {
                 for (int dy = -20 ; dy <= 20 ; dy++) {
@@ -52,7 +51,7 @@ public class SearchWheelAction implements IWheelAction {
                             IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
                             for (int i = 0 ; i < handler.getSlots() ; i++) {
                                 ItemStack stack = handler.getStackInSlot(i);
-                                if (ItemStackTools.isValid(stack) && heldItem.isItemEqualIgnoreDurability(stack)) {
+                                if (!stack.isEmpty() && heldItem.isItemEqualIgnoreDurability(stack)) {
                                     found.add(p);
                                     break;
                                 }
@@ -61,7 +60,7 @@ public class SearchWheelAction implements IWheelAction {
                             IInventory inventory = (IInventory) te;
                             for (int i = 0 ; i < inventory.getSizeInventory() ; i++) {
                                 ItemStack stack = inventory.getStackInSlot(i);
-                                if (ItemStackTools.isValid(stack) && heldItem.isItemEqualIgnoreDurability(stack)) {
+                                if (!stack.isEmpty() && heldItem.isItemEqualIgnoreDurability(stack)) {
                                     found.add(p);
                                     break;
                                 }

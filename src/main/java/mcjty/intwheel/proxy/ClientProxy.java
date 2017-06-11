@@ -4,7 +4,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import mcjty.intwheel.RenderHandler;
 import mcjty.intwheel.input.InputHandler;
 import mcjty.intwheel.input.KeyBindings;
-import mcjty.lib.tools.MinecraftTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -41,12 +40,12 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public World getClientWorld() {
-        return MinecraftTools.getWorld(Minecraft.getMinecraft());
+        return Minecraft.getMinecraft().world;
     }
 
     @Override
     public EntityPlayer getClientPlayer() {
-        return MinecraftTools.getPlayer(Minecraft.getMinecraft());
+        return Minecraft.getMinecraft().player;
     }
 
     @Override
