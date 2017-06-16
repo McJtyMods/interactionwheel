@@ -38,7 +38,7 @@ public class PacketSyncConfigToServer implements IMessage {
         }
 
         private void handle(PacketSyncConfigToServer message, MessageContext ctx) {
-            EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+            EntityPlayerMP player = ctx.getServerHandler().player;
             PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(player);
             config.loadNBTData(message.tc);
         }
