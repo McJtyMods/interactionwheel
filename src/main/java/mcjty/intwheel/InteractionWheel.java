@@ -1,8 +1,6 @@
 package mcjty.intwheel;
 
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import mcjty.intwheel.api.IInteractionWheel;
 import mcjty.intwheel.apiimp.InteractionWheelImp;
 import mcjty.intwheel.apiimp.WheelActionRegistry;
@@ -15,6 +13,9 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Optional;
+import java.util.function.Function;
+
 @Mod(modid = InteractionWheel.MODID, name = InteractionWheel.MODNAME,
         dependencies =
                 "after:forge@[" + InteractionWheel.MIN_FORGE11_VER + ",)",
@@ -23,7 +24,7 @@ public class InteractionWheel {
 
     public static final String MODID = "intwheel";
     public static final String MODNAME = "Interaction Wheel";
-    public static final String VERSION = "1.2.6";
+    public static final String VERSION = "1.2.7";
     public static final String MIN_FORGE11_VER = "13.19.0.2176";
 
     @SidedProxy(clientSide = "mcjty.intwheel.proxy.ClientProxy", serverSide = "mcjty.intwheel.proxy.ServerProxy")
