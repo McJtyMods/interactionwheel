@@ -19,6 +19,7 @@ import java.util.function.Function;
 @Mod(modid = InteractionWheel.MODID, name = InteractionWheel.MODNAME,
         dependencies =
                 "after:forge@[" + InteractionWheel.MIN_FORGE11_VER + ",)",
+        acceptedMinecraftVersions = "[1.12,1.13)",
         version = InteractionWheel.VERSION)
 public class InteractionWheel {
 
