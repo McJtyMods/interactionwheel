@@ -95,7 +95,7 @@ public class InteractionWheelImp implements IInteractionWheel {
             try {
                 provider.updateWheelActions(actions, player, world, pos);
             } catch (Exception e) {
-                InteractionWheel.logger.log(Level.ERROR, "The provider " + provider.getID() + " caused a crash!", e);
+                InteractionWheel.setup.getLogger().log(Level.ERROR, "The provider " + provider.getID() + " caused a crash!", e);
             }
         }
         // Only keep enabled actions

@@ -1,4 +1,4 @@
-package mcjty.intwheel.proxy;
+package mcjty.intwheel.setup;
 
 import mcjty.intwheel.gui.GuiWheel;
 import mcjty.intwheel.gui.GuiWheelConfig;

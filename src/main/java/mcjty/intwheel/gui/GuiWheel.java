@@ -9,7 +9,7 @@ import mcjty.intwheel.network.PacketPerformAction;
 import mcjty.intwheel.network.PacketRequestConfig;
 import mcjty.intwheel.playerdata.PlayerProperties;
 import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
-import mcjty.intwheel.proxy.GuiProxy;
+import mcjty.intwheel.setup.GuiProxy;
 import mcjty.intwheel.varia.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;

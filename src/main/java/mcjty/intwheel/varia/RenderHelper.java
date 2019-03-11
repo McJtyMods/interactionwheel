@@ -42,7 +42,7 @@ public class RenderHelper {
         try {
             Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
         } catch (Exception e) {
-            InteractionWheel.logger.error("Error rendering entity!", e);
+            InteractionWheel.setup.getLogger().error("Error rendering entity!", e);
         }
         GlStateManager.popMatrix();
         net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();

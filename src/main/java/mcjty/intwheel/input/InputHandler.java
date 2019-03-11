@@ -2,7 +2,7 @@ package mcjty.intwheel.input;
 
 
 import mcjty.intwheel.InteractionWheel;
-import mcjty.intwheel.proxy.GuiProxy;
+import mcjty.intwheel.setup.GuiProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.math.BlockPos;
