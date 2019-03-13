@@ -27,6 +27,8 @@ public class ModSetup {
         MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
         NetworkRegistry.INSTANCE.registerGuiHandler(InteractionWheel.instance, new GuiProxy());
 
+        ConfigSetup.init(e);
+
         registerCapabilities();
         PacketHandler.registerMessages("intwheel");
 
@@ -41,8 +43,6 @@ public class ModSetup {
         InteractionWheel.registry.register(new DumpBlocksAction());
         InteractionWheel.registry.register(new ExtractWheelAction());
         InteractionWheel.registry.register(new PickToolWheelAction());
-
-        ConfigSetup.init(e);
     }
 
     public Logger getLogger() {
