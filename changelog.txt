@@ -1,2 +1,5 @@
+Upcoming:
+- Fixed readme (by JamesJPK123)
+
 1.2.7:
 - xxx
