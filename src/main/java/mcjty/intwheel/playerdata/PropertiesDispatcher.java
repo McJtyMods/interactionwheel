@@ -1,37 +1,47 @@
 package mcjty.intwheel.playerdata;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.common.util.LazyOptional;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class PropertiesDispatcher implements ICapabilityProvider, INBTSerializable<NBTTagCompound> {
+import javax.annotation.Nonnull;
 
-    private PlayerWheelConfiguration playerWheelConfiguration = new PlayerWheelConfiguration();
+public class PropertiesDispatcher implements ICapabilityProvider, INBTSerializable<CompoundTag> {
+
+    private PlayerWheelConfiguration config;
+    private LazyOptional<PlayerWheelConfiguration> playerWheelConfiguration = LazyOptional.of(this::create);
 
     @Override
-    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-        return capability == PlayerProperties.PLAYER_WHEEL_CONFIGURATION;
-    }
-
-    @Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-        if (capability == PlayerProperties.PLAYER_WHEEL_CONFIGURATION) {
-            return (T) playerWheelConfiguration;
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        if (cap == PlayerProperties.PLAYER_WHEEL_CONFIGURATION) {
+            return playerWheelConfiguration.cast();
         }
-        return null;
+        return LazyOptional.empty();
+    }
+
+    @Nonnull
+    private PlayerWheelConfiguration create() {
+        if (config == null) {
+            config = new PlayerWheelConfiguration();
+        }
+        return config;
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        NBTTagCompound nbt = new NBTTagCompound();
-        playerWheelConfiguration.saveNBTData(nbt);
-        return nbt;
+    public void deserializeNBT(CompoundTag nbt) {
+        create().loadNBTData(nbt);
+
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        playerWheelConfiguration.loadNBTData(nbt);
+    public CompoundTag serializeNBT() {
+        CompoundTag tag = new CompoundTag();
+        create().saveNBTData(tag);
+        return tag;
     }
 }

@@ -11,14 +11,22 @@ import mcjty.intwheel.playerdata.PlayerProperties;
 import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import mcjty.intwheel.setup.GuiProxy;
 import mcjty.intwheel.varia.RenderHelper;
+import mcjty.theoneprobe.gui.GuiConfig;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -28,7 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class GuiWheel extends GuiScreen {
+import static com.mojang.blaze3d.platform.InputConstants.KEY_SPACE;
+
+public class GuiWheel extends Screen {
 
     private static final int WIDTH = 160;
     private static final int HEIGHT = 160;
@@ -49,21 +59,21 @@ public class GuiWheel extends GuiScreen {
     private static final ResourceLocation hilight = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel_hilight.png");
 
     public GuiWheel() {
-        RayTraceResult mouseOver = Minecraft.getMinecraft().objectMouseOver;
-        if (mouseOver.typeOfHit == RayTraceResult.Type.BLOCK && mouseOver != null) {
-            pos = mouseOver.getBlockPos();
+        super(Component.literal("Wheel"));
+        HitResult mouseOver = Minecraft.getInstance().hitResult;
+        if (mouseOver instanceof BlockHitResult blockHitResult) {
+            pos = blockHitResult.getBlockPos();
         } else {
             pos = null;
         }
     }
 
     private List<String> getActions() {
-        return InteractionWheel.interactionWheelImp.getActions(Minecraft.getMinecraft().player, Minecraft.getMinecraft().world, pos);
+        return InteractionWheel.interactionWheelImp.getActions(Minecraft.getInstance().player, Minecraft.getInstance().level, pos);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    protected void init() {
         guiLeft = (this.width - WIDTH) / 2;
         guiTop = (this.height - HEIGHT) / 2;
 
@@ -72,17 +82,19 @@ public class GuiWheel extends GuiScreen {
         PacketHandler.INSTANCE.sendToServer(new PacketRequestConfig());
     }
 
-    private static boolean isKeyDown(KeyBinding key) {
-        int i = key.getKeyCode();
-        return ((i != 0) && (i < 256)) ? ((i < 0) ? Mouse.isButtonDown(i + 100) : Keyboard.isKeyDown(i)) : false;
+    private static boolean isKeyDown(KeyMapping key) {
+        // @todo 1.19.2 is this right?
+        return key.isDown();
+//        int i = key.getKeyCode();
+//        return ((i != 0) && (i < 256)) ? ((i < 0) ? Mouse.isButtonDown(i + 100) : Keyboard.isKeyDown(i)) : false;
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
+    public boolean keyPressed(int typedChar, int keyCode, int modifiers) {  // @todo 1.19.2. Are these right?
+        super.keyPressed(typedChar, keyCode, modifiers);
         if (isKeyDown(KeyBindings.keyOpenWheel)) {
             closeThis();
-        } else if (keyCode == Keyboard.KEY_SPACE) {
+        } else if (keyCode == KEY_SPACE) {
             page++;
             if (page >= pages) {
                 page = 0;
@@ -95,24 +107,25 @@ public class GuiWheel extends GuiScreen {
                 if (hotkeys.containsKey(action)) {
                     if (hotkeys.get(action) == keyCode) {
                         performAction(action);
-                        this.mc.displayGuiScreen(null);
-                        mc.setIngameFocus();
-                        KeyBinding.unPressAllKeys();
-                        return;
+                        // @todo 1.19.2
+//                        minecraft.displayGuiScreen(null);
+//                        minecraft.setIngameFocus();
+//                        KeyBinding.unPressAllKeys();
+                        return false;
                     }
                 }
             }
         }
-
-    }
-
-    @Override
-    public boolean doesGuiPauseGame() {
         return false;
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    public boolean isPauseScreen() {
+        return false;
+    }
+
+    @Override
+    protected boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
         List<String> actions = getActions();
@@ -122,9 +135,10 @@ public class GuiWheel extends GuiScreen {
 
         int q = getSelectedSection(actions, cx, cy);
         if (q == BUTTON_CONFIG) {
-            EntityPlayerSP player = mc.player;
-            player.openGui(InteractionWheel.instance, GuiProxy.GUI_CONFIG, player.getEntityWorld(), player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
-            return;
+            minecraft.setScreen(new GuiConfig());   // @todo 1.19.2
+//            EntityPlayerSP player = mc.player;
+//            player.openGui(InteractionWheel.instance, GuiProxy.GUI_CONFIG, player.getEntityWorld(), player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
+            return true;
         } else if (q == BUTTON_LEFT) {
             page--;
             if (page < 0) {
@@ -133,13 +147,13 @@ public class GuiWheel extends GuiScreen {
                     page = 0;
                 }
             }
-            return;
+            return true;
         } else if (q == BUTTON_RIGHT) {
             page++;
             if (page > pages - 1) {
                 page = 0;
             }
-            return;
+            return true;
         } else if (q == -1) {
             closeThis();
         } else {
@@ -148,6 +162,7 @@ public class GuiWheel extends GuiScreen {
             }
         }
         closeThis();
+        return true;
     }
 
     private void performAction(List<String> actions, int index) {

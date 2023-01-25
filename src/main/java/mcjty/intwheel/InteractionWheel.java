@@ -4,7 +4,9 @@ package mcjty.intwheel;
 import mcjty.intwheel.apiimp.InteractionWheelImp;
 import mcjty.intwheel.apiimp.WheelActionRegistry;
 import mcjty.intwheel.setup.ModSetup;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(InteractionWheel.MODID)
 public class InteractionWheel {
@@ -19,8 +21,11 @@ public class InteractionWheel {
     public static WheelActionRegistry registry = new WheelActionRegistry();
 
     public InteractionWheel() {
+        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        bus.addListener(setup::init);
     }
 
+    // @todo 1.19.2
     //    @Mod.EventHandler
 //    public void imcCallback(FMLInterModComms.IMCEvent event) {
 //        for (FMLInterModComms.IMCMessage message : event.getMessages()) {

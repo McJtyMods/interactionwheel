@@ -1,36 +1,40 @@
 package mcjty.intwheel.input;
 
 
-import mcjty.intwheel.InteractionWheel;
-import mcjty.intwheel.setup.GuiProxy;
+import mcjty.intwheel.gui.GuiWheel;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class InputHandler {
 
     @SubscribeEvent
-    public void onMouseInput(InputEvent.MouseInputEvent event) {
+    public void onMouseInput(InputEvent.MouseButton event) {
         checkWheelKey();
     }
 
     @SubscribeEvent
-    public void onKeyInput(InputEvent.KeyInputEvent event) {
+    public void onKeyInput(InputEvent.Key event) {
         checkWheelKey();
     }
 
     private void checkWheelKey() {
-        if (KeyBindings.keyOpenWheel.isPressed()) {
-            EntityPlayerSP player = Minecraft.getMinecraft().player;
-            RayTraceResult mouseOver = Minecraft.getMinecraft().objectMouseOver;
-            if (mouseOver != null && mouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
-                BlockPos pos = mouseOver.getBlockPos();
-                player.openGui(InteractionWheel.instance, GuiProxy.GUI_WHEEL, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ());
+        if (KeyBindings.keyOpenWheel.consumeClick()) {
+            Player player = Minecraft.getInstance().player;
+            HitResult mouseOver = Minecraft.getInstance().hitResult;
+            if (mouseOver instanceof BlockHitResult blockHitResult) {
+                BlockPos pos = blockHitResult.getBlockPos();
+                // @todo 1.19.2
+                Minecraft.getInstance().setScreen(new GuiWheel());
+//                player.openGui(InteractionWheel.instance, GuiProxy.GUI_WHEEL, player.getEntityWorld(), pos.getX(), pos.getY(), pos.getZ());
             } else {
-                player.openGui(InteractionWheel.instance, GuiProxy.GUI_WHEEL, player.getEntityWorld(), player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
+                // @todo 1.19.2
+                Minecraft.getInstance().setScreen(new GuiWheel());
+//                player.openGui(InteractionWheel.instance, GuiProxy.GUI_WHEEL, player.getEntityWorld(), player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
             }
         }
     }
