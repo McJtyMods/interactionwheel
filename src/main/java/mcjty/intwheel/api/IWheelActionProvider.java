@@ -1,12 +1,11 @@
 package mcjty.intwheel.api;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Set;
 
 public interface IWheelActionProvider {
@@ -24,5 +23,5 @@ public interface IWheelActionProvider {
      * @param actions a set with action IDs that you can modify
      * @param pos is the position of the block the player is looking at or null in case the player isn't pointing at a block
      */
-    void updateWheelActions(@Nonnull Set<String> actions, @Nonnull EntityPlayer player, World world, @Nullable BlockPos pos);
+    void updateWheelActions(@Nonnull Set<String> actions, @Nonnull Player player, Level world, @Nullable BlockPos pos);
 }

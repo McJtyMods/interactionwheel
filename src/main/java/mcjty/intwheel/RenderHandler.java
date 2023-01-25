@@ -1,15 +1,16 @@
 package mcjty.intwheel;
 
-import mcjty.intwheel.varia.RenderHelper;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +20,7 @@ public class RenderHandler {
     public static long time = -1;
     public static Set<BlockPos> foundPositions = new HashSet<>();
 
-    public static void showFoundInventories(RenderWorldLastEvent evt) {
+    public static void showFoundInventories(RenderLevelLastEvent evt) {
         if (!foundPositions.isEmpty()) {
             if (System.currentTimeMillis() > time) {
                 foundPositions.clear();
@@ -30,49 +31,56 @@ public class RenderHandler {
         }
     }
 
-    private static void renderBlocks(RenderWorldLastEvent evt, Set<BlockPos> blocks) {
-        EntityPlayerSP player = Minecraft.getMinecraft().player;
+    private static void renderBlocks(RenderLevelLastEvent evt, Set<BlockPos> blocks) {
+        PoseStack matrixStack = evt.getPoseStack();
+        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        VertexConsumer builder = buffer.getBuffer(RenderType.LINES);
 
-        double doubleX = player.lastTickPosX + (player.posX - player.lastTickPosX) * evt.getPartialTicks();
-        double doubleY = player.lastTickPosY + (player.posY - player.lastTickPosY) * evt.getPartialTicks();
-        double doubleZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * evt.getPartialTicks();
+        Level world = Minecraft.getInstance().level;
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(-doubleX, -doubleY, -doubleZ);
+        matrixStack.pushPose();
 
-        GlStateManager.disableDepth();
-        GlStateManager.enableTexture2D();
+        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
 
         for (BlockPos pos : blocks) {
-            renderBoxOutline(pos);
+            renderHighLightedBlocksOutline(matrixStack, builder, pos.getX(), pos.getY(), pos.getZ(), 1.0f, 0.5f, 0.5f, 1.0f);
         }
 
-        GlStateManager.enableDepth();
+        matrixStack.popPose();
 
-        GlStateManager.popMatrix();
+        RenderSystem.disableDepthTest();
+        buffer.endBatch(RenderType.LINES);
     }
 
-    private static void renderBoxOutline(BlockPos pos) {
-        net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
-        Minecraft.getMinecraft().entityRenderer.disableLightmap();
-        GlStateManager.disableTexture2D();
-        GlStateManager.disableBlend();
-        GlStateManager.disableLighting();
-        GlStateManager.disableAlpha();
-        GlStateManager.glLineWidth(2);
-        GlStateManager.color(1, 1, 1);
+    private static void renderHighLightedBlocksOutline(PoseStack poseStack, VertexConsumer buffer, float mx, float my, float mz, float r, float g, float b, float a) {
+        Matrix4f matrix = poseStack.last().pose();
+        buffer.vertex(matrix, mx, my, mz).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx + 1, my, mz).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx, my, mz).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx, my + 1, mz).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx, my, mz).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx, my, mz + 1).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx + 1, my + 1, mz + 1).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx, my + 1, mz + 1).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx + 1, my + 1, mz + 1).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx + 1, my, mz + 1).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx + 1, my + 1, mz + 1).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx + 1, my + 1, mz).color(r, g, b, a).endVertex();
 
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        float mx = pos.getX();
-        float my = pos.getY();
-        float mz = pos.getZ();
-        buffer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-        RenderHelper.renderHighLightedBlocksOutline(buffer, mx, my, mz, .9f, .7f, 0, 1);
+        buffer.vertex(matrix, mx, my + 1, mz).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx, my + 1, mz + 1).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx, my + 1, mz).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx + 1, my + 1, mz).color(r, g, b, a).endVertex();
 
-        tessellator.draw();
+        buffer.vertex(matrix, mx + 1, my, mz).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx + 1, my, mz + 1).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx + 1, my, mz).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx + 1, my + 1, mz).color(r, g, b, a).endVertex();
 
-        Minecraft.getMinecraft().entityRenderer.enableLightmap();
-        GlStateManager.enableTexture2D();
+        buffer.vertex(matrix, mx, my, mz + 1).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx + 1, my, mz + 1).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx, my, mz + 1).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, mx, my + 1, mz + 1).color(r, g, b, a).endVertex();
     }
 }

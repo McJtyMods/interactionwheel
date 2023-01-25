@@ -2,10 +2,10 @@ package mcjty.intwheel.playerdata;
 
 import mcjty.intwheel.network.PacketHandler;
 import mcjty.intwheel.network.PacketSyncConfigToServer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,58 +65,58 @@ public class PlayerWheelConfiguration {
     }
 
 
-    public void saveNBTData(NBTTagCompound compound) {
-        NBTTagList list = new NBTTagList();
+    public void saveNBTData(CompoundTag compound) {
+        ListTag list = new ListTag();
         for (Map.Entry<String, Integer> entry : hotkeys.entrySet()) {
-            NBTTagCompound tc = new NBTTagCompound();
-            tc.setString("id", entry.getKey());
-            tc.setInteger("key", entry.getValue());
-            list.appendTag(tc);
+            CompoundTag tc = new CompoundTag();
+            tc.putString("id", entry.getKey());
+            tc.putInt("key", entry.getValue());
+            list.add(tc);
         }
-        compound.setTag("hotkeys", list);
+        compound.put("hotkeys", list);
 
-        list = new NBTTagList();
+        list = new ListTag();
         for (Map.Entry<String, Boolean> entry : enabledActions.entrySet()) {
-            NBTTagCompound tc = new NBTTagCompound();
-            tc.setString("id", entry.getKey());
-            tc.setBoolean("enabled", entry.getValue());
-            list.appendTag(tc);
+            CompoundTag tc = new CompoundTag();
+            tc.putString("id", entry.getKey());
+            tc.putBoolean("enabled", entry.getValue());
+            list.add(tc);
         }
-        compound.setTag("enabled", list);
+        compound.put("enabled", list);
 
-        list = new NBTTagList();
+        list = new ListTag();
         for (String action : orderedActions) {
-            list.appendTag(new NBTTagString(action));
+            list.add(StringTag.valueOf(action));
         }
-        compound.setTag("order", list);
+        compound.put("order", list);
 
     }
 
-    public void loadNBTData(NBTTagCompound compound) {
+    public void loadNBTData(CompoundTag compound) {
         hotkeys = new HashMap<>();
-        NBTTagList list = compound.getTagList("hotkeys", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0 ; i < list.tagCount() ; i++) {
-            NBTTagCompound tc = (NBTTagCompound) list.get(i);
-            hotkeys.put(tc.getString("id"), tc.getInteger("key"));
+        ListTag list = compound.getList("hotkeys", Tag.TAG_COMPOUND);
+        for (int i = 0 ; i < list.size() ; i++) {
+            CompoundTag tc = (CompoundTag) list.get(i);
+            hotkeys.put(tc.getString("id"), tc.getInt("key"));
         }
 
         enabledActions = new HashMap<>();
-        list = compound.getTagList("enabled", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0 ; i < list.tagCount() ; i++) {
-            NBTTagCompound tc = (NBTTagCompound) list.get(i);
+        list = compound.getList("enabled", Tag.TAG_COMPOUND);
+        for (int i = 0 ; i < list.size() ; i++) {
+            CompoundTag tc = (CompoundTag) list.get(i);
             enabledActions.put(tc.getString("id"), tc.getBoolean("enabled"));
         }
 
         orderedActions = new ArrayList<>();
-        list = compound.getTagList("order", Constants.NBT.TAG_STRING);
-        for (int i = 0 ; i < list.tagCount() ; i++) {
-            NBTTagString tc = (NBTTagString) list.get(i);
-            orderedActions.add(tc.getString());
+        list = compound.getList("order", Tag.TAG_STRING);
+        for (int i = 0 ; i < list.size() ; i++) {
+            StringTag tc = (StringTag) list.get(i);
+            orderedActions.add(tc.getAsString());
         }
     }
 
     public void sendToServer() {
-        NBTTagCompound tc = new NBTTagCompound();
+        CompoundTag tc = new CompoundTag();
         saveNBTData(tc);
         PacketHandler.INSTANCE.sendToServer(new PacketSyncConfigToServer(tc));
     }

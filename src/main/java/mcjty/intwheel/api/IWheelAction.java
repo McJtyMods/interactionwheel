@@ -1,8 +1,8 @@
 package mcjty.intwheel.api;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
@@ -25,8 +25,8 @@ public interface IWheelAction {
 
     // Perform an action. This is called client-side. If this returns false the server
     // side action is not performed
-    boolean performClient(EntityPlayer player, World world, @Nullable BlockPos pos, boolean extended);
+    boolean performClient(Player player, Level world, @Nullable BlockPos pos, boolean extended);
 
     // Perform an action. This is called server-side
-    void performServer(EntityPlayer player, World world, @Nullable BlockPos pos, boolean extended);
+    void performServer(Player player, Level world, @Nullable BlockPos pos, boolean extended);
 }

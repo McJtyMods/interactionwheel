@@ -1,47 +1,37 @@
 package mcjty.intwheel.network;
 
-import io.netty.buffer.ByteBuf;
 import mcjty.intwheel.playerdata.PlayerProperties;
-import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import mcjty.intwheel.varia.SafeClientTools;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkEvent;
 
-public class PacketSyncConfigToServer implements IMessage {
-    NBTTagCompound tc;
+import java.util.function.Supplier;
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        tc = NetworkTools.readTag(buf);
+public class PacketSyncConfigToServer {
+    private CompoundTag tc;
+
+    public PacketSyncConfigToServer(FriendlyByteBuf buf) {
+        tc = buf.readNbt();
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
-        NetworkTools.writeTag(buf, tc);
+    public void toBytes(FriendlyByteBuf buf) {
+        buf.writeNbt(tc);
     }
 
-    public PacketSyncConfigToServer() {
-    }
-
-    public PacketSyncConfigToServer(NBTTagCompound tc) {
+    public PacketSyncConfigToServer(CompoundTag tc) {
         this.tc = tc;
     }
 
-    public static class Handler implements IMessageHandler<PacketSyncConfigToServer, IMessage> {
-        @Override
-        public IMessage onMessage(PacketSyncConfigToServer message, MessageContext ctx) {
-            FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
-            return null;
-        }
-
-        private void handle(PacketSyncConfigToServer message, MessageContext ctx) {
-            EntityPlayerMP player = ctx.getServerHandler().player;
-            PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(player);
-            config.loadNBTData(message.tc);
-        }
+    public void handle(Supplier<NetworkEvent.Context> supplier) {
+        NetworkEvent.Context ctx = supplier.get();
+        ctx.enqueueWork(() -> {
+            Player player = ctx.getSender();
+            PlayerProperties.getWheelConfig(player).ifPresent(config -> {
+                config.loadNBTData(tc);
+            });
+        });
+        ctx.setPacketHandled(true);
     }
-
 }

@@ -1,0 +1,22 @@
+modLoader="javafml" #mandatory
+loaderVersion="[40,)"
+license="MIT License https://github.com/McJty/YouTubeModding14/blob/1.16/LICENCE"
+[[mods]]
+modId="interactionwheel"
+version="${file.jarVersion}"
+displayName="Interaction Wheel"
+description='''
+Special GUI to interact with stuff
+'''
+[[dependencies.interactionwheel]]
+    modId="forge" #mandatory
+    mandatory=true
+    versionRange="[40.1.50,)" #mandatory
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.interactionwheel]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.18.2,)"
+    ordering="NONE"
+    side="BOTH"

@@ -1,47 +1,36 @@
 package mcjty.intwheel.network;
 
-import io.netty.buffer.ByteBuf;
-import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.playerdata.PlayerProperties;
-import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import mcjty.intwheel.varia.SafeClientTools;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkEvent;
 
-public class PacketSyncConfigToClient implements IMessage {
-    NBTTagCompound tc;
+import java.util.function.Supplier;
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        tc = NetworkTools.readTag(buf);
+public class PacketSyncConfigToClient {
+    private CompoundTag tc;
+
+    public PacketSyncConfigToClient(FriendlyByteBuf buf) {
+        tc = buf.readNbt();
     }
-
-    @Override
-    public void toBytes(ByteBuf buf) {
-        NetworkTools.writeTag(buf, tc);
-    }
-
-    public PacketSyncConfigToClient() {
-    }
-
-    public PacketSyncConfigToClient(NBTTagCompound tc) {
+    public PacketSyncConfigToClient(CompoundTag tc) {
         this.tc = tc;
     }
 
-    public static class Handler implements IMessageHandler<PacketSyncConfigToClient, IMessage> {
-        @Override
-        public IMessage onMessage(PacketSyncConfigToClient message, MessageContext ctx) {
-            InteractionWheel.proxy.addScheduledTaskClient(() -> handle(message, ctx));
-            return null;
-        }
-
-        private void handle(PacketSyncConfigToClient message, MessageContext ctx) {
-            EntityPlayer player = InteractionWheel.proxy.getClientPlayer();
-            PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(player);
-            config.loadNBTData(message.tc);
-        }
+    public void toBytes(FriendlyByteBuf buf) {
+        buf.writeNbt(tc);
     }
 
+    public void handle(Supplier<NetworkEvent.Context> supplier) {
+        NetworkEvent.Context ctx = supplier.get();
+        ctx.enqueueWork(() -> {
+            Player player = SafeClientTools.getClientPlayer();
+            PlayerProperties.getWheelConfig(player).ifPresent(config -> {
+                config.loadNBTData(tc);
+            });
+        });
+        ctx.setPacketHandled(true);
+    }
 }

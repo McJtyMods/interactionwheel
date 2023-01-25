@@ -1,15 +1,16 @@
 package mcjty.intwheel.network;
 
 
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
+import mcjty.intwheel.InteractionWheel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 public class PacketHandler {
     private static int ID = 12;
     private static int packetId = 0;
 
-    public static SimpleNetworkWrapper INSTANCE = null;
+    public static SimpleChannel INSTANCE = null;
 
     public static int nextPacketID() {
         return packetId++;
@@ -23,18 +24,26 @@ public class PacketHandler {
     }
 
     public static void registerMessages(String channelName) {
-        INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(channelName);
+        SimpleChannel net = NetworkRegistry.ChannelBuilder
+                .named(new ResourceLocation(InteractionWheel.MODID, channelName))
+                .networkProtocolVersion(() -> "1.0")
+                .clientAcceptedVersions(s -> true)
+                .serverAcceptedVersions(s -> true)
+                .simpleChannel();
+
+        INSTANCE = net;
         registerMessages();
     }
 
     public static void registerMessages() {
         // Server side
-        INSTANCE.registerMessage(PacketPerformAction.Handler.class, PacketPerformAction.class, nextID(), Side.SERVER);
-        INSTANCE.registerMessage(PacketSyncConfigToServer.Handler.class, PacketSyncConfigToServer.class, nextID(), Side.SERVER);
-        INSTANCE.registerMessage(PacketRequestConfig.Handler.class, PacketRequestConfig.class, nextID(), Side.SERVER);
+        int idx = 1;
+        INSTANCE.registerMessage(idx++, PacketPerformAction.class, PacketPerformAction::toBytes, PacketPerformAction::new, PacketPerformAction::handle);
+        INSTANCE.registerMessage(idx++, PacketSyncConfigToServer.class, PacketSyncConfigToServer::toBytes, PacketSyncConfigToServer::new, PacketSyncConfigToServer::handle);
+        INSTANCE.registerMessage(idx++, PacketRequestConfig.class, PacketRequestConfig::toBytes, PacketRequestConfig::new, PacketRequestConfig::handle);
 
         // Client side
-        INSTANCE.registerMessage(PackedInventoriesToClient.Handler.class, PackedInventoriesToClient.class, nextID(), Side.CLIENT);
-        INSTANCE.registerMessage(PacketSyncConfigToClient.Handler.class, PacketSyncConfigToClient.class, nextID(), Side.CLIENT);
+        INSTANCE.registerMessage(idx++, PacketInventoriesToClient.class, PacketInventoriesToClient::toBytes, PacketInventoriesToClient::new, PacketInventoriesToClient::handle);
+        INSTANCE.registerMessage(idx++, PacketSyncConfigToClient.class, PacketSyncConfigToClient::toBytes, PacketSyncConfigToClient::new, PacketSyncConfigToClient::handle);
     }
 }

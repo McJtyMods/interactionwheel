@@ -30,7 +30,7 @@ public class InventoryHelper {
     }
 
     public static Optional<IInventory> getInventory(World world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
+        BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof IInventory) {
             return Optional.of((IInventory) te);
         } else {

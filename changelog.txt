@@ -1,5 +1,5 @@
 Upcoming:
-- Fixed readme (by JamesJPK123)
+- Ported to 1.19.2
 
 1.2.7:
 - xxx
