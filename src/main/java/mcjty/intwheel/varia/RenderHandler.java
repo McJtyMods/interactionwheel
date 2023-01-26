@@ -1,4 +1,4 @@
-package mcjty.intwheel;
+package mcjty.intwheel.varia;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;

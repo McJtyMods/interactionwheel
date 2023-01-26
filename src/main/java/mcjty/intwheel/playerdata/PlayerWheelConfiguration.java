@@ -14,18 +14,18 @@ import java.util.Map;
 
 public class PlayerWheelConfiguration {
 
-    private Map<String, String> hotkeys = new HashMap<>();
+    private Map<String, Character> hotkeys = new HashMap<>();
     private Map<String, Boolean> enabledActions = new HashMap<>();
     private List<String> orderedActions = new ArrayList<>();
 
     public PlayerWheelConfiguration() {
     }
 
-    public Map<String, String> getHotkeys() {
+    public Map<String, Character> getHotkeys() {
         return hotkeys;
     }
 
-    public void addHotkey(String key, String id) {
+    public void addHotkey(Character key, String id) {
         hotkeys.put(id, key);
     }
 
@@ -67,10 +67,10 @@ public class PlayerWheelConfiguration {
 
     public void saveNBTData(CompoundTag compound) {
         ListTag list = new ListTag();
-        for (Map.Entry<String, String> entry : hotkeys.entrySet()) {
+        for (Map.Entry<String, Character> entry : hotkeys.entrySet()) {
             CompoundTag tc = new CompoundTag();
             tc.putString("id", entry.getKey());
-            tc.putString("key", entry.getValue());
+            tc.putString("key", entry.getValue().toString());
             list.add(tc);
         }
         compound.put("hotkeys", list);
@@ -95,22 +95,22 @@ public class PlayerWheelConfiguration {
     public void loadNBTData(CompoundTag compound) {
         hotkeys = new HashMap<>();
         ListTag list = compound.getList("hotkeys", Tag.TAG_COMPOUND);
-        for (int i = 0 ; i < list.size() ; i++) {
-            CompoundTag tc = (CompoundTag) list.get(i);
-            hotkeys.put(tc.getString("id"), tc.getString("key"));
+        for (Tag tag : list) {
+            CompoundTag tc = (CompoundTag) tag;
+            hotkeys.put(tc.getString("id"), tc.getString("key").charAt(0));
         }
 
         enabledActions = new HashMap<>();
         list = compound.getList("enabled", Tag.TAG_COMPOUND);
-        for (int i = 0 ; i < list.size() ; i++) {
-            CompoundTag tc = (CompoundTag) list.get(i);
+        for (Tag tag : list) {
+            CompoundTag tc = (CompoundTag) tag;
             enabledActions.put(tc.getString("id"), tc.getBoolean("enabled"));
         }
 
         orderedActions = new ArrayList<>();
         list = compound.getList("order", Tag.TAG_STRING);
-        for (int i = 0 ; i < list.size() ; i++) {
-            StringTag tc = (StringTag) list.get(i);
+        for (Tag tag : list) {
+            StringTag tc = (StringTag) tag;
             orderedActions.add(tc.getAsString());
         }
     }

@@ -4,10 +4,14 @@ import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.StandardWheelActions;
 import mcjty.intwheel.api.WheelActionElement;
 import net.minecraft.core.BlockPos;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -36,34 +40,28 @@ public class DumpBlocksAction implements IWheelAction {
         return true;
     }
 
-    private static Set<String> blocks = new HashSet<>();
-    static {
-        blocks.add("stone");
-        blocks.add("stoneGranite");
-        blocks.add("stoneGranitePolished");
-        blocks.add("stoneDiorite");
-        blocks.add("stoneDioritePolished");
-        blocks.add("stoneAndesite");
-        blocks.add("stoneAndesitePolished");
-        blocks.add("dirt");
-        blocks.add("grass");
-        blocks.add("gravel");
-        blocks.add("sand");
-        blocks.add("cobblestone");
-        blocks.add("sandstone");
-        blocks.add("netherrack");
-        blocks.add("endstone");
+    private static final Set<TagKey<Item>> TAGS = new HashSet<>();
+
+    private static Set<TagKey<Item>> getTags() {
+        if (TAGS.isEmpty()) {
+            TAGS.add(Tags.Items.STONE);
+            TAGS.add(Tags.Items.SANDSTONE);
+            TAGS.add(Tags.Items.END_STONES);
+            TAGS.add(Tags.Items.NETHERRACK);
+            TAGS.add(Tags.Items.COBBLESTONE);
+            TAGS.add(Tags.Items.GRAVEL);
+            TAGS.add(ItemTags.SAND);
+            TAGS.add(ItemTags.DIRT);
+        }
+        return TAGS;
     }
 
     private boolean isBlock(ItemStack stack) {
-        // @todo 1.19.2 use tags!
-//        int[] ids = OreDictionary.getOreIDs(stack);
-//        for (int id : ids) {
-//            String oreName = OreDictionary.getOreName(id);
-//            if (oreName != null && blocks.contains(oreName)) {
-//                return true;
-//            }
-//        }
+        for (TagKey<Item> tag : getTags()) {
+            if (stack.is(tag)) {
+                return true;
+            }
+        }
         return false;
     }
 

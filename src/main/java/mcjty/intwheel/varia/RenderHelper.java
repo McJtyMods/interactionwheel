@@ -28,12 +28,10 @@ public class RenderHelper {
         float f7 = (color2 & 255) / 255.0F;
         RenderSystem.disableTexture();
         RenderSystem.enableBlend();
-        // @todo 1.17 GlStateManager._disableAlphaTest();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA.value, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.value, GlStateManager.SourceFactor.ONE.value, GlStateManager.DestFactor.ZERO.value);
 
-        // @todo 1.17 GlStateManager._shadeModel(GL11.GL_SMOOTH);
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder buffer = tessellator.getBuilder();
         buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -43,9 +41,7 @@ public class RenderHelper {
         buffer.vertex(x2, y2, zLevel).color(f5, f6, f7, f4).endVertex();
         tessellator.end();
 
-        // @todo 1.17 GlStateManager._shadeModel(GL11.GL_FLAT);
         RenderSystem.disableBlend();
-        // @todo 1.17 GlStateManager._enableAlphaTest();
         RenderSystem.enableTexture();
     }
 
@@ -103,17 +99,12 @@ public class RenderHelper {
         matrixStack.pushPose();
         matrixStack.translate(0.0F, 0.0F, 32.0F);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        // @todo 1.17 GlStateManager._enableRescaleNormal();
-        // @todo 1.17 GlStateManager._enableLighting();
-        // @todo 1.17 com.mojang.blaze3d.platform.Lighting.turnBackOn();
 
-        // @todo 1.17 GlStateManager._disableLighting();
         GlStateManager._disableDepthTest();
         GlStateManager._disableBlend();
         Minecraft mc = Minecraft.getInstance();
         int width = mc.font.width(txt);
         mc.font.drawShadow(matrixStack, txt, x, y, 16777215);
-        // @todo 1.17 GlStateManager._enableLighting();
         GlStateManager._enableDepthTest();
         // Fixes opaque cooldown overlay a bit lower
         // TODO: check if enabled blending still screws things up down the line.
@@ -121,8 +112,6 @@ public class RenderHelper {
 
 
         matrixStack.popPose();
-        // @todo 1.17 GlStateManager._disableRescaleNormal();
-        // @todo 1.17 GlStateManager._disableLighting();
 
         return width;
     }
@@ -133,17 +122,12 @@ public class RenderHelper {
         matrixStack.pushPose();
         matrixStack.translate(0.0F, 0.0F, 32.0F);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        // @todo 1.17 GlStateManager._enableRescaleNormal();
-        // @todo 1.17 GlStateManager._enableLighting();
-        // @todo 1.17 com.mojang.blaze3d.platform.Lighting.turnBackOn();
 
-        // @todo 1.17 GlStateManager._disableLighting();
         GlStateManager._disableDepthTest();
         GlStateManager._disableBlend();
         Minecraft mc = Minecraft.getInstance();
         int width = mc.font.width(txt);
         mc.font.draw(matrixStack, txt, x, y, color);
-        // @todo 1.17 GlStateManager._enableLighting();
         GlStateManager._enableDepthTest();
         // Fixes opaque cooldown overlay a bit lower
         // TODO: check if enabled blending still screws things up down the line.
@@ -151,8 +135,6 @@ public class RenderHelper {
 
 
         matrixStack.popPose();
-        // @todo 1.17 GlStateManager._disableRescaleNormal();
-        // @todo 1.17 GlStateManager._disableLighting();
 
         return width;
     }

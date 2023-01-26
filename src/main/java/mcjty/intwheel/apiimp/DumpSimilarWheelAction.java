@@ -45,7 +45,7 @@ public class DumpSimilarWheelAction implements IWheelAction {
             te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent(inventory -> {
                 for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                     ItemStack stack = player.getInventory().getItem(i);
-                    if (!stack.isEmpty() && stack.is(heldItem.getItem())) { // @todo 1.19.2 test with tags instead?
+                    if (!stack.isEmpty() && stack.is(heldItem.getItem())) { // Can we do more here?
                         stack = ItemHandlerHelper.insertItem(inventory, stack, false);
                         player.getInventory().setItem( i, stack);
                     }

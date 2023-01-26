@@ -1,19 +1,19 @@
 package mcjty.intwheel.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.playerdata.PlayerProperties;
 import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import mcjty.intwheel.varia.RenderHelper;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.client.MouseHandler;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -70,7 +70,7 @@ public class GuiWheelConfig extends Screen {
             if (id != null) {
                 PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(minecraft.player).map(s -> s).get();  // @todo not proper
                 if ((typedChar >= 'a' && typedChar <= 'z')) {
-                    config.getHotkeys().put(id, "" + typedChar);
+                    config.getHotkeys().put(id, typedChar);
                     config.sendToServer();
                 }
             }
@@ -103,7 +103,7 @@ public class GuiWheelConfig extends Screen {
                     config.sendToServer();
                 }
             } else if (keyCode == InputConstants.KEY_RIGHT) {
-                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
+                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(minecraft.player);
                 int idx = actions.indexOf(id);
                 if (idx < actions.size()-1) {
                     String idnext = actions.get(idx+1);
@@ -114,7 +114,7 @@ public class GuiWheelConfig extends Screen {
                     config.sendToServer();
                 }
             } else if (keyCode == InputConstants.KEY_HOME) {
-                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
+                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(minecraft.player);
                 int idx = actions.indexOf(id);
                 if (idx > 0) {
                     String idnext = actions.get(0);
@@ -125,7 +125,7 @@ public class GuiWheelConfig extends Screen {
                     config.sendToServer();
                 }
             } else if (keyCode == InputConstants.KEY_END) {
-                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
+                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(minecraft.player);
                 int idx = actions.indexOf(id);
                 if (idx < actions.size()-1) {
                     String idnext = actions.get(actions.size()-1);
@@ -145,64 +145,60 @@ public class GuiWheelConfig extends Screen {
     }
 
     @Override
-    public boolean doesGuiPauseGame() {
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
+
+        int cx = (int) (mouseX - guiLeft);
+        int cy = (int) (mouseY - guiTop);
+
+        List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(minecraft.player);
+
+        int selected = getSelectedAction(cx, cy);
+        if (selected >= 0 && selected < actions.size()) {
+            PlayerProperties.getWheelConfig(minecraft.player).ifPresent(config -> {
+                String id = actions.get(selected);
+                IWheelAction action = InteractionWheel.registry.get(id);
+                if (action != null) {
+                    Boolean enabled = config.isEnabled(id);
+                    if (enabled == null) {
+                        enabled = action.isDefaultEnabled();
+                    }
+                    if (enabled) {
+                        config.disable(id);
+                    } else {
+                        config.enable(id);
+                    }
+                    config.sendToServer();
+                }
+            });
+        }
         return true;
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-
-        int cx = mouseX - guiLeft;
-        int cy = mouseY - guiTop;
-
-        List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
-
-        int selected = getSelectedAction(cx, cy);
-        if (selected >= 0 && selected < actions.size()) {
-            PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(mc.player);
-            String id = actions.get(selected);
-            IWheelAction action = InteractionWheel.registry.get(id);
-            if (action != null) {
-                Boolean enabled = config.isEnabled(id);
-                if (enabled == null) {
-                    enabled = action.isDefaultEnabled();
-                }
-                if (enabled) {
-                    config.disable(id);
-                } else {
-                    config.enable(id);
-                }
-                config.sendToServer();
-            }
-        }
-    }
-
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        GlStateManager.enableBlend();
-        mc.getTextureManager().bindTexture(background);
-        drawTexturedModalRect(guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
-        drawIcons();
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+        super.render(poseStack, mouseX, mouseY, partialTick);
+        RenderSystem.setShaderTexture(0, background);
+        RenderHelper.drawTexturedModalRect(poseStack, guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
+        drawIcons(poseStack);
 
         int cx = mouseX - guiLeft;
         int cy = mouseY - guiTop;
         String id = getSelectedActionID(cx, cy);
         if (id != null) {
-            drawTooltip(id);
+            drawTooltip(poseStack, id);
         }
 
     }
 
-    private void renderTooltipText(String desc, int dy) {
+    private void renderTooltipText(PoseStack poseStack, String desc, int dy) {
 //        int width = mc.fontRendererObj.getStringWidth(desc);
         int x = guiLeft + 5;//(WIDTH - width) / 2;
         int y = guiTop + 157 + 1 + dy;
-        RenderHelper.renderText(mc, x, y, desc);
+        RenderHelper.renderText(poseStack, x, y, desc);
     }
 
-    private void drawTooltip(String id) {
+    private void drawTooltip(PoseStack poseStack, String id) {
         IWheelAction action = InteractionWheel.registry.get(id);
         if (action != null) {
             WheelActionElement element = action.createElement();
@@ -211,46 +207,47 @@ public class GuiWheelConfig extends Screen {
 //            if (extended && sneakDesc != null) {
 //                desc = sneakDesc;
 //            }
-            renderTooltipText(TextFormatting.AQUA + id + ": " + TextFormatting.WHITE + desc, 0);
-            renderTooltipText(TextFormatting.YELLOW + "Click to enable/disable this action", 10);
-            renderTooltipText(TextFormatting.YELLOW + "Press 'a' to 'z' to assign hotkey ('del' to remove hotkey)", 20);
-            renderTooltipText(TextFormatting.YELLOW + "Arrows and home/end to order actions", 30);
+            renderTooltipText(poseStack, ChatFormatting.AQUA + id + ": " + ChatFormatting.WHITE + desc, 0);
+            renderTooltipText(poseStack, ChatFormatting.YELLOW + "Click to enable/disable this action", 10);
+            renderTooltipText(poseStack, ChatFormatting.YELLOW + "Press 'a' to 'z' to assign hotkey ('del' to remove hotkey)", 20);
+            renderTooltipText(poseStack, ChatFormatting.YELLOW + "Arrows and home/end to order actions", 30);
         }
     }
 
 
-    private void drawIcons() {
-        PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(mc.player);
-        Map<String, Integer> hotkeys = config.getHotkeys();
+    private void drawIcons(PoseStack poseStack) {
+        PlayerProperties.getWheelConfig(minecraft.player).ifPresent(config -> {
+            Map<String, Character> hotkeys = config.getHotkeys();
 
-        List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
-        int ox = 0;
-        int oy = 0;
-        for (String id : actions) {
-            IWheelAction action = InteractionWheel.registry.get(id);
-            WheelActionElement element = action.createElement();
-            mc.getTextureManager().bindTexture(new ResourceLocation(element.getTexture()));
-            int txtw = element.getTxtw();
-            int txth = element.getTxth();
-            Boolean enabled = config.isEnabled(action.getId());
-            if (enabled == null) {
-                enabled = action.isDefaultEnabled();
-            }
-            int u = enabled ? element.getUhigh() : element.getUlow();
-            int v = enabled ? element.getVhigh() : element.getVlow();
-            RenderHelper.drawTexturedModalRect(guiLeft + ox * SIZE + MARGIN, guiTop + oy * SIZE + MARGIN, u, v, 31, 31, txtw, txth);
+            List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(minecraft.player);
+            int ox = 0;
+            int oy = 0;
+            for (String id : actions) {
+                IWheelAction action = InteractionWheel.registry.get(id);
+                WheelActionElement element = action.createElement();
+                RenderSystem.setShaderTexture(0, new ResourceLocation(element.getTexture()));
+                int txtw = element.getTxtw();
+                int txth = element.getTxth();
+                Boolean enabled = config.isEnabled(action.getId());
+                if (enabled == null) {
+                    enabled = action.isDefaultEnabled();
+                }
+                int u = enabled ? element.getUhigh() : element.getUlow();
+                int v = enabled ? element.getVhigh() : element.getVlow();
+                RenderHelper.drawTexturedModalRect(poseStack, guiLeft + ox * SIZE + MARGIN, guiTop + oy * SIZE + MARGIN, u, v, 31, 31, txtw, txth);
 
-            if (hotkeys.containsKey(id)) {
-                String keyName = Keyboard.getKeyName(hotkeys.get(id));
-                RenderHelper.renderText(mc, guiLeft + ox * SIZE + MARGIN + 1, guiTop + oy * SIZE + MARGIN + 1, keyName);
-            }
+                if (hotkeys.containsKey(id)) {
+                    String keyName = "" + hotkeys.get(id);
+                    RenderHelper.renderText(poseStack, guiLeft + ox * SIZE + MARGIN + 1, guiTop + oy * SIZE + MARGIN + 1, keyName);
+                }
 
-            ox++;
-            if (ox >= 8) {
-                ox = 0;
-                oy++;
+                ox++;
+                if (ox >= 8) {
+                    ox = 0;
+                    oy++;
+                }
             }
-        }
+        });
     }
 
     private int getSelectedAction(int cx, int cy) {
@@ -266,7 +263,7 @@ public class GuiWheelConfig extends Screen {
     }
 
     private String getSelectedActionID(int cx, int cy) {
-        List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
+        List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(minecraft.player);
         int selected = getSelectedAction(cx, cy);
         if (selected >= 0 && selected < actions.size()) {
             return actions.get(selected);

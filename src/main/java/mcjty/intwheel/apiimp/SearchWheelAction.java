@@ -50,7 +50,7 @@ public class SearchWheelAction implements IWheelAction {
                             te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent(handler -> {
                                 for (int i = 0; i < handler.getSlots(); i++) {
                                     ItemStack stack = handler.getStackInSlot(i);
-                                    if (!stack.isEmpty() && heldItem.is(stack.getItem())) { // @todo 1.19.2 is this correct?
+                                    if (!stack.isEmpty() && heldItem.is(stack.getItem())) { // Check on item?
                                         found.add(p);
                                         break;
                                     }
@@ -60,7 +60,6 @@ public class SearchWheelAction implements IWheelAction {
                     }
                 }
             }
-            // @todo 1.19.2 this can be done better
             PacketHandler.INSTANCE.sendTo(new PacketInventoriesToClient(found), ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
         }
     }

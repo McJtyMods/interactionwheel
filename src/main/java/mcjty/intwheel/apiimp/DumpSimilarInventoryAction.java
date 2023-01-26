@@ -12,9 +12,6 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class DumpSimilarInventoryAction implements IWheelAction {
 
     @Override
@@ -38,39 +35,21 @@ public class DumpSimilarInventoryAction implements IWheelAction {
     }
 
     private boolean isSimilar(IItemHandler handler, ItemStack stack) {
-        Set<Integer> ores = getOres(stack);
         for (int i = 0 ; i < handler.getSlots() ; i++) {
             ItemStack s = handler.getStackInSlot(i);
-            if (matchStack(stack, ores, s)) {
+            if (matchStack(stack, s)) {
                 return true;
             }
         }
         return false;
     }
 
-    private Set<Integer> getOres(ItemStack stack) {
-        Set<Integer> ores = new HashSet<>();
-        // @todo 1.19.2 tags
-//        for (int id : OreDictionary.getOreIDs(stack)) {
-//            ores.add(id);
-//        }
-        return ores;
-    }
-
-    private boolean matchStack(ItemStack stack, Set<Integer> ores, ItemStack s) {
+    private boolean matchStack(ItemStack stack, ItemStack s) {
         if (!s.isEmpty()) {
             if (s.getItem() == stack.getItem()) {
                 return true;
             }
-            if (!ores.isEmpty()) {
-                // @todo 1.19.2 tags
-//                int[] iDs = OreDictionary.getOreIDs(s);
-//                for (int d : iDs) {
-//                    if (ores.contains(d)) {
-//                        return true;
-//                    }
-//                }
-            }
+            // Can we do more here?
         }
         return false;
     }

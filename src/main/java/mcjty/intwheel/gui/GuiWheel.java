@@ -40,7 +40,7 @@ public class GuiWheel extends Screen {
     private int guiLeft;
     private int guiTop;
 
-    private BlockPos pos;
+    private final BlockPos pos;
 
     private int page = 0;
     private int pages = 1;
@@ -54,7 +54,7 @@ public class GuiWheel extends Screen {
         if (mouseOver instanceof BlockHitResult blockHitResult) {
             pos = blockHitResult.getBlockPos();
         } else {
-            pos = null;
+            pos = Minecraft.getInstance().player.blockPosition();
         }
     }
 
@@ -80,7 +80,7 @@ public class GuiWheel extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {  // @todo 1.19.2. Are these right?
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         super.keyPressed(keyCode, scanCode, modifiers);
         if (isKeyDown(KeyBindings.keyOpenWheel)) {
             closeThis();
@@ -91,16 +91,13 @@ public class GuiWheel extends Screen {
             }
         } else if ((keyCode >= 'a' && keyCode <= 'z') || (keyCode >= 'A' && keyCode <= 'Z')) {
             PlayerProperties.getWheelConfig(minecraft.player).ifPresent(config -> {
-                Map<String, Integer> hotkeys = config.getHotkeys();
+                Map<String, Character> hotkeys = config.getHotkeys();
                 List<String> actions = getActions();
                 for (String action : actions) {
                     if (hotkeys.containsKey(action)) {
-                        if (hotkeys.get(action) == scanCode) {
+                        if (hotkeys.get(action) == keyCode) {
                             performAction(action);
-                            // @todo 1.19.2
-//                        minecraft.displayGuiScreen(null);
-//                        minecraft.setIngameFocus();
-//                        KeyBinding.unPressAllKeys();
+                            minecraft.setScreen(null);
                             return;
                         }
                     }
@@ -127,9 +124,7 @@ public class GuiWheel extends Screen {
 
         int q = getSelectedSection(actions, cx, cy);
         if (q == BUTTON_CONFIG) {
-            minecraft.setScreen(new GuiConfig());   // @todo 1.19.2
-//            EntityPlayerSP player = mc.player;
-//            player.openGui(InteractionWheel.instance, GuiProxy.GUI_CONFIG, player.getEntityWorld(), player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
+            minecraft.setScreen(new GuiConfig());
             return true;
         } else if (q == BUTTON_LEFT) {
             page--;
@@ -228,7 +223,7 @@ public class GuiWheel extends Screen {
 
     private void drawIcons(PoseStack poseStack, List<String> actions, int offset, int q) {
         PlayerProperties.getWheelConfig(minecraft.player).ifPresent(config -> {
-            Map<String, Integer> hotkeys = config.getHotkeys();
+            Map<String, Character> hotkeys = config.getHotkeys();
 
             for (int i = 0; i < getActionSize(actions); i++) {
                 String id = actions.get(i + page * 8);
@@ -250,10 +245,9 @@ public class GuiWheel extends Screen {
                         double angle = Math.PI * 2.0 * offs / 8 - Math.PI / 2.0 + Math.PI / 8.0;
                         int tx = (int) (guiLeft + 80 + 86 * Math.cos(angle));
                         int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));
-                        // @todo 1.19.2
-//                        String keyName = KeyMapping.
+                        String keyName = "" + hotkeys.get(id);
 //                        String keyName = Keyboard.getKeyName(hotkeys.get(id));
-//                        RenderHelper.renderText(mc, tx - minecraft.font.getCharWidth(keyName.charAt(0)) / 2, ty - minecraft.font.FONT_HEIGHT / 2, keyName);
+                        RenderHelper.renderText(poseStack, tx - minecraft.font.width("" + keyName.charAt(0)) / 2, ty - minecraft.font.lineHeight / 2, keyName);
                     }
                 }
             }

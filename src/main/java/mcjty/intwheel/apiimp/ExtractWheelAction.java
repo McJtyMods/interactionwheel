@@ -44,7 +44,6 @@ public class ExtractWheelAction implements IWheelAction {
                 }
             });
         }
-        // @todo 1.19.2
-//        player.openContainer.detectAndSendChanges();
+        player.containerMenu.broadcastChanges();
     }
 }

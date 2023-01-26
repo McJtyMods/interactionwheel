@@ -3,9 +3,12 @@ package mcjty.intwheel.api;
 /**
  * Main interface for this mod. Use this to add custom support for the interaction wheel
  * Get a reference to an implementation of this interface by calling:
- *         FMLInterModComms.sendFunctionMessage("intwheel", "getTheWheel", "<whatever>.YourClass$GetTheWheel");
+ *         FMLInterModComms.sendFunctionMessage("interactionwheel", "getInteractionWheel", "<whatever>.YourClass$GetInteractionWheel");
  */
 public interface IInteractionWheel {
+
+    // IMC message for getting IInteractionWheel
+    String GET_INTERACTION_WHEEL = "getInteractionWheel";
 
     /**
      * Optionally register a provider for your wheel support. You don't have to do this. You
