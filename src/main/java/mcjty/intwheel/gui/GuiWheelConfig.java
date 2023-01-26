@@ -1,23 +1,23 @@
 package mcjty.intwheel.gui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.playerdata.PlayerProperties;
 import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import mcjty.intwheel.varia.RenderHelper;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.MouseHandler;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class GuiWheelConfig extends GuiScreen {
+public class GuiWheelConfig extends Screen {
 
     private static final int WIDTH = 256;
     private static final int HEIGHT = 204;
@@ -31,29 +31,68 @@ public class GuiWheelConfig extends GuiScreen {
     private static final ResourceLocation background = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel_config.png");
 
     public GuiWheelConfig() {
+        super(Component.literal("Config"));
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
         guiLeft = (this.width - WIDTH) / 2;
         guiTop = (this.height - HEIGHT) / 2;
     }
 
-    @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
+    private int getRelativeX() {
+        int windowWidth = getMinecraft().getWindow().getScreenWidth();
+        if (windowWidth == 0) {
+            return 0;
+        } else {
+            return (int) getMinecraft().mouseHandler.xpos() * width / windowWidth;
+        }
+    }
 
-        int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
-        int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
+    private int getRelativeY() {
+        int windowHeight = getMinecraft().getWindow().getScreenHeight();
+        if (windowHeight == 0) {
+            return 0;
+        } else {
+            return (int) getMinecraft().mouseHandler.ypos() * height / windowHeight;
+        }
+    }
+
+    @Override
+    public boolean charTyped(char typedChar, int modifiers) {
+        if (!super.charTyped(typedChar, modifiers)) {
+            int mouseX = getRelativeX();
+            int mouseY = getRelativeY();
+            int cx = mouseX - guiLeft;
+            int cy = mouseY - guiTop;
+
+            String id = getSelectedActionID(cx, cy);
+            if (id != null) {
+                PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(minecraft.player).map(s -> s).get();  // @todo not proper
+                if ((typedChar >= 'a' && typedChar <= 'z')) {
+                    config.getHotkeys().put(id, "" + typedChar);
+                    config.sendToServer();
+                }
+            }
+        }
+        return false;
+    }
+
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        super.keyPressed(keyCode, scanCode, modifiers);
+
+        int mouseX = getRelativeX();
+        int mouseY = getRelativeY();
         int cx = mouseX - guiLeft;
         int cy = mouseY - guiTop;
 
         String id = getSelectedActionID(cx, cy);
         if (id != null) {
-            PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(mc.player);
-            if (keyCode == Keyboard.KEY_LEFT) {
-                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
+            PlayerWheelConfiguration config = PlayerProperties.getWheelConfig(minecraft.player).map(s -> s).get();  // @todo not proper
+            if (keyCode == InputConstants.KEY_LEFT) {
+                List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(minecraft.player);
                 int idx = actions.indexOf(id);
                 if (idx > 0) {
                     String idprev = actions.get(idx - 1);
@@ -63,7 +102,7 @@ public class GuiWheelConfig extends GuiScreen {
                     config.setOrderActions(actions);
                     config.sendToServer();
                 }
-            } else if (keyCode == Keyboard.KEY_RIGHT) {
+            } else if (keyCode == InputConstants.KEY_RIGHT) {
                 List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
                 int idx = actions.indexOf(id);
                 if (idx < actions.size()-1) {
@@ -74,7 +113,7 @@ public class GuiWheelConfig extends GuiScreen {
                     config.setOrderActions(actions);
                     config.sendToServer();
                 }
-            } else if (keyCode == Keyboard.KEY_HOME) {
+            } else if (keyCode == InputConstants.KEY_HOME) {
                 List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
                 int idx = actions.indexOf(id);
                 if (idx > 0) {
@@ -85,7 +124,7 @@ public class GuiWheelConfig extends GuiScreen {
                     config.setOrderActions(actions);
                     config.sendToServer();
                 }
-            } else if (keyCode == Keyboard.KEY_END) {
+            } else if (keyCode == InputConstants.KEY_END) {
                 List<String> actions = InteractionWheel.interactionWheelImp.getSortedActions(mc.player);
                 int idx = actions.indexOf(id);
                 if (idx < actions.size()-1) {
@@ -96,15 +135,13 @@ public class GuiWheelConfig extends GuiScreen {
                     config.setOrderActions(actions);
                     config.sendToServer();
                 }
-            } else if ((typedChar >= 'a' && typedChar <= 'z') || keyCode == Keyboard.KEY_DELETE || keyCode == Keyboard.KEY_BACK) {
-                if (keyCode == Keyboard.KEY_DELETE || keyCode == Keyboard.KEY_BACK) {
-                    config.getHotkeys().remove(id);
-                } else {
-                    config.getHotkeys().put(id, keyCode);
-                }
+            }
+            else if (keyCode == InputConstants.KEY_DELETE || keyCode == InputConstants.KEY_BACKSPACE) {
+                config.getHotkeys().remove(id);
                 config.sendToServer();
             }
         }
+        return true;
     }
 
     @Override
