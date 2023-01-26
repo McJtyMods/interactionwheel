@@ -15,6 +15,7 @@ import mcjty.theoneprobe.gui.GuiConfig;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -54,7 +55,7 @@ public class GuiWheel extends Screen {
         if (mouseOver instanceof BlockHitResult blockHitResult) {
             pos = blockHitResult.getBlockPos();
         } else {
-            pos = Minecraft.getInstance().player.blockPosition();
+            pos = null;
         }
     }
 
@@ -188,6 +189,8 @@ public class GuiWheel extends Screen {
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         super.render(poseStack, mouseX, mouseY, partialTick);
         RenderSystem.setShaderTexture(0, background);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.5f);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderHelper.drawTexturedModalRect(poseStack, guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
 
         List<String> actions = getActions();
