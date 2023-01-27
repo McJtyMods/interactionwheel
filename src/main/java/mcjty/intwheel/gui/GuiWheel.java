@@ -190,7 +190,7 @@ public class GuiWheel extends Screen {
         super.render(poseStack, mouseX, mouseY, partialTick);
         RenderSystem.setShaderTexture(0, background);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.5f);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderHelper.drawTexturedModalRect(poseStack, guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
 
         List<String> actions = getActions();
@@ -233,6 +233,7 @@ public class GuiWheel extends Screen {
                 IWheelAction action = InteractionWheel.registry.get(id);
                 if (action != null) {
                     WheelActionElement element = action.createElement();
+                    RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
                     RenderSystem.setShaderTexture(0, new ResourceLocation(element.getTexture()));
                     int txtw = element.getTxtw();
                     int txth = element.getTxth();
@@ -288,21 +289,25 @@ public class GuiWheel extends Screen {
 
     private void highlightConfigButton(PoseStack poseStack) {
         RenderSystem.setShaderTexture(0, background);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 74, guiTop + 74, 74, 74, 12, 12);
     }
 
     private void highlightLeftButton(PoseStack poseStack) {
         RenderSystem.setShaderTexture(0, background);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 60, guiTop + 75, 60, 75, 10, 10);
     }
 
     private void highlightRightButton(PoseStack poseStack) {
         RenderSystem.setShaderTexture(0, background);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 90, guiTop + 75, 90, 75, 10, 10);
     }
 
     private void drawSelectedSection(PoseStack poseStack, int offset, int q) {
         RenderSystem.setShaderTexture(0, hilight);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         switch ((q - offset + 8) % 8) {
             case 0 -> RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 78, guiTop, 0, 0, 63, 63);
             case 1 -> RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 107, guiTop + 22, 64, 0, 63, 63);
