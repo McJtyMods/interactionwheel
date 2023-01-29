@@ -17,7 +17,7 @@ public interface IInteractionWheel {
      * is one way to replace the standard provider. Interaction Wheel has the following standard
      * provider:
      *
-     *   - "intwheel:default": the default provider
+     *   - "interactionwheel:default": the default provider
      *
      * @param provider
      */

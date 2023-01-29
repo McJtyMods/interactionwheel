@@ -76,6 +76,24 @@ public class RenderHelper {
     }
 
     /**
+     * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, r, g, b, a, width, height
+     */
+    public static void drawTexturedModalRect(PoseStack poseStack, int x, int y, int u, int v, float r, float g, float b, float a, int width, int height) {
+        Matrix4f matrix = poseStack.last().pose();
+        float zLevel = 0.01f;
+        float f = (1 / 256.0f);
+        float f1 = (1 / 256.0f);
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder buffer = tessellator.getBuilder();
+        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        buffer.vertex(matrix, (x + 0), (y + height), zLevel).uv(((u + 0) * f), ((v + height) * f1)).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, (x + width), (y + height), zLevel).uv(((u + width) * f), ((v + height) * f1)).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, (x + width), (y + 0), zLevel).uv(((u + width) * f), ((v + 0) * f1)).color(r, g, b, a).endVertex();
+        buffer.vertex(matrix, (x + 0), (y + 0), zLevel).uv(((u + 0) * f), ((v + 0) * f1)).color(r, g, b, a).endVertex();
+        tessellator.end();
+    }
+
+    /**
      * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height
      */
     public static void drawTexturedModalRect(PoseStack poseStack, int x, int y, int u, int v, int width, int height, int txtw, int txth) {

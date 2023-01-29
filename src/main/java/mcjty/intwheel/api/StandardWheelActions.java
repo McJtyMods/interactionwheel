@@ -41,6 +41,6 @@ public enum StandardWheelActions {
 
     // Create a standard wheel action element
     public WheelActionElement createElement() {
-        return new WheelActionElement(id).texture("intwheel:textures/gui/wheel_hilight.png", u, v, u, v+64, 256, 256).description(desc, sneakDesc);
+        return new WheelActionElement(id).texture("interactionwheel:textures/gui/wheel_hilight.png", u, v, u, v+64, 256, 256).description(desc, sneakDesc);
     }
 }

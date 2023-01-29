@@ -24,7 +24,6 @@ public class InputHandler {
 
     private void checkWheelKey() {
         if (KeyBindings.keyOpenWheel.consumeClick()) {
-            Player player = Minecraft.getInstance().player;
             HitResult mouseOver = Minecraft.getInstance().hitResult;
             if (mouseOver instanceof BlockHitResult blockHitResult) {
                 BlockPos pos = blockHitResult.getBlockPos();

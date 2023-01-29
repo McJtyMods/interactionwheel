@@ -11,6 +11,7 @@ import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import mcjty.intwheel.varia.RenderHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -179,6 +180,8 @@ public class GuiWheelConfig extends Screen {
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         super.render(poseStack, mouseX, mouseY, partialTick);
         RenderSystem.setShaderTexture(0, background);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderHelper.drawTexturedModalRect(poseStack, guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
         drawIcons(poseStack);
 
@@ -234,6 +237,8 @@ public class GuiWheelConfig extends Screen {
                 }
                 int u = enabled ? element.getUhigh() : element.getUlow();
                 int v = enabled ? element.getVhigh() : element.getVlow();
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.setShaderColor(1, 1, 1, 1);
                 RenderHelper.drawTexturedModalRect(poseStack, guiLeft + ox * SIZE + MARGIN, guiTop + oy * SIZE + MARGIN, u, v, 31, 31, txtw, txth);
 
                 if (hotkeys.containsKey(id)) {

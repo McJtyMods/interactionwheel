@@ -11,8 +11,6 @@ import mcjty.intwheel.network.PacketPerformAction;
 import mcjty.intwheel.network.PacketRequestConfig;
 import mcjty.intwheel.playerdata.PlayerProperties;
 import mcjty.intwheel.varia.RenderHelper;
-import mcjty.theoneprobe.gui.GuiConfig;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -37,6 +35,10 @@ public class GuiWheel extends Screen {
     public static final int BUTTON_CONFIG = -2;
     public static final int BUTTON_LEFT = -3;
     public static final int BUTTON_RIGHT = -4;
+    public static final float BASE_RED = 0.0f;
+    public static final float BASE_GREEN = 0.9f;
+    public static final float BASE_BLUE = 0.6f;
+    public static final float BASE_ALPHA = 0.4f;
 
     private int guiLeft;
     private int guiTop;
@@ -48,6 +50,9 @@ public class GuiWheel extends Screen {
 
     private static final ResourceLocation background = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel.png");
     private static final ResourceLocation hilight = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel_hilight.png");
+
+    // Set to >0 to close this (with a delay)
+    private int closeMe = 0;
 
     public GuiWheel() {
         super(Component.literal("Wheel"));
@@ -65,6 +70,7 @@ public class GuiWheel extends Screen {
 
     @Override
     protected void init() {
+        closeMe = 0;
         guiLeft = (this.width - WIDTH) / 2;
         guiTop = (this.height - HEIGHT) / 2;
 
@@ -73,37 +79,38 @@ public class GuiWheel extends Screen {
         PacketHandler.INSTANCE.sendToServer(new PacketRequestConfig());
     }
 
-    private static boolean isKeyDown(KeyMapping key) {
-        // @todo 1.19.2 is this right?
-        return key.isDown();
-//        int i = key.getKeyCode();
-//        return ((i != 0) && (i < 256)) ? ((i < 0) ? Mouse.isButtonDown(i + 100) : Keyboard.isKeyDown(i)) : false;
-    }
-
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        super.keyPressed(keyCode, scanCode, modifiers);
-        if (isKeyDown(KeyBindings.keyOpenWheel)) {
-            closeThis();
-        } else if (scanCode == KEY_SPACE) {
-            page++;
-            if (page >= pages) {
-                page = 0;
-            }
-        } else if ((keyCode >= 'a' && keyCode <= 'z') || (keyCode >= 'A' && keyCode <= 'Z')) {
+    public boolean charTyped(char codePoint, int modifiers) {
+        super.charTyped(codePoint, modifiers);
+        if ((codePoint >= 'a' && codePoint <= 'z') || (codePoint >= 'A' && codePoint <= 'Z')) {
             PlayerProperties.getWheelConfig(minecraft.player).ifPresent(config -> {
                 Map<String, Character> hotkeys = config.getHotkeys();
                 List<String> actions = getActions();
                 for (String action : actions) {
                     if (hotkeys.containsKey(action)) {
-                        if (hotkeys.get(action) == keyCode) {
+                        if (hotkeys.get(action) == codePoint) {
                             performAction(action);
-                            minecraft.setScreen(null);
+                            closeThis(5);
                             return;
                         }
                     }
                 }
             });
+        }
+        return true;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        super.keyPressed(keyCode, scanCode, modifiers);
+        if (KeyBindings.keyOpenWheel.matches(keyCode, scanCode)) {
+            KeyBindings.keyOpenWheel.consumeClick();
+            closeThis(2);
+        } else if (scanCode == KEY_SPACE) {
+            page++;
+            if (page >= pages) {
+                page = 0;
+            }
         }
         return false;
     }
@@ -125,7 +132,7 @@ public class GuiWheel extends Screen {
 
         int q = getSelectedSection(actions, cx, cy);
         if (q == BUTTON_CONFIG) {
-            minecraft.setScreen(new GuiConfig());
+            minecraft.setScreen(new GuiWheelConfig());
             return true;
         } else if (q == BUTTON_LEFT) {
             page--;
@@ -143,13 +150,13 @@ public class GuiWheel extends Screen {
             }
             return true;
         } else if (q == -1) {
-            closeThis();
+            closeThis(2);
         } else {
             if (q < getActionSize(actions)) {
                 performAction(actions, q);
             }
         }
-        closeThis();
+        closeThis(2);
         return true;
     }
 
@@ -161,15 +168,16 @@ public class GuiWheel extends Screen {
     private void performAction(String id) {
         IWheelAction action = InteractionWheel.registry.get(id);
         if (action != null) {
-            boolean extended = minecraft.player.isShiftKeyDown();
+            boolean extended = Screen.hasShiftDown();
             if (action.performClient(minecraft.player, minecraft.level, pos, extended)) {
                 PacketHandler.INSTANCE.sendToServer(new PacketPerformAction(pos, id, extended));
             }
         }
     }
 
-    private void closeThis() {
-        this.minecraft.setScreen(null);
+    private void closeThis(int amount) {
+        closeMe = amount;
+//        this.minecraft.setScreen(null);
     }
 
     private static final List<Pair<Integer, Integer>> iconOffsets = new ArrayList<>();
@@ -186,12 +194,23 @@ public class GuiWheel extends Screen {
     }
 
     @Override
+    public void tick() {
+        if (closeMe > 0) {
+            closeMe--;
+            if (closeMe <= 0) {
+                minecraft.setScreen(null);
+                closeMe = 0;
+            }
+        }
+    }
+
+    @Override
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         super.render(poseStack, mouseX, mouseY, partialTick);
         RenderSystem.setShaderTexture(0, background);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.5f);
+        RenderSystem.setShaderColor(BASE_RED, BASE_GREEN, BASE_BLUE, BASE_ALPHA);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderHelper.drawTexturedModalRect(poseStack, guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
+        RenderHelper.drawTexturedModalRect(poseStack, guiLeft, guiTop, 0, 0, BASE_RED, BASE_GREEN, BASE_BLUE, 1.0f, WIDTH, HEIGHT);
 
         List<String> actions = getActions();
         pages = actions.isEmpty() ? 0 : ((actions.size() - 1) / 8 + 1);
@@ -234,6 +253,7 @@ public class GuiWheel extends Screen {
                 if (action != null) {
                     WheelActionElement element = action.createElement();
                     RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+                    RenderSystem.setShaderColor(BASE_RED, BASE_GREEN, BASE_BLUE, i == q ? 0.7f : BASE_ALPHA);
                     RenderSystem.setShaderTexture(0, new ResourceLocation(element.getTexture()));
                     int txtw = element.getTxtw();
                     int txth = element.getTxth();
@@ -273,7 +293,7 @@ public class GuiWheel extends Screen {
     }
 
     private void drawTooltip(PoseStack poseStack, List<String> actions, int q) {
-        boolean extended = minecraft.player.isShiftKeyDown();
+        boolean extended = Screen.hasShiftDown();
         String id = actions.get(q + page * 8);
         IWheelAction action = InteractionWheel.registry.get(id);
         if (action != null) {
@@ -289,24 +309,28 @@ public class GuiWheel extends Screen {
 
     private void highlightConfigButton(PoseStack poseStack) {
         RenderSystem.setShaderTexture(0, background);
+        RenderSystem.setShaderColor(BASE_RED, BASE_GREEN, BASE_BLUE, BASE_ALPHA);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 74, guiTop + 74, 74, 74, 12, 12);
     }
 
     private void highlightLeftButton(PoseStack poseStack) {
         RenderSystem.setShaderTexture(0, background);
+        RenderSystem.setShaderColor(BASE_RED, BASE_GREEN, BASE_BLUE, BASE_ALPHA);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 60, guiTop + 75, 60, 75, 10, 10);
     }
 
     private void highlightRightButton(PoseStack poseStack) {
         RenderSystem.setShaderTexture(0, background);
+        RenderSystem.setShaderColor(BASE_RED, BASE_GREEN, BASE_BLUE, BASE_ALPHA);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 90, guiTop + 75, 90, 75, 10, 10);
     }
 
     private void drawSelectedSection(PoseStack poseStack, int offset, int q) {
         RenderSystem.setShaderTexture(0, hilight);
+        RenderSystem.setShaderColor(BASE_RED, BASE_GREEN, BASE_BLUE, 0.7f);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         switch ((q - offset + 8) % 8) {
             case 0 -> RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 78, guiTop, 0, 0, 63, 63);

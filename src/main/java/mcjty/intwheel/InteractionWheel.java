@@ -7,6 +7,7 @@ import mcjty.intwheel.apiimp.WheelActionRegistry;
 import mcjty.intwheel.input.InputHandler;
 import mcjty.intwheel.input.KeyBindings;
 import mcjty.intwheel.setup.ModSetup;
+import mcjty.intwheel.varia.RenderHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -37,6 +38,7 @@ public class InteractionWheel {
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             bus.addListener(KeyBindings::onRegisterKeyMappings);
+            MinecraftForge.EVENT_BUS.addListener(RenderHandler::showFoundInventories);
             MinecraftForge.EVENT_BUS.register(new InputHandler());
         });
     }

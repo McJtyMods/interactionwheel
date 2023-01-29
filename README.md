@@ -1,2 +1,2 @@
-# ImmersiveCraft
-Immersive Craft is a mod that adds a more immersive way to craft and store items
+# InteractionWheel
+InteractionWheel is a mod that adds a configurable gui for conveniant functions in game

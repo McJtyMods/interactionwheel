@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +20,7 @@ public class DefaultWheelActionProvider implements IWheelActionProvider {
 
     @Override
     public String getID() {
-        return "intwheel:default";
+        return "interactionwheel:default";
     }
 
     @Override
@@ -33,7 +33,7 @@ public class DefaultWheelActionProvider implements IWheelActionProvider {
             actions.add(StandardWheelActions.ID_ROTATE);
             Block block = world.getBlockState(pos).getBlock();
             BlockEntity te = world.getBlockEntity(pos);
-            if (te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent()) {
+            if (te != null && te.getCapability(ForgeCapabilities.ITEM_HANDLER, null).isPresent()) {
                 actions.add(StandardWheelActions.ID_DUMP);
                 actions.add(StandardWheelActions.ID_EXTRACT);
                 actions.add(StandardWheelActions.ID_DUMPORES);

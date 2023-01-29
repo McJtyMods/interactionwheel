@@ -27,7 +27,7 @@ public class WheelActionElement {
         this.id = id;
         this.description = "Unknown";
         this.sneakDescription = null;
-        this.texture = "intwheel:textures/gui/wheel_hilight.png";
+        this.texture = "interactionwheel:textures/gui/wheel_hilight.png";
     }
 
     /**
@@ -42,7 +42,7 @@ public class WheelActionElement {
     }
 
     /**
-     * @param texture a string representation of a texture resource. Default is "intwheel:textures/gui/wheel_hilight.png"
+     * @param texture a string representation of a texture resource. Default is "interactionwheel:textures/gui/wheel_hilight.png"
      * @param uhigh the texture 'u' location of the image within the texture (selected version)
      * @param vhigh the texture 'v' location of the image within the texture (selected version)
      * @param ulow the texture 'u' location of the image within the texture (non-selected version)

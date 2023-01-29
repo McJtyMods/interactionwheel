@@ -3,8 +3,8 @@ package mcjty.intwheel.apiimp;
 import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.StandardWheelActions;
 import mcjty.intwheel.api.WheelActionElement;
-import mcjty.intwheel.network.PacketInventoriesToClient;
 import mcjty.intwheel.network.PacketHandler;
+import mcjty.intwheel.network.PacketInventoriesToClient;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -12,7 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.network.NetworkDirection;
 
 import java.util.HashSet;
@@ -46,8 +46,8 @@ public class SearchWheelAction implements IWheelAction {
                     for (int dz = -20 ; dz <= 20 ; dz++) {
                         BlockPos p = pos.offset(dx, dy, dz);
                         BlockEntity te = world.getBlockEntity(p);
-                        if (te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent()) {
-                            te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).ifPresent(handler -> {
+                        if (te != null && te.getCapability(ForgeCapabilities.ITEM_HANDLER, null).isPresent()) {
+                            te.getCapability(ForgeCapabilities.ITEM_HANDLER, null).ifPresent(handler -> {
                                 for (int i = 0; i < handler.getSlots(); i++) {
                                     ItemStack stack = handler.getStackInSlot(i);
                                     if (!stack.isEmpty() && heldItem.is(stack.getItem())) { // Check on item?

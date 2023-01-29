@@ -6,6 +6,7 @@ import mcjty.intwheel.api.WheelActionElement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -29,6 +30,6 @@ public class RotateBlockAction implements IWheelAction {
     @Override
     public void performServer(Player player, Level world, BlockPos pos, boolean extended) {
         BlockState blockState = world.getBlockState(pos);
-        blockState.rotate(world, pos, Rotation.CLOCKWISE_90);
+        world.setBlock(pos, blockState.rotate(world, pos, Rotation.CLOCKWISE_90), Block.UPDATE_ALL);
     }
 }
