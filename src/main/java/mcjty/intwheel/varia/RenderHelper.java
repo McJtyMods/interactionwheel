@@ -26,7 +26,6 @@ public class RenderHelper {
         float f5 = (color2 >> 16 & 255) / 255.0F;
         float f6 = (color2 >> 8 & 255) / 255.0F;
         float f7 = (color2 & 255) / 255.0F;
-        RenderSystem.disableTexture();
         RenderSystem.enableBlend();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
@@ -42,7 +41,6 @@ public class RenderHelper {
         tessellator.end();
 
         RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
     }
 
     public static void drawTexturedModalRect(PoseStack poseStack, VertexConsumer builder, int x, int y, int textureX, int textureY, int width, int height, int totw, int toth, float parentU, float parentV) {
