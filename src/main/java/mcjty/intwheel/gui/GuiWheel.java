@@ -12,6 +12,7 @@ import mcjty.intwheel.network.PacketRequestConfig;
 import mcjty.intwheel.playerdata.PlayerProperties;
 import mcjty.intwheel.varia.RenderHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
@@ -205,12 +206,12 @@ public class GuiWheel extends Screen {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        super.render(poseStack, mouseX, mouseY, partialTick);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
         RenderSystem.setShaderTexture(0, background);
         RenderSystem.setShaderColor(BASE_RED, BASE_GREEN, BASE_BLUE, BASE_ALPHA);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderHelper.drawTexturedModalRect(poseStack, guiLeft, guiTop, 0, 0, BASE_RED, BASE_GREEN, BASE_BLUE, 1.0f, WIDTH, HEIGHT);
+        RenderHelper.drawTexturedModalRect(graphics, guiLeft, guiTop, 0, 0, BASE_RED, BASE_GREEN, BASE_BLUE, 1.0f, WIDTH, HEIGHT);
 
         List<String> actions = getActions();
         pages = actions.isEmpty() ? 0 : ((actions.size() - 1) / 8 + 1);
@@ -218,7 +219,7 @@ public class GuiWheel extends Screen {
             page = 0;
         }
         if (pages > 1) {
-            renderPageText(poseStack, (page + 1) + " / " + pages);
+            renderPageText(graphics, (page + 1) + " / " + pages);
         }
 
         int cx = mouseX - guiLeft - WIDTH / 2;
@@ -226,24 +227,24 @@ public class GuiWheel extends Screen {
         int offset = getActionSize(actions) / 2;
         int q = getSelectedSection(actions, cx, cy);
         if (q == BUTTON_CONFIG) {
-            highlightConfigButton(poseStack);
-            renderTooltipText(poseStack, "Click for configuration");
+            highlightConfigButton(graphics);
+            renderTooltipText(graphics, "Click for configuration");
         } else if (q == BUTTON_LEFT) {
-            highlightLeftButton(poseStack);
-            renderTooltipText(poseStack, "Go to previous page");
+            highlightLeftButton(graphics);
+            renderTooltipText(graphics, "Go to previous page");
         } else if (q == BUTTON_RIGHT) {
-            highlightRightButton(poseStack);
-            renderTooltipText(poseStack, "Go to next page");
+            highlightRightButton(graphics);
+            renderTooltipText(graphics, "Go to next page");
         } else if (q != -1) {
-            drawSelectedSection(poseStack, offset, q);
+            drawSelectedSection(graphics, offset, q);
             if (q < getActionSize(actions)) {
-                drawTooltip(poseStack, actions, q);
+                drawTooltip(graphics, actions, q);
             }
         }
-        drawIcons(poseStack, actions, offset, q);
+        drawIcons(graphics, actions, offset, q);
     }
 
-    private void drawIcons(PoseStack poseStack, List<String> actions, int offset, int q) {
+    private void drawIcons(GuiGraphics graphics, List<String> actions, int offset, int q) {
         PlayerProperties.getWheelConfig(minecraft.player).ifPresent(config -> {
             Map<String, Character> hotkeys = config.getHotkeys();
 
@@ -263,7 +264,7 @@ public class GuiWheel extends Screen {
                     int offs = (i - offset + 8) % 8;
                     int ox = guiLeft + iconOffsets.get(offs).getLeft();
                     int oy = guiTop + iconOffsets.get(offs).getRight();
-                    RenderHelper.drawTexturedModalRect(poseStack, ox, oy, u, v, 31, 31, txtw, txth);
+                    RenderHelper.drawTexturedModalRect(graphics, ox, oy, u, v, 31, 31, txtw, txth);
 
                     if (selected && hotkeys.containsKey(id)) {
                         double angle = Math.PI * 2.0 * offs / 8 - Math.PI / 2.0 + Math.PI / 8.0;
@@ -271,28 +272,28 @@ public class GuiWheel extends Screen {
                         int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));
                         String keyName = "" + hotkeys.get(id);
 //                        String keyName = Keyboard.getKeyName(hotkeys.get(id));
-                        RenderHelper.renderText(poseStack, tx - minecraft.font.width("" + keyName.charAt(0)) / 2, ty - minecraft.font.lineHeight / 2, keyName);
+                        RenderHelper.renderText(graphics, tx - minecraft.font.width("" + keyName.charAt(0)) / 2, ty - minecraft.font.lineHeight / 2, keyName);
                     }
                 }
             }
         });
     }
 
-    private void renderTooltipText(PoseStack poseStack, String desc) {
+    private void renderTooltipText(GuiGraphics graphics, String desc) {
         int width = minecraft.font.width(desc);
         int x = guiLeft + (160 - width) / 2;
         int y = guiTop + HEIGHT + 5;
-        RenderHelper.renderText(poseStack, x, y, desc);
+        RenderHelper.renderText(graphics, x, y, desc);
     }
 
-    private void renderPageText(PoseStack poseStack, String desc) {
+    private void renderPageText(GuiGraphics graphics, String desc) {
         int width = minecraft.font.width(desc);
         int x = guiLeft + (160 - width) / 2;
         int y = guiTop + 90;
-        RenderHelper.renderText(poseStack, x, y, desc);
+        RenderHelper.renderText(graphics, x, y, desc);
     }
 
-    private void drawTooltip(PoseStack poseStack, List<String> actions, int q) {
+    private void drawTooltip(GuiGraphics graphics, List<String> actions, int q) {
         boolean extended = Screen.hasShiftDown();
         String id = actions.get(q + page * 8);
         IWheelAction action = InteractionWheel.registry.get(id);
@@ -303,44 +304,44 @@ public class GuiWheel extends Screen {
             if (extended && sneakDesc != null) {
                 desc = sneakDesc;
             }
-            renderTooltipText(poseStack, desc);
+            renderTooltipText(graphics, desc);
         }
     }
 
-    private void highlightConfigButton(PoseStack poseStack) {
+    private void highlightConfigButton(GuiGraphics graphics) {
         RenderSystem.setShaderTexture(0, background);
         RenderSystem.setShaderColor(BASE_RED, BASE_GREEN, BASE_BLUE, BASE_ALPHA);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 74, guiTop + 74, 74, 74, 12, 12);
+        RenderHelper.drawTexturedModalRect(graphics, guiLeft + 74, guiTop + 74, 74, 74, 12, 12);
     }
 
-    private void highlightLeftButton(PoseStack poseStack) {
+    private void highlightLeftButton(GuiGraphics graphics) {
         RenderSystem.setShaderTexture(0, background);
         RenderSystem.setShaderColor(BASE_RED, BASE_GREEN, BASE_BLUE, BASE_ALPHA);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 60, guiTop + 75, 60, 75, 10, 10);
+        RenderHelper.drawTexturedModalRect(graphics, guiLeft + 60, guiTop + 75, 60, 75, 10, 10);
     }
 
-    private void highlightRightButton(PoseStack poseStack) {
+    private void highlightRightButton(GuiGraphics graphics) {
         RenderSystem.setShaderTexture(0, background);
         RenderSystem.setShaderColor(BASE_RED, BASE_GREEN, BASE_BLUE, BASE_ALPHA);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 90, guiTop + 75, 90, 75, 10, 10);
+        RenderHelper.drawTexturedModalRect(graphics, guiLeft + 90, guiTop + 75, 90, 75, 10, 10);
     }
 
-    private void drawSelectedSection(PoseStack poseStack, int offset, int q) {
+    private void drawSelectedSection(GuiGraphics graphics, int offset, int q) {
         RenderSystem.setShaderTexture(0, hilight);
         RenderSystem.setShaderColor(BASE_RED, BASE_GREEN, BASE_BLUE, 0.7f);
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         switch ((q - offset + 8) % 8) {
-            case 0 -> RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 78, guiTop, 0, 0, 63, 63);
-            case 1 -> RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 107, guiTop + 22, 64, 0, 63, 63);
-            case 2 -> RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 107, guiTop + 78, 128, 0, 63, 63);
-            case 3 -> RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 78, guiTop + 108, 192, 0, 63, 63);
-            case 4 -> RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 23, guiTop + 107, 0, 64, 63, 63);
-            case 5 -> RenderHelper.drawTexturedModalRect(poseStack, guiLeft, guiTop + 78, 64, 64, 63, 63);
-            case 6 -> RenderHelper.drawTexturedModalRect(poseStack, guiLeft, guiTop + 22, 128, 64, 63, 63);
-            case 7 -> RenderHelper.drawTexturedModalRect(poseStack, guiLeft + 22, guiTop, 192, 64, 63, 63);
+            case 0 -> RenderHelper.drawTexturedModalRect(graphics, guiLeft + 78, guiTop, 0, 0, 63, 63);
+            case 1 -> RenderHelper.drawTexturedModalRect(graphics, guiLeft + 107, guiTop + 22, 64, 0, 63, 63);
+            case 2 -> RenderHelper.drawTexturedModalRect(graphics, guiLeft + 107, guiTop + 78, 128, 0, 63, 63);
+            case 3 -> RenderHelper.drawTexturedModalRect(graphics, guiLeft + 78, guiTop + 108, 192, 0, 63, 63);
+            case 4 -> RenderHelper.drawTexturedModalRect(graphics, guiLeft + 23, guiTop + 107, 0, 64, 63, 63);
+            case 5 -> RenderHelper.drawTexturedModalRect(graphics, guiLeft, guiTop + 78, 64, 64, 63, 63);
+            case 6 -> RenderHelper.drawTexturedModalRect(graphics, guiLeft, guiTop + 22, 128, 64, 63, 63);
+            case 7 -> RenderHelper.drawTexturedModalRect(graphics, guiLeft + 22, guiTop, 192, 64, 63, 63);
         }
     }
 

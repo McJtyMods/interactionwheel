@@ -10,6 +10,7 @@ import mcjty.intwheel.playerdata.PlayerProperties;
 import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import mcjty.intwheel.varia.RenderHelper;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -177,31 +178,31 @@ public class GuiWheelConfig extends Screen {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        super.render(poseStack, mouseX, mouseY, partialTick);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
         RenderSystem.setShaderTexture(0, background);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderHelper.drawTexturedModalRect(poseStack, guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
-        drawIcons(poseStack);
+        RenderHelper.drawTexturedModalRect(graphics, guiLeft, guiTop, 0, 0, WIDTH, HEIGHT);
+        drawIcons(graphics);
 
         int cx = mouseX - guiLeft;
         int cy = mouseY - guiTop;
         String id = getSelectedActionID(cx, cy);
         if (id != null) {
-            drawTooltip(poseStack, id);
+            drawTooltip(graphics, id);
         }
 
     }
 
-    private void renderTooltipText(PoseStack poseStack, String desc, int dy) {
+    private void renderTooltipText(GuiGraphics graphics, String desc, int dy) {
 //        int width = mc.fontRendererObj.getStringWidth(desc);
         int x = guiLeft + 5;//(WIDTH - width) / 2;
         int y = guiTop + 157 + 1 + dy;
-        RenderHelper.renderText(poseStack, x, y, desc);
+        RenderHelper.renderText(graphics, x, y, desc);
     }
 
-    private void drawTooltip(PoseStack poseStack, String id) {
+    private void drawTooltip(GuiGraphics graphics, String id) {
         IWheelAction action = InteractionWheel.registry.get(id);
         if (action != null) {
             WheelActionElement element = action.createElement();
@@ -210,15 +211,15 @@ public class GuiWheelConfig extends Screen {
 //            if (extended && sneakDesc != null) {
 //                desc = sneakDesc;
 //            }
-            renderTooltipText(poseStack, ChatFormatting.AQUA + id + ": " + ChatFormatting.WHITE + desc, 0);
-            renderTooltipText(poseStack, ChatFormatting.YELLOW + "Click to enable/disable this action", 10);
-            renderTooltipText(poseStack, ChatFormatting.YELLOW + "Press 'a' to 'z' to assign hotkey ('del' to remove hotkey)", 20);
-            renderTooltipText(poseStack, ChatFormatting.YELLOW + "Arrows and home/end to order actions", 30);
+            renderTooltipText(graphics, ChatFormatting.AQUA + id + ": " + ChatFormatting.WHITE + desc, 0);
+            renderTooltipText(graphics, ChatFormatting.YELLOW + "Click to enable/disable this action", 10);
+            renderTooltipText(graphics, ChatFormatting.YELLOW + "Press 'a' to 'z' to assign hotkey ('del' to remove hotkey)", 20);
+            renderTooltipText(graphics, ChatFormatting.YELLOW + "Arrows and home/end to order actions", 30);
         }
     }
 
 
-    private void drawIcons(PoseStack poseStack) {
+    private void drawIcons(GuiGraphics graphics) {
         PlayerProperties.getWheelConfig(minecraft.player).ifPresent(config -> {
             Map<String, Character> hotkeys = config.getHotkeys();
 
@@ -239,11 +240,11 @@ public class GuiWheelConfig extends Screen {
                 int v = enabled ? element.getVhigh() : element.getVlow();
                 RenderSystem.setShader(GameRenderer::getPositionTexShader);
                 RenderSystem.setShaderColor(1, 1, 1, 1);
-                RenderHelper.drawTexturedModalRect(poseStack, guiLeft + ox * SIZE + MARGIN, guiTop + oy * SIZE + MARGIN, u, v, 31, 31, txtw, txth);
+                RenderHelper.drawTexturedModalRect(graphics, guiLeft + ox * SIZE + MARGIN, guiTop + oy * SIZE + MARGIN, u, v, 31, 31, txtw, txth);
 
                 if (hotkeys.containsKey(id)) {
                     String keyName = "" + hotkeys.get(id);
-                    RenderHelper.renderText(poseStack, guiLeft + ox * SIZE + MARGIN + 1, guiTop + oy * SIZE + MARGIN + 1, keyName);
+                    RenderHelper.renderText(graphics, guiLeft + ox * SIZE + MARGIN + 1, guiTop + oy * SIZE + MARGIN + 1, keyName);
                 }
 
                 ox++;

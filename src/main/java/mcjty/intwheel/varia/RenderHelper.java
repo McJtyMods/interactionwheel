@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import org.joml.Matrix4f;
 
@@ -58,7 +59,8 @@ public class RenderHelper {
     /**
      * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height
      */
-    public static void drawTexturedModalRect(PoseStack poseStack, int x, int y, int u, int v, int width, int height) {
+    public static void drawTexturedModalRect(GuiGraphics graphics, int x, int y, int u, int v, int width, int height) {
+        PoseStack poseStack = graphics.pose();
         Matrix4f matrix = poseStack.last().pose();
         float zLevel = 0.01f;
         float f = (1 / 256.0f);
@@ -76,7 +78,8 @@ public class RenderHelper {
     /**
      * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, r, g, b, a, width, height
      */
-    public static void drawTexturedModalRect(PoseStack poseStack, int x, int y, int u, int v, float r, float g, float b, float a, int width, int height) {
+    public static void drawTexturedModalRect(GuiGraphics graphics, int x, int y, int u, int v, float r, float g, float b, float a, int width, int height) {
+        PoseStack poseStack = graphics.pose();
         Matrix4f matrix = poseStack.last().pose();
         float zLevel = 0.01f;
         float f = (1 / 256.0f);
@@ -94,7 +97,8 @@ public class RenderHelper {
     /**
      * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height
      */
-    public static void drawTexturedModalRect(PoseStack poseStack, int x, int y, int u, int v, int width, int height, int txtw, int txth) {
+    public static void drawTexturedModalRect(GuiGraphics graphics, int x, int y, int u, int v, int width, int height, int txtw, int txth) {
+        PoseStack poseStack = graphics.pose();
         Matrix4f matrix = poseStack.last().pose();
         float zLevel = 0.01f;
         float f = (1.0f / txtw);
@@ -109,9 +113,10 @@ public class RenderHelper {
         tessellator.end();
     }
 
-    public static int renderText(PoseStack matrixStack, int x, int y, String txt) {
+    public static int renderText(GuiGraphics graphics, int x, int y, String txt) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1f);
 
+        PoseStack matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(0.0F, 0.0F, 32.0F);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -120,7 +125,7 @@ public class RenderHelper {
         GlStateManager._disableBlend();
         Minecraft mc = Minecraft.getInstance();
         int width = mc.font.width(txt);
-        mc.font.drawShadow(matrixStack, txt, x, y, 16777215);
+        graphics.drawString(mc.font, txt, x, y, 16777215);
         GlStateManager._enableDepthTest();
         // Fixes opaque cooldown overlay a bit lower
         // TODO: check if enabled blending still screws things up down the line.
@@ -130,80 +135,5 @@ public class RenderHelper {
         matrixStack.popPose();
 
         return width;
-    }
-
-    public static int renderText(PoseStack matrixStack, int x, int y, String txt, int color) {
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0f);
-
-        matrixStack.pushPose();
-        matrixStack.translate(0.0F, 0.0F, 32.0F);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-        GlStateManager._disableDepthTest();
-        GlStateManager._disableBlend();
-        Minecraft mc = Minecraft.getInstance();
-        int width = mc.font.width(txt);
-        mc.font.draw(matrixStack, txt, x, y, color);
-        GlStateManager._enableDepthTest();
-        // Fixes opaque cooldown overlay a bit lower
-        // TODO: check if enabled blending still screws things up down the line.
-        GlStateManager._enableBlend();
-
-
-        matrixStack.popPose();
-
-        return width;
-    }
-
-    public static class Vector {
-        public final float x;
-        public final float y;
-        public final float z;
-
-        public Vector(float x, float y, float z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-
-        public float getX() {
-            return x;
-        }
-
-        public float getY() {
-            return y;
-        }
-
-        public float getZ() {
-            return z;
-        }
-
-        public float norm() {
-            return (float) Math.sqrt(x * x + y * y + z * z);
-        }
-
-        public Vector normalize() {
-            float n = norm();
-            return new Vector(x / n, y / n, z / n);
-        }
-    }
-
-    private static Vector Cross(Vector a, Vector b) {
-        float x = a.y * b.z - a.z * b.y;
-        float y = a.z * b.x - a.x * b.z;
-        float z = a.x * b.y - a.y * b.x;
-        return new Vector(x, y, z);
-    }
-
-    private static Vector Sub(Vector a, Vector b) {
-        return new Vector(a.x - b.x, a.y - b.y, a.z - b.z);
-    }
-
-    private static Vector Add(Vector a, Vector b) {
-        return new Vector(a.x + b.x, a.y + b.y, a.z + b.z);
-    }
-
-    private static Vector Mul(Vector a, float f) {
-        return new Vector(a.x * f, a.y * f, a.z * f);
     }
 }

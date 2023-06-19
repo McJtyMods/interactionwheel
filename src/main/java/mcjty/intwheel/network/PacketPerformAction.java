@@ -45,7 +45,7 @@ public class PacketPerformAction {
             IWheelAction action = InteractionWheel.registry.get(actionId);
             if (action != null) {
                 ServerPlayer player = ctx.getSender();
-                action.performServer(player, player.getLevel(), pos, extended);
+                action.performServer(player, player.level(), pos, extended);
             }
         });
         ctx.setPacketHandled(true);
