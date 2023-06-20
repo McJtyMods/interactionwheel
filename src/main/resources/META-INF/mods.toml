@@ -1,5 +1,5 @@
 modLoader="javafml" #mandatory
-loaderVersion="[40,)"
+loaderVersion="[47,)"
 license="MIT License https://github.com/McJty/YouTubeModding14/blob/1.16/LICENCE"
 [[mods]]
 modId="interactionwheel"
