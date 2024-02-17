@@ -11,10 +11,10 @@ import mcjty.intwheel.varia.RenderHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -33,14 +33,16 @@ public class InteractionWheel {
 
     public InteractionWheel() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        Dist dist = FMLEnvironment.dist;
+
         bus.addListener(this::processIMC);
         bus.addListener(setup::init);
 
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (dist.isClient()) {
             bus.addListener(KeyBindings::onRegisterKeyMappings);
             MinecraftForge.EVENT_BUS.addListener(RenderHandler::showFoundInventories);
             MinecraftForge.EVENT_BUS.register(new InputHandler());
-        });
+        }
     }
 
     private void processIMC(final InterModProcessEvent event) {
