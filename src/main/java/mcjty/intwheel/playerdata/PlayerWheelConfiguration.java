@@ -118,6 +118,6 @@ public class PlayerWheelConfiguration {
     public void sendToServer() {
         CompoundTag tc = new CompoundTag();
         saveNBTData(tc);
-        PacketHandler.INSTANCE.sendToServer(new PacketSyncConfigToServer(tc));
+        PacketHandler.sendToServer(new PacketSyncConfigToServer(tc));
     }
 }

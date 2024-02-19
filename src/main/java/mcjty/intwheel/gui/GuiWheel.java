@@ -1,7 +1,6 @@
 package mcjty.intwheel.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.WheelActionElement;
@@ -77,7 +76,7 @@ public class GuiWheel extends Screen {
 
         page = 0;
         pages = 1;
-        PacketHandler.INSTANCE.sendToServer(new PacketRequestConfig());
+        PacketHandler.sendToServer(new PacketRequestConfig());
     }
 
     @Override
@@ -171,7 +170,7 @@ public class GuiWheel extends Screen {
         if (action != null) {
             boolean extended = Screen.hasShiftDown();
             if (action.performClient(minecraft.player, minecraft.level, pos, extended)) {
-                PacketHandler.INSTANCE.sendToServer(new PacketPerformAction(pos, id, extended));
+                PacketHandler.sendToServer(new PacketPerformAction(pos, id, extended));
             }
         }
     }

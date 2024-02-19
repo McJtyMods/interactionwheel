@@ -6,14 +6,12 @@ import mcjty.intwheel.api.WheelActionElement;
 import mcjty.intwheel.network.PacketHandler;
 import mcjty.intwheel.network.PacketInventoriesToClient;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.network.NetworkDirection;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -60,7 +58,7 @@ public class SearchWheelAction implements IWheelAction {
                     }
                 }
             }
-            PacketHandler.INSTANCE.sendTo(new PacketInventoriesToClient(found), ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+            PacketHandler.sendToPlayer(new PacketInventoriesToClient(found), player);
         }
     }
 }

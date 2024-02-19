@@ -3,6 +3,9 @@ package mcjty.intwheel.network;
 
 import mcjty.intwheel.InteractionWheel;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
@@ -10,7 +13,7 @@ public class PacketHandler {
     private static int ID = 12;
     private static int packetId = 0;
 
-    public static SimpleChannel INSTANCE = null;
+    private static SimpleChannel INSTANCE = null;
 
     public static int nextPacketID() {
         return packetId++;
@@ -45,5 +48,13 @@ public class PacketHandler {
         // Client side
         INSTANCE.registerMessage(idx++, PacketInventoriesToClient.class, PacketInventoriesToClient::toBytes, PacketInventoriesToClient::new, PacketInventoriesToClient::handle);
         INSTANCE.registerMessage(idx++, PacketSyncConfigToClient.class, PacketSyncConfigToClient::toBytes, PacketSyncConfigToClient::new, PacketSyncConfigToClient::handle);
+    }
+
+    public static <T> void sendToPlayer(T packet, Player player) {
+        INSTANCE.sendTo(packet, ((ServerPlayer)player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+    }
+
+    public static <T> void sendToServer(T packet) {
+        INSTANCE.sendToServer(packet);
     }
 }
