@@ -3,8 +3,8 @@ package mcjty.intwheel.input;
 
 import mcjty.intwheel.gui.GuiWheel;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
 
 public class InputHandler {
 

@@ -3,7 +3,7 @@ package mcjty.intwheel.network;
 import mcjty.intwheel.varia.RenderHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 
 import java.util.HashSet;
 import java.util.Set;

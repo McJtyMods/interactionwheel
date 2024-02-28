@@ -4,8 +4,8 @@ import mcjty.intwheel.ForgeEventHandlers;
 import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.apiimp.*;
 import mcjty.intwheel.network.PacketHandler;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.MinecraftForge;
+import net.neoforged.neoforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
