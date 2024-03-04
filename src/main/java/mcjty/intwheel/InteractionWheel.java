@@ -9,8 +9,8 @@ import mcjty.intwheel.input.KeyBindings;
 import mcjty.intwheel.setup.ModSetup;
 import mcjty.intwheel.varia.RenderHandler;
 import net.neoforged.neoforge.api.distmarker.Dist;
-import net.neoforged.neoforge.common.MinecraftForge;
-import net.neoforged.neoforge.eventbus.api.IEventBus;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.fml.common.Mod;
 import net.neoforged.neoforge.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.neoforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -41,7 +41,7 @@ public class InteractionWheel {
         if (dist.isClient()) {
             bus.addListener(KeyBindings::onRegisterKeyMappings);
             MinecraftForge.EVENT_BUS.addListener(RenderHandler::showFoundInventories);
-            MinecraftForge.EVENT_BUS.register(new InputHandler());
+            NeoForge.EVENT_BUS.register(new InputHandler());
         }
     }
 
