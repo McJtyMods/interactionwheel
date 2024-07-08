@@ -57,32 +57,32 @@ public class RenderHandler {
 
     private static void renderHighLightedBlocksOutline(PoseStack poseStack, VertexConsumer buffer, float mx, float my, float mz, float r, float g, float b, float a) {
         Matrix4f matrix = poseStack.last().pose();
-        buffer.vertex(matrix, mx, my, mz).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx + 1, my, mz).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx, my, mz).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx, my + 1, mz).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx, my, mz).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx, my, mz + 1).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx + 1, my + 1, mz + 1).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx, my + 1, mz + 1).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx + 1, my + 1, mz + 1).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx + 1, my, mz + 1).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx + 1, my + 1, mz + 1).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx + 1, my + 1, mz).color(r, g, b, a).endVertex();
+        buffer.addVertex(matrix, mx, my, mz).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx + 1, my, mz).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx, my, mz).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx, my + 1, mz).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx, my, mz).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx, my, mz + 1).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx + 1, my + 1, mz + 1).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx, my + 1, mz + 1).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx + 1, my + 1, mz + 1).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx + 1, my, mz + 1).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx + 1, my + 1, mz + 1).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx + 1, my + 1, mz).setColor(r, g, b, a);
 
-        buffer.vertex(matrix, mx, my + 1, mz).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx, my + 1, mz + 1).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx, my + 1, mz).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx + 1, my + 1, mz).color(r, g, b, a).endVertex();
+        buffer.addVertex(matrix, mx, my + 1, mz).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx, my + 1, mz + 1).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx, my + 1, mz).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx + 1, my + 1, mz).setColor(r, g, b, a);
 
-        buffer.vertex(matrix, mx + 1, my, mz).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx + 1, my, mz + 1).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx + 1, my, mz).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx + 1, my + 1, mz).color(r, g, b, a).endVertex();
+        buffer.addVertex(matrix, mx + 1, my, mz).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx + 1, my, mz + 1).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx + 1, my, mz).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx + 1, my + 1, mz).setColor(r, g, b, a);
 
-        buffer.vertex(matrix, mx, my, mz + 1).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx + 1, my, mz + 1).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx, my, mz + 1).color(r, g, b, a).endVertex();
-        buffer.vertex(matrix, mx, my + 1, mz + 1).color(r, g, b, a).endVertex();
+        buffer.addVertex(matrix, mx, my, mz + 1).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx + 1, my, mz + 1).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx, my, mz + 1).setColor(r, g, b, a);
+        buffer.addVertex(matrix, mx, my + 1, mz + 1).setColor(r, g, b, a);
     }
 }

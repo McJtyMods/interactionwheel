@@ -1,36 +1,31 @@
 package mcjty.intwheel.network;
 
-import mcjty.intwheel.playerdata.PlayerProperties;
+import mcjty.intwheel.InteractionWheel;
+import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import mcjty.intwheel.varia.SafeClientTools;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record PacketSyncConfigToClient(PlayerWheelConfiguration data) implements CustomPacketPayload {
 
-public class PacketSyncConfigToClient {
-    private CompoundTag tc;
+    private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(InteractionWheel.MODID, "syncconfigtoclient");
+    public static final Type<PacketSyncConfigToClient> TYPE = new Type<>(ID);
 
-    public PacketSyncConfigToClient(FriendlyByteBuf buf) {
-        tc = buf.readNbt();
-    }
-    public PacketSyncConfigToClient(CompoundTag tc) {
-        this.tc = tc;
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketSyncConfigToClient> CODEC = PlayerWheelConfiguration.STREAM_CODEC.map(PacketSyncConfigToClient::new, PacketSyncConfigToClient::data);
 
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeNbt(tc);
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
+    public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             Player player = SafeClientTools.getClientPlayer();
-            PlayerProperties.getWheelConfig(player).ifPresent(config -> {
-                config.loadNBTData(tc);
-            });
+            player.setData(InteractionWheel.HOTKEYS, data);
         });
-        ctx.setPacketHandled(true);
     }
 }

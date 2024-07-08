@@ -1,0 +1,16 @@
+modLoader="javafml" #mandatory
+loaderVersion="[2,)"
+license="MIT License https://github.com/McJtyMods/InteractionWheel/blob/1.21_neo/LICENSE"
+[[mods]]
+modId="interactionwheel"
+version="${file.jarVersion}"
+displayName="Interaction Wheel"
+description='''
+Special GUI to interact with stuff
+'''
+[[dependencies.interactionwheel]]
+    modId="neoforge"
+    type="required"
+    versionRange="[21.0,)"
+    ordering="NONE"
+    side="BOTH"

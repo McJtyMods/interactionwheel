@@ -1,43 +1,50 @@
 package mcjty.intwheel.network;
 
+import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.varia.RenderHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.codec.StreamDecoder;
+import net.minecraft.network.codec.StreamEncoder;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Supplier;
 
-public class PacketInventoriesToClient {
-    private Set<BlockPos> positions;
+public record PacketInventoriesToClient(Set<BlockPos> positions) implements CustomPacketPayload {
 
-    public PacketInventoriesToClient(FriendlyByteBuf buf) {
-        int size = buf.readInt();
-        positions = new HashSet<>(size);
-        for (int i = 0 ; i < size ; i++) {
-            positions.add(buf.readBlockPos());
-        }
+    private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(InteractionWheel.MODID, "inventoriestoclient");
+    public static final Type<PacketInventoriesToClient> TYPE = new Type<>(ID);
+
+    public static final StreamCodec<FriendlyByteBuf, PacketInventoriesToClient> CODEC = StreamCodec.of(
+            (buf, packet) -> {
+                buf.writeInt(packet.positions.size());
+                for (BlockPos pos : packet.positions) {
+                    buf.writeBlockPos(pos);
+                }
+            },
+            buf -> {
+                int size = buf.readInt();
+                Set<BlockPos> positions = new HashSet<>(size);
+                for (int i = 0; i < size; i++) {
+                    positions.add(buf.readBlockPos());
+                }
+                return new PacketInventoriesToClient(positions);
+            }
+    );
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public PacketInventoriesToClient(Set<BlockPos> positions) {
-        this.positions = new HashSet<>(positions);
-    }
-
-
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeInt(positions.size());
-        for (BlockPos pos : positions) {
-            buf.writeBlockPos(pos);
-        }
-    }
-
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
+    public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             RenderHandler.foundPositions = positions;
             RenderHandler.time = System.currentTimeMillis() + 5000;
         });
-        ctx.setPacketHandled(true);
     }
 }

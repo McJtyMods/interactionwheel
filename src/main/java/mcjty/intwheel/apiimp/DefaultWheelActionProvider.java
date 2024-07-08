@@ -10,7 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,8 +33,8 @@ public class DefaultWheelActionProvider implements IWheelActionProvider {
         if (pos != null) {
             actions.add(StandardWheelActions.ID_ROTATE);
             Block block = world.getBlockState(pos).getBlock();
-            BlockEntity te = world.getBlockEntity(pos);
-            if (te != null && te.getCapability(ForgeCapabilities.ITEM_HANDLER, null).isPresent()) {
+            IItemHandler inventory = world.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+            if (inventory != null) {
                 actions.add(StandardWheelActions.ID_DUMP);
                 actions.add(StandardWheelActions.ID_EXTRACT);
                 actions.add(StandardWheelActions.ID_DUMPORES);

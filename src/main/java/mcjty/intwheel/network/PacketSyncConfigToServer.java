@@ -1,37 +1,30 @@
 package mcjty.intwheel.network;
 
-import mcjty.intwheel.playerdata.PlayerProperties;
-import mcjty.intwheel.varia.SafeClientTools;
-import net.minecraft.nbt.CompoundTag;
+import mcjty.intwheel.InteractionWheel;
+import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record PacketSyncConfigToServer(PlayerWheelConfiguration config) implements CustomPacketPayload {
 
-public class PacketSyncConfigToServer {
-    private CompoundTag tc;
+    private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(InteractionWheel.MODID, "syncconfigtoserver");
+    public static final Type<PacketSyncConfigToServer> TYPE = new Type<>(ID);
 
-    public PacketSyncConfigToServer(FriendlyByteBuf buf) {
-        tc = buf.readNbt();
+    public static final StreamCodec<FriendlyByteBuf, PacketSyncConfigToServer> CODEC = PlayerWheelConfiguration.STREAM_CODEC.map(PacketSyncConfigToServer::new, PacketSyncConfigToServer::config);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeNbt(tc);
-    }
-
-    public PacketSyncConfigToServer(CompoundTag tc) {
-        this.tc = tc;
-    }
-
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
+    public void handle(IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
-            Player player = ctx.getSender();
-            PlayerProperties.getWheelConfig(player).ifPresent(config -> {
-                config.loadNBTData(tc);
-            });
+            Player player = ctx.player();
+            player.setData(InteractionWheel.HOTKEYS, config);
         });
-        ctx.setPacketHandled(true);
     }
 }

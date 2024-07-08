@@ -6,15 +6,18 @@ import mcjty.intwheel.apiimp.InteractionWheelImp;
 import mcjty.intwheel.apiimp.WheelActionRegistry;
 import mcjty.intwheel.input.InputHandler;
 import mcjty.intwheel.input.KeyBindings;
+import mcjty.intwheel.network.PacketHandler;
+import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import mcjty.intwheel.setup.ModSetup;
 import mcjty.intwheel.varia.RenderHandler;
-import net.neoforged.neoforge.api.distmarker.Dist;
-import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.fml.common.Mod;
-import net.neoforged.neoforge.fml.event.lifecycle.InterModProcessEvent;
-import net.neoforged.neoforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.fml.loading.FMLEnvironment;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -31,16 +34,25 @@ public class InteractionWheel {
 
     public static WheelActionRegistry registry = new WheelActionRegistry();
 
-    public InteractionWheel() {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        Dist dist = FMLEnvironment.dist;
+    public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, MODID);
+
+    public static final Supplier<AttachmentType<PlayerWheelConfiguration>> HOTKEYS = ATTACHMENT_TYPES.register(
+            "hotkeys", () -> AttachmentType.builder(PlayerWheelConfiguration::new)
+                    .serialize(PlayerWheelConfiguration.CODEC)
+                    .copyOnDeath()
+                    .build());
+
+
+    public InteractionWheel(IEventBus bus, Dist dist) {
 
         bus.addListener(this::processIMC);
         bus.addListener(setup::init);
+        bus.addListener(PacketHandler::registerMessages);
+        ATTACHMENT_TYPES.register(bus);
 
         if (dist.isClient()) {
             bus.addListener(KeyBindings::onRegisterKeyMappings);
-            MinecraftForge.EVENT_BUS.addListener(RenderHandler::showFoundInventories);
+            NeoForge.EVENT_BUS.addListener(RenderHandler::showFoundInventories);
             NeoForge.EVENT_BUS.register(new InputHandler());
         }
     }

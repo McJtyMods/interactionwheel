@@ -1,10 +1,7 @@
 package mcjty.intwheel.setup;
 
-import mcjty.intwheel.ForgeEventHandlers;
 import mcjty.intwheel.InteractionWheel;
 import mcjty.intwheel.apiimp.*;
-import mcjty.intwheel.network.PacketHandler;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,10 +12,6 @@ public class ModSetup {
 
     public void init(FMLCommonSetupEvent e) {
         logger = LogManager.getLogger();
-
-        NeoForge.EVENT_BUS.register(new ForgeEventHandlers());
-
-        PacketHandler.registerMessages("intwheel");
 
         InteractionWheel.interactionWheelImp.registerProvider(new DefaultWheelActionProvider());
         InteractionWheel.registry.register(new RotateBlockAction());

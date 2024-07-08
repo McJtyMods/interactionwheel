@@ -1,31 +1,40 @@
 package mcjty.intwheel.playerdata;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mcjty.intwheel.network.PacketHandler;
 import mcjty.intwheel.network.PacketSyncConfigToServer;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PlayerWheelConfiguration {
+public record PlayerWheelConfiguration(Map<String, String> hotkeys, Map<String, Boolean> enabledActions, List<String> orderedActions) {
 
-    private Map<String, Character> hotkeys = new HashMap<>();
-    private Map<String, Boolean> enabledActions = new HashMap<>();
-    private List<String> orderedActions = new ArrayList<>();
+    public static final Codec<PlayerWheelConfiguration> CODEC = RecordCodecBuilder.create(instance ->
+            instance.group(
+                    Codec.unboundedMap(Codec.STRING, Codec.STRING).fieldOf("hotkeys").forGetter(l -> l.hotkeys),
+                    Codec.unboundedMap(Codec.STRING, Codec.BOOL).fieldOf("enabled").forGetter(l -> l.enabledActions),
+                    Codec.list(Codec.STRING).fieldOf("order").forGetter(l -> l.orderedActions)
+            ).apply(instance, PlayerWheelConfiguration::new));
+
+    public static final StreamCodec<FriendlyByteBuf, PlayerWheelConfiguration> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.STRING_UTF8), PlayerWheelConfiguration::hotkeys,
+            ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.BOOL), PlayerWheelConfiguration::enabledActions,
+            ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), PlayerWheelConfiguration::orderedActions,
+            PlayerWheelConfiguration::new
+    );
 
     public PlayerWheelConfiguration() {
+        this(new HashMap<>(), new HashMap<>(), new ArrayList<>());
     }
 
-    public Map<String, Character> getHotkeys() {
-        return hotkeys;
-    }
-
-    public void addHotkey(Character key, String id) {
+    public void addHotkey(String key, String id) {
         hotkeys.put(id, key);
     }
 
@@ -41,12 +50,9 @@ public class PlayerWheelConfiguration {
         enabledActions.put(id, Boolean.FALSE);
     }
 
-    public List<String> getOrderedActions() {
-        return orderedActions;
-    }
-
     public void setOrderActions(List<String> actions) {
-        orderedActions = new ArrayList<>(actions);
+        orderedActions.clear();
+        orderedActions.addAll(actions);
     }
 
     /**
@@ -59,65 +65,16 @@ public class PlayerWheelConfiguration {
     }
 
     public void copyFrom(PlayerWheelConfiguration source) {
-        hotkeys = new HashMap<>(source.hotkeys);
-        enabledActions = new HashMap<>(source.enabledActions);
-        orderedActions = new ArrayList<>(source.orderedActions);
+        hotkeys.clear();
+        hotkeys.putAll(source.hotkeys);
+        enabledActions.clear();
+        enabledActions.putAll(source.enabledActions);
+        orderedActions.clear();
+        orderedActions.addAll(source.orderedActions);
     }
 
-
-    public void saveNBTData(CompoundTag compound) {
-        ListTag list = new ListTag();
-        for (Map.Entry<String, Character> entry : hotkeys.entrySet()) {
-            CompoundTag tc = new CompoundTag();
-            tc.putString("id", entry.getKey());
-            tc.putString("key", entry.getValue().toString());
-            list.add(tc);
-        }
-        compound.put("hotkeys", list);
-
-        list = new ListTag();
-        for (Map.Entry<String, Boolean> entry : enabledActions.entrySet()) {
-            CompoundTag tc = new CompoundTag();
-            tc.putString("id", entry.getKey());
-            tc.putBoolean("enabled", entry.getValue());
-            list.add(tc);
-        }
-        compound.put("enabled", list);
-
-        list = new ListTag();
-        for (String action : orderedActions) {
-            list.add(StringTag.valueOf(action));
-        }
-        compound.put("order", list);
-
-    }
-
-    public void loadNBTData(CompoundTag compound) {
-        hotkeys = new HashMap<>();
-        ListTag list = compound.getList("hotkeys", Tag.TAG_COMPOUND);
-        for (Tag tag : list) {
-            CompoundTag tc = (CompoundTag) tag;
-            hotkeys.put(tc.getString("id"), tc.getString("key").charAt(0));
-        }
-
-        enabledActions = new HashMap<>();
-        list = compound.getList("enabled", Tag.TAG_COMPOUND);
-        for (Tag tag : list) {
-            CompoundTag tc = (CompoundTag) tag;
-            enabledActions.put(tc.getString("id"), tc.getBoolean("enabled"));
-        }
-
-        orderedActions = new ArrayList<>();
-        list = compound.getList("order", Tag.TAG_STRING);
-        for (Tag tag : list) {
-            StringTag tc = (StringTag) tag;
-            orderedActions.add(tc.getAsString());
-        }
-    }
 
     public void sendToServer() {
-        CompoundTag tc = new CompoundTag();
-        saveNBTData(tc);
-        PacketHandler.sendToServer(new PacketSyncConfigToServer(tc));
+        PacketHandler.sendToServer(new PacketSyncConfigToServer(this));
     }
 }

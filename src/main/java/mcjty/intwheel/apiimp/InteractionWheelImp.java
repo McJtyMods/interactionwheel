@@ -5,7 +5,7 @@ import mcjty.intwheel.api.IInteractionWheel;
 import mcjty.intwheel.api.IWheelAction;
 import mcjty.intwheel.api.IWheelActionProvider;
 import mcjty.intwheel.api.IWheelActionRegistry;
-import mcjty.intwheel.playerdata.PlayerProperties;
+import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -60,27 +60,26 @@ public class InteractionWheelImp implements IInteractionWheel {
 
     // Get all sorted actions. Disabled and enabled
     public List<String> getSortedActions(@Nonnull Player player) {
-        return PlayerProperties.getWheelConfig(player).map(config -> {
-            List<String> orderedActions = new ArrayList<>(config.getOrderedActions());
+        PlayerWheelConfiguration config = player.getData(InteractionWheel.HOTKEYS);
+        List<String> orderedActions = new ArrayList<>(config.orderedActions());
 
-            // Add all ids that are missing
-            for (String id : InteractionWheel.registry.getRegistrationOrder()) {
-                if (!orderedActions.contains(id)) {
-                    orderedActions.add(id);
-                }
+        // Add all ids that are missing
+        for (String id : InteractionWheel.registry.getRegistrationOrder()) {
+            if (!orderedActions.contains(id)) {
+                orderedActions.add(id);
             }
+        }
 
 
-            // Clean up all invalid actions
-            List<String> valid = new ArrayList<>();
-            for (String action : orderedActions) {
-                if (InteractionWheel.registry.get(action) != null) {
-                    valid.add(action);
-                }
+        // Clean up all invalid actions
+        List<String> valid = new ArrayList<>();
+        for (String action : orderedActions) {
+            if (InteractionWheel.registry.get(action) != null) {
+                valid.add(action);
             }
+        }
 
-            return valid;
-        }).orElse(Collections.emptyList());
+        return valid;
     }
 
 
@@ -95,27 +94,26 @@ public class InteractionWheelImp implements IInteractionWheel {
             }
         }
         // Only keep enabled actions
-        return PlayerProperties.getWheelConfig(player).map(config -> {
-            List<String> newactions = new ArrayList<>();
-            for (String id : getSortedActions(player)) {
-                if (actions.contains(id)) {
-                    Boolean enabled = config.isEnabled(id);
-                    if (enabled == null) {
-                        // Don't know yet, use default
-                        IWheelAction action = InteractionWheel.registry.get(id);
-                        if (action == null) {
-                            enabled = Boolean.FALSE;
-                        } else {
-                            enabled = action.isDefaultEnabled();
-                        }
-                    }
-                    if (enabled) {
-                        newactions.add(id);
+        PlayerWheelConfiguration config = player.getData(InteractionWheel.HOTKEYS);
+        List<String> newactions = new ArrayList<>();
+        for (String id : getSortedActions(player)) {
+            if (actions.contains(id)) {
+                Boolean enabled = config.isEnabled(id);
+                if (enabled == null) {
+                    // Don't know yet, use default
+                    IWheelAction action = InteractionWheel.registry.get(id);
+                    if (action == null) {
+                        enabled = Boolean.FALSE;
+                    } else {
+                        enabled = action.isDefaultEnabled();
                     }
                 }
+                if (enabled) {
+                    newactions.add(id);
+                }
             }
+        }
 
-            return newactions;
-        }).orElse(Collections.emptyList());
+        return newactions;
     }
 }

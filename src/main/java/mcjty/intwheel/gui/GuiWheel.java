@@ -8,7 +8,7 @@ import mcjty.intwheel.input.KeyBindings;
 import mcjty.intwheel.network.PacketHandler;
 import mcjty.intwheel.network.PacketPerformAction;
 import mcjty.intwheel.network.PacketRequestConfig;
-import mcjty.intwheel.playerdata.PlayerProperties;
+import mcjty.intwheel.playerdata.PlayerWheelConfiguration;
 import mcjty.intwheel.varia.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -48,8 +48,8 @@ public class GuiWheel extends Screen {
     private int page = 0;
     private int pages = 1;
 
-    private static final ResourceLocation background = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel.png");
-    private static final ResourceLocation hilight = new ResourceLocation(InteractionWheel.MODID, "textures/gui/wheel_hilight.png");
+    private static final ResourceLocation background = ResourceLocation.fromNamespaceAndPath(InteractionWheel.MODID, "textures/gui/wheel.png");
+    private static final ResourceLocation hilight = ResourceLocation.fromNamespaceAndPath(InteractionWheel.MODID, "textures/gui/wheel_hilight.png");
 
     // Set to >0 to close this (with a delay)
     private int closeMe = 0;
@@ -83,19 +83,18 @@ public class GuiWheel extends Screen {
     public boolean charTyped(char codePoint, int modifiers) {
         super.charTyped(codePoint, modifiers);
         if ((codePoint >= 'a' && codePoint <= 'z') || (codePoint >= 'A' && codePoint <= 'Z')) {
-            PlayerProperties.getWheelConfig(minecraft.player).ifPresent(config -> {
-                Map<String, Character> hotkeys = config.getHotkeys();
-                List<String> actions = getActions();
-                for (String action : actions) {
-                    if (hotkeys.containsKey(action)) {
-                        if (hotkeys.get(action) == codePoint) {
-                            performAction(action);
-                            closeThis(5);
-                            return;
-                        }
+            PlayerWheelConfiguration config = minecraft.player.getData(InteractionWheel.HOTKEYS);
+            Map<String, String> hotkeys = config.hotkeys();
+            List<String> actions = getActions();
+            for (String action : actions) {
+                if (hotkeys.containsKey(action)) {
+                    if (hotkeys.get(action).charAt(0) == codePoint) {
+                        performAction(action);
+                        closeThis(5);
+                        break;
                     }
                 }
-            });
+            }
         }
         return true;
     }
@@ -244,38 +243,37 @@ public class GuiWheel extends Screen {
     }
 
     private void drawIcons(GuiGraphics graphics, List<String> actions, int offset, int q) {
-        PlayerProperties.getWheelConfig(minecraft.player).ifPresent(config -> {
-            Map<String, Character> hotkeys = config.getHotkeys();
+        PlayerWheelConfiguration config = minecraft.player.getData(InteractionWheel.HOTKEYS);
+        Map<String, String> hotkeys = config.hotkeys();
 
-            for (int i = 0; i < getActionSize(actions); i++) {
-                String id = actions.get(i + page * 8);
-                IWheelAction action = InteractionWheel.registry.get(id);
-                if (action != null) {
-                    WheelActionElement element = action.createElement();
-                    RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-                    RenderSystem.setShaderColor(BASE_RED, BASE_GREEN, BASE_BLUE, i == q ? 0.7f : BASE_ALPHA);
-                    RenderSystem.setShaderTexture(0, new ResourceLocation(element.getTexture()));
-                    int txtw = element.getTxtw();
-                    int txth = element.getTxth();
-                    boolean selected = q == i;
-                    int u = selected ? element.getUhigh() : element.getUlow();
-                    int v = selected ? element.getVhigh() : element.getVlow();
-                    int offs = (i - offset + 8) % 8;
-                    int ox = guiLeft + iconOffsets.get(offs).getLeft();
-                    int oy = guiTop + iconOffsets.get(offs).getRight();
-                    RenderHelper.drawTexturedModalRect(graphics, ox, oy, u, v, 31, 31, txtw, txth);
+        for (int i = 0; i < getActionSize(actions); i++) {
+            String id = actions.get(i + page * 8);
+            IWheelAction action = InteractionWheel.registry.get(id);
+            if (action != null) {
+                WheelActionElement element = action.createElement();
+                RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+                RenderSystem.setShaderColor(BASE_RED, BASE_GREEN, BASE_BLUE, i == q ? 0.7f : BASE_ALPHA);
+                RenderSystem.setShaderTexture(0, ResourceLocation.parse(element.getTexture()));
+                int txtw = element.getTxtw();
+                int txth = element.getTxth();
+                boolean selected = q == i;
+                int u = selected ? element.getUhigh() : element.getUlow();
+                int v = selected ? element.getVhigh() : element.getVlow();
+                int offs = (i - offset + 8) % 8;
+                int ox = guiLeft + iconOffsets.get(offs).getLeft();
+                int oy = guiTop + iconOffsets.get(offs).getRight();
+                RenderHelper.drawTexturedModalRect(graphics, ox, oy, u, v, 31, 31, txtw, txth);
 
-                    if (selected && hotkeys.containsKey(id)) {
-                        double angle = Math.PI * 2.0 * offs / 8 - Math.PI / 2.0 + Math.PI / 8.0;
-                        int tx = (int) (guiLeft + 80 + 86 * Math.cos(angle));
-                        int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));
-                        String keyName = "" + hotkeys.get(id);
+                if (selected && hotkeys.containsKey(id)) {
+                    double angle = Math.PI * 2.0 * offs / 8 - Math.PI / 2.0 + Math.PI / 8.0;
+                    int tx = (int) (guiLeft + 80 + 86 * Math.cos(angle));
+                    int ty = (int) (guiTop + 80 + 86 * Math.sin(angle));
+                    String keyName = "" + hotkeys.get(id);
 //                        String keyName = Keyboard.getKeyName(hotkeys.get(id));
-                        RenderHelper.renderText(graphics, tx - minecraft.font.width("" + keyName.charAt(0)) / 2, ty - minecraft.font.lineHeight / 2, keyName);
-                    }
+                    RenderHelper.renderText(graphics, tx - minecraft.font.width("" + keyName.charAt(0)) / 2, ty - minecraft.font.lineHeight / 2, keyName);
                 }
             }
-        });
+        }
     }
 
     private void renderTooltipText(GuiGraphics graphics, String desc) {

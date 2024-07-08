@@ -8,8 +8,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public class DumpSimilarWheelAction implements IWheelAction {
@@ -40,17 +40,15 @@ public class DumpSimilarWheelAction implements IWheelAction {
         if (heldItem.isEmpty()) {
             return;
         }
-        BlockEntity te = world.getBlockEntity(pos);
-        if (te != null && te.getCapability(ForgeCapabilities.ITEM_HANDLER, null).isPresent()) {
-            te.getCapability(ForgeCapabilities.ITEM_HANDLER, null).ifPresent(inventory -> {
-                for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                    ItemStack stack = player.getInventory().getItem(i);
-                    if (!stack.isEmpty() && stack.is(heldItem.getItem())) { // Can we do more here?
-                        stack = ItemHandlerHelper.insertItem(inventory, stack, false);
-                        player.getInventory().setItem( i, stack);
-                    }
+        IItemHandler inventory = world.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+        if (inventory != null) {
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                ItemStack stack = player.getInventory().getItem(i);
+                if (!stack.isEmpty() && stack.is(heldItem.getItem())) { // Can we do more here?
+                    stack = ItemHandlerHelper.insertItem(inventory, stack, false);
+                    player.getInventory().setItem( i, stack);
                 }
-            });
+            }
         }
     }
 }

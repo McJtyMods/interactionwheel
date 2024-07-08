@@ -9,7 +9,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public class Dump1WheelAction implements IWheelAction {
@@ -40,12 +41,10 @@ public class Dump1WheelAction implements IWheelAction {
         if (heldItem.isEmpty()) {
             return;
         }
-        BlockEntity te = world.getBlockEntity(pos);
-        if (te != null && te.getCapability(ForgeCapabilities.ITEM_HANDLER, null).isPresent()) {
-            te.getCapability(ForgeCapabilities.ITEM_HANDLER, null).ifPresent(inventory -> {
-                ItemStack remaining = ItemHandlerHelper.insertItem(inventory, heldItem, false);
-                player.setItemInHand(InteractionHand.MAIN_HAND, remaining);
-            });
+        IItemHandler inventory = world.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+        if (inventory != null) {
+            ItemStack remaining = ItemHandlerHelper.insertItem(inventory, heldItem, false);
+            player.setItemInHand(InteractionHand.MAIN_HAND, remaining);
         }
     }
 }
