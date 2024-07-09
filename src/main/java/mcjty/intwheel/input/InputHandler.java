@@ -9,7 +9,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 public class InputHandler {
 
     @SubscribeEvent
-    public void onMouseInput(InputEvent.MouseButton event) {
+    public void onMouseInput(InputEvent.MouseButton.Post event) {
         checkWheelKey();
     }
 
