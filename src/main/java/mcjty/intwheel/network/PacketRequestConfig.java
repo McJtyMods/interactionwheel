@@ -10,12 +10,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class PacketRequestConfig implements CustomPacketPayload {
+public record PacketRequestConfig() implements CustomPacketPayload {
 
     private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(InteractionWheel.MODID, "requestconfig");
     public static final Type<PacketRequestConfig> TYPE = new Type<>(ID);
 
-    public static final StreamCodec<FriendlyByteBuf, PacketRequestConfig> CODEC = StreamCodec.unit(new PacketRequestConfig());
+    public static final PacketRequestConfig INSTANCE = new PacketRequestConfig();
+
+    public static final StreamCodec<FriendlyByteBuf, PacketRequestConfig> CODEC = StreamCodec.unit(INSTANCE);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

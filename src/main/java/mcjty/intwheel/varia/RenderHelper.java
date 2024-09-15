@@ -95,7 +95,7 @@ public class RenderHelper {
     }
 
     public static int renderText(GuiGraphics graphics, int x, int y, String txt) {
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1f);
+//        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1f);
 
         PoseStack matrixStack = graphics.pose();
         matrixStack.pushPose();
@@ -107,10 +107,10 @@ public class RenderHelper {
         Minecraft mc = Minecraft.getInstance();
         int width = mc.font.width(txt);
         graphics.drawString(mc.font, txt, x, y, 16777215, false);
-        GlStateManager._enableDepthTest();
+//        GlStateManager._enableDepthTest();
         // Fixes opaque cooldown overlay a bit lower
         // TODO: check if enabled blending still screws things up down the line.
-        GlStateManager._enableBlend();
+//        GlStateManager._enableBlend();
 
 
         matrixStack.popPose();

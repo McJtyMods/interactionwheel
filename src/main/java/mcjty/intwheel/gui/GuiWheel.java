@@ -76,7 +76,7 @@ public class GuiWheel extends Screen {
 
         page = 0;
         pages = 1;
-        PacketHandler.sendToServer(new PacketRequestConfig());
+        PacketHandler.sendToServer(PacketRequestConfig.INSTANCE);
     }
 
     @Override
