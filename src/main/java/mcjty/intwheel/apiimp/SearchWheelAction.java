@@ -45,7 +45,7 @@ public class SearchWheelAction implements IWheelAction {
                 for (int dy = -20 ; dy <= 20 ; dy++) {
                     for (int dz = -20 ; dz <= 20 ; dz++) {
                         BlockPos p = pos.offset(dx, dy, dz);
-                        IItemHandler inventory = world.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+                        IItemHandler inventory = world.getCapability(Capabilities.ItemHandler.BLOCK, p, null);
                         if (inventory != null) {
                             for (int i = 0; i < inventory.getSlots(); i++) {
                                 ItemStack stack = inventory.getStackInSlot(i);
